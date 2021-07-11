@@ -7,18 +7,18 @@ The Docker configuration provides the following setup:
 - Swoole Server
   
 And the following PHP extensions are included:
--[x] Swoole
--[x] OPcache
--[x] Redis
--[x] PCNTL
--[x] BCMATH
--[x] RDKAFKA
--[x] pdo_mysql
--[x] MySQL Client
--[x] zip
--[x] cURL
--[x] GD
--[x] mbstring
+- [x] Swoole
+- [x] OPcache
+- [x] Redis
+- [x] PCNTL
+- [x] BCMATH
+- [x] RDKAFKA
+- [x] pdo_mysql
+- [x] MySQL Client
+- [x] zip
+- [x] cURL
+- [x] GD
+- [x] mbstring
 
 ## Configuration
 
