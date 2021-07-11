@@ -170,11 +170,11 @@ COPY . /var/www/html/
 
 COPY --from=vendor /var/www/html/vendor /var/www/html/vendor
 
-RUN cp ./config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf && \
-    cp ./config/php.ini /usr/local/etc/php/conf.d/99-octane.ini && \
-    cp ./config/opcache.ini /usr/local/etc/php/conf.d/opcache.ini && \
+RUN cp ./deployment/config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf && \
+    cp ./deployment/config/php.ini /usr/local/etc/php/conf.d/99-octane.ini && \
+    cp ./deployment/config/opcache.ini /usr/local/etc/php/conf.d/opcache.ini && \
     chgrp -R octane  ./storage/logs/ ./bootstrap/cache/ && \
-    chmod +x ./config/entrypoint.sh && \
+    chmod +x ./deployment/config/entrypoint.sh && \
 	echo 'php(){ echo "Running php as octane user ..."; su octane -c "php $*";}' >> ~/.bashrc && \
 	ln -s /var/www/html/config/entrypoint.sh /entrypoint.sh
 
