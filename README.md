@@ -1,5 +1,5 @@
 # Laravel Octane Dockerfile
-A pretty configurable and production ready multi-stage Dockerfile for [Octane](https://github.com/laravel/octane) powered Laravel applications.
+A pretty configurable and production ready multi-stage Dockerfile for [Octane](https://github.com/laravel/octane) powered Laravelish web services and microservices.
 
 The Docker configuration provides the following setup:
 - Debian Buster 10
