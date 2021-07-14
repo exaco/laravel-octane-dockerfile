@@ -16,6 +16,7 @@ And the following PHP extensions are included:
 - [x] PCNTL
 - [x] BCMATH
 - [x] RDKAFKA
+- [x] INTL
 - [x] pdo_mysql
 - [x] MySQL Client
 - [x] zip
