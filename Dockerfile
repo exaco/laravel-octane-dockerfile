@@ -141,6 +141,19 @@ RUN set -eux; \
       php -m | grep -q 'swoole'; \
     fi
 
+###########################################################################
+# Human Language and Character Encoding Support:
+###########################################################################
+
+ARG INSTALL_INTL=true
+
+RUN if [ ${INSTALL_INTL} = true ]; then \
+    # Install intl and requirements
+    apt-get install -yqq zlib1g-dev libicu-dev g++ && \
+    docker-php-ext-configure intl && \
+    docker-php-ext-install intl \
+;fi
+
 ###########################################
 # MySQL Client:
 ###########################################
