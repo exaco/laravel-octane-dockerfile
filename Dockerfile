@@ -43,6 +43,7 @@ RUN set -eux; \
             supervisor \
             libmemcached-dev \
             libz-dev \
+            libbrotli-dev \
             libpq-dev \
             libjpeg-dev \
             libpng-dev \
@@ -183,13 +184,13 @@ COPY . /var/www/html/
 
 COPY --from=vendor /var/www/html/vendor /var/www/html/vendor
 
-RUN cp ./deployment/config/supervisord.conf /etc/supervisor/conf.d/supervisord.conf && \
-    cp ./deployment/config/php.ini /usr/local/etc/php/conf.d/99-octane.ini && \
-    cp ./deployment/config/opcache.ini /usr/local/etc/php/conf.d/opcache.ini && \
+RUN cp ./deployment/octane/supervisord.conf /etc/supervisor/conf.d/supervisord.conf && \
+    cp ./deployment/octane/php.ini /usr/local/etc/php/conf.d/99-octane.ini && \
+    cp ./deployment/octane/opcache.ini /usr/local/etc/php/conf.d/opcache.ini && \
     chgrp -R octane  ./storage/logs/ ./bootstrap/cache/ && \
-    chmod +x ./deployment/config/entrypoint.sh && \
+    chmod +x ./deployment/octane/entrypoint.sh && \
 	echo 'php(){ echo "Running php as octane user ..."; su octane -c "php $*";}' >> ~/.bashrc && \
-	ln -s /var/www/html/config/entrypoint.sh /entrypoint.sh
+	ln -s /var/www/html/deployment/octane/entrypoint.sh /entrypoint.sh
 
 EXPOSE 9000
 
