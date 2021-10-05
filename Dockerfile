@@ -25,7 +25,8 @@ WORKDIR /var/www/html
 ARG deployment_env="Production"
 ENV deployment_env=${deployment_env}
 
-ENV DEBIAN_FRONTEND noninteractive TZ=Asia/Tehran
+ARG TZ=Asia/Tehran
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
