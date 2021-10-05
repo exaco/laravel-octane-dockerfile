@@ -34,21 +34,21 @@ Exposed ports of container:
 
 ## Usage
 
-1. Clone this repository
-    
+1. Clone this repository:
+
     `git clone git@github.com:exaco/laravel-octane-dockerfile.git`
-   
-2. Copy cloned directory content into your Laravel project
+
+2. Copy cloned directory content into your Octane powered Laravel project
 3. Change directory to your Laravel project
-3. Build your image
-   
-   `docker build -t laravel-octane:1.0 .`
-   
-4. Up the container
+3. Build your image:
 
-   `docker run -p 80:9000 --rm laravel-octane:1.0`
+   `docker build -t <container-name>:<tag> .`
 
-5. Visit `http://localhost`
+4. Up the container:
+
+   `docker run -p <port>:9000 --rm <container-name>:<tag>`
+
+5. Visit `http://localhost:<port>`
 
 ## Configuration
 
