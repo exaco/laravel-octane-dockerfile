@@ -59,7 +59,7 @@ There are something that you maybe want to configure:
 - OPcache and JIT configurations in `opcache.ini`
 - PHP configurations in `php.ini`
 - `ENTRYPOINT` Bash script in `entrypoint.sh`
-- set OS timezone using the `--build-arg` option along with the build command
+- Set OS timezone using the `--build-arg` option along with the build command
 
 ## Contributing
 
