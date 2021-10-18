@@ -10,6 +10,7 @@ RUN composer install \
   --no-interaction \
   --prefer-dist \
   --optimize-autoloader \
+  --apcu-autoloader \
   --ansi \
   --no-scripts
 
