@@ -191,7 +191,7 @@ RUN cp ./deployment/octane/supervisord.conf /etc/supervisor/conf.d/supervisord.c
     cp ./deployment/octane/opcache.ini /usr/local/etc/php/conf.d/opcache.ini && \
     chgrp -R octane  ./storage/logs/ ./bootstrap/cache/ && \
     chmod +x ./deployment/octane/entrypoint.sh && \
-	echo 'php(){ echo "Running php as octane user ..."; su octane -c "php $*";}' >> ~/.bashrc && \
+	cat ./deployment/octane/bash_functions.sh >> ~/.bashrc && \
 	ln -s /var/www/html/deployment/octane/entrypoint.sh /entrypoint.sh
 
 EXPOSE 9000
