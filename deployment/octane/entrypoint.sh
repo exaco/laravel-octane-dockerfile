@@ -9,7 +9,7 @@ initialStuff(){
 }
 
 if [ "$1" != "" ]; then
-    exec $@
+    exec "$@"
 else
     initialStuff
     exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
