@@ -61,6 +61,10 @@ There are something that you maybe want to configure:
 - `ENTRYPOINT` Bash script in `entrypoint.sh`
 - Set OS timezone using the `--build-arg` option along with the build command
 
+## Utilities
+Also, some useful Bash functions and aliases are added in `utilities.sh` that maybe help.
+
+
 ## Contributing
 
 Thank you for considering contributing! If you find an issue, or have a better way to do something, feel free to open an issue, or a PR.
