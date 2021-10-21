@@ -57,7 +57,6 @@ RUN set -eux; \
             libonig-dev \
             libzip-dev zip unzip
 
-
 RUN mkdir -p ~/.gnupg \
         && chmod 600 ~/.gnupg \
         && echo "disable-ipv6" >> ~/.gnupg/dirmngr.conf \
