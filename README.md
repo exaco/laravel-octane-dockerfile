@@ -3,7 +3,7 @@ A pretty configurable and production ready multi-stage Dockerfile for [Octane](h
 
 The Docker configuration provides the following setup:
 - Debian Buster 10
-- PHP 8.0
+- PHP 8.0 with preconfigured JIT compiler and OPcache
 - Swoole Server
 
 
@@ -30,7 +30,7 @@ Exposed ports of container:
 
 | Software | Port |
 |-------------- | -------------- |
-| **Swoole** | 9000 |
+| Swoole | 9000 |
 
 ## Usage
 
