@@ -35,8 +35,8 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN set -eux; \
     apt-get update; \
     apt-get upgrade -yqq; \
-    pecl channel-update pecl.php.net && \
-    apt-get install -yqq --no-install-recommends \
+    pecl channel-update pecl.php.net \
+    && apt-get install -yqq --no-install-recommends \
             apt-utils \
             gnupg \
             gosu \
@@ -57,17 +57,10 @@ RUN set -eux; \
             libonig-dev \
             libzip-dev zip unzip
 
-RUN mkdir -p ~/.gnupg \
-        && chmod 600 ~/.gnupg \
-        && echo "disable-ipv6" >> ~/.gnupg/dirmngr.conf \
-        && apt-key adv --homedir ~/.gnupg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys E5267A6C \
-        && apt-key adv --homedir ~/.gnupg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C300EE8C \
-        && echo "deb http://ppa.launchpad.net/ondrej/php/ubuntu focal main" > /etc/apt/sources.list.d/ppa_ondrej_php.list
-
 RUN set -xe; \
-    docker-php-ext-configure zip && \
-            docker-php-ext-install zip && \
-            php -m | grep -q 'zip'; \
+    docker-php-ext-configure zip \
+            && docker-php-ext-install zip \
+            && php -m | grep -q 'zip'; \
     docker-php-ext-install \
             mbstring \
             pdo_mysql; \
@@ -75,65 +68,65 @@ RUN set -xe; \
             --prefix=/usr \
             --with-jpeg \
             --with-webp \
-            --with-freetype && \
-    docker-php-ext-install gd; \
+            --with-freetype \
+    && docker-php-ext-install gd; \
     php -r 'var_dump(gd_info());'
 
 ###########################################
-# Opcache
+# OPcache
 ###########################################
 
 ARG INSTALL_OPCACHE=true
 
 RUN if [ ${INSTALL_OPCACHE} = true ]; then \
-  docker-php-ext-install opcache \
-  ;fi
+    docker-php-ext-install opcache; \
+  fi
 
 ###########################################
-# PHP REDIS EXTENSION
+# PHP Redis
 ###########################################
 
 ARG INSTALL_PHPREDIS=true
 
 RUN if [ ${INSTALL_PHPREDIS} = true ]; then \
-  pecl install -o -f redis \
-  && rm -rf /tmp/pear \
-  && docker-php-ext-enable redis \
-  ;fi
+      pecl install -o -f redis \
+      && rm -rf /tmp/pear \
+      && docker-php-ext-enable redis; \
+  fi
 
 ###########################################
-# pcntl
+# PCNTL
 ###########################################
 
 ARG INSTALL_PCNTL=true
 RUN if [ ${INSTALL_PCNTL} = true ]; then \
-  docker-php-ext-install pcntl \
-  ;fi
+    docker-php-ext-install pcntl; \
+  fi
 
 ###########################################
-# bcmath:
+# BCMath
 ###########################################
 
 ARG INSTALL_BCMATH=true
 
 RUN if [ ${INSTALL_BCMATH} = true ]; then \
-  docker-php-ext-install bcmath \
-  ;fi
+    docker-php-ext-install bcmath; \
+  fi
 
 ###########################################
-# RDKAFKA:
+# RDKAFKA
 ###########################################
 
 ARG INSTALL_RDKAFKA=true
 
 RUN if [ ${INSTALL_RDKAFKA} = true ]; then \
-  apt-get install -y librdkafka-dev && \
-  pecl install rdkafka && \
-  docker-php-ext-enable rdkafka \
-  ;fi
+      apt-get install -y librdkafka-dev \
+      && pecl install rdkafka \
+      && docker-php-ext-enable rdkafka; \
+  fi
 
 ###########################################
-# Swoole EXTENSION
+# Swoole extension
 ###########################################
 
 ARG INSTALL_SWOOLE=true
@@ -145,20 +138,19 @@ RUN set -eux; \
     fi
 
 ###########################################################################
-# Human Language and Character Encoding Support:
+# Human Language and Character Encoding Support
 ###########################################################################
 
 ARG INSTALL_INTL=true
 
 RUN if [ ${INSTALL_INTL} = true ]; then \
-    # Install intl and requirements
-    apt-get install -yqq zlib1g-dev libicu-dev g++ && \
-    docker-php-ext-configure intl && \
-    docker-php-ext-install intl \
-;fi
+    apt-get install -yqq zlib1g-dev libicu-dev g++ \
+    && docker-php-ext-configure intl \
+    && docker-php-ext-install intl; \
+  fi
 
 ###########################################
-# MySQL Client:
+# MySQL Client
 ###########################################
 
 USER root
@@ -166,8 +158,8 @@ USER root
 ARG INSTALL_MYSQL_CLIENT=true
 
 RUN if [ ${INSTALL_MYSQL_CLIENT} = true ]; then \
-  apt-get -y install default-mysql-client \
-  ;fi
+    apt-get -y install default-mysql-client; \
+  fi
 
 ###########################################
 
@@ -186,13 +178,14 @@ COPY . /var/www/html/
 
 COPY --from=vendor /var/www/html/vendor /var/www/html/vendor
 
-RUN cp ./deployment/octane/supervisord.conf /etc/supervisor/conf.d/supervisord.conf && \
-    cp ./deployment/octane/php.ini /usr/local/etc/php/conf.d/99-octane.ini && \
-    cp ./deployment/octane/opcache.ini /usr/local/etc/php/conf.d/opcache.ini && \
-    chgrp -R octane  ./storage/logs/ ./bootstrap/cache/ && \
-    chmod +x ./deployment/octane/entrypoint.sh && \
-	ln -s /var/www/html/deployment/octane/entrypoint.sh /entrypoint.sh && \
-	cat ./deployment/octane/utilities.sh >> ~/.bashrc
+COPY ./deployment/octane/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY ./deployment/octane/php.ini /usr/local/etc/php/conf.d/octane.ini
+COPY ./deployment/octane/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+
+RUN chgrp -R octane ./storage/clockwork/  ./storage/logs/ ./bootstrap/cache/
+RUN chmod +x ./deployment/octane/entrypoint.sh
+RUN ln -s /var/www/html/deployment/octane/entrypoint.sh /entrypoint.sh
+RUN cat ./deployment/octane/utilities.sh >> ~/.bashrc
 
 EXPOSE 9000
 
