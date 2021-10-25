@@ -168,11 +168,11 @@ RUN useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u 1337 octane
 
 RUN if [ ! -z "$WWWUSER" ]; then \
     usermod -u $WWWUSER octane; \
-fi
+  fi
 
-RUN apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
-    rm /var/log/lastlog /var/log/faillog
+RUN apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+    && rm /var/log/lastlog /var/log/faillog
 
 COPY . /var/www/html/
 
@@ -182,7 +182,7 @@ COPY ./deployment/octane/supervisord.conf /etc/supervisor/conf.d/supervisord.con
 COPY ./deployment/octane/php.ini /usr/local/etc/php/conf.d/octane.ini
 COPY ./deployment/octane/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
-RUN chgrp -R octane ./storage/clockwork/  ./storage/logs/ ./bootstrap/cache/
+RUN chgrp -R octane ./storage/logs/ ./bootstrap/cache/
 RUN chmod +x ./deployment/octane/entrypoint.sh
 RUN ln -s /var/www/html/deployment/octane/entrypoint.sh /entrypoint.sh
 RUN cat ./deployment/octane/utilities.sh >> ~/.bashrc
