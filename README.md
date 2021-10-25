@@ -14,7 +14,7 @@ And the following PHP extensions are included:
 - [x] OPcache
 - [x] Redis
 - [x] PCNTL
-- [x] BCMATH
+- [x] BCMath
 - [x] RDKAFKA
 - [x] INTL
 - [x] pdo_mysql
