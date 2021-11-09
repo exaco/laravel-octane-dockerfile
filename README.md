@@ -64,6 +64,8 @@ There are something that you maybe want to configure:
 ## Utilities
 Also, some useful Bash functions and aliases are added in `utilities.sh` that maybe help.
 
+## Notes
+- Laravel Octane logs requests' info only `local` environment.
 
 ## Contributing
 
