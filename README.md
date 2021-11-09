@@ -40,15 +40,19 @@ Exposed ports of container:
 
 2. Copy cloned directory content into your Octane powered Laravel project
 3. Change directory to your Laravel project
-3. Build your image:
+4. Build your image:
 
    `docker build -t <container-name>:<tag> .`
 
-4. Up the container:
+5. Up the container:
 
    `docker run -p <port>:9000 --rm <container-name>:<tag>`
 
-5. Visit `http://localhost:<port>`
+6. Visit `http://localhost:<port>`
+
+### Use in Laravel Sail
+
+You can use this Dockerfile within Laravel Sail. Just change PHP container context to `.` in `docker-compose.yml`. You maybe need to remove `WWWGROUP` in `args` and `WWWUSER` in `environment` configuration in this file.  
 
 ## Configuration
 
@@ -62,9 +66,11 @@ There are something that you maybe want to configure:
 - Set OS timezone using the `--build-arg` option along with the build command
 
 ## Utilities
+
 Also, some useful Bash functions and aliases are added in `utilities.sh` that maybe help.
 
 ## Notes
+
 - Laravel Octane logs requests' info only `local` environment.
 
 ## Contributing
