@@ -3,7 +3,7 @@
 ###########################################
 
 FROM composer:latest AS vendor
-WORKDIR /var/www/html/
+WORKDIR /var/www/html
 COPY composer* ./
 RUN composer install \
   --no-dev \
@@ -22,13 +22,13 @@ FROM php:8.0-buster
 ARG WWWUSER=1000
 ARG WWWGROUP=1000
 
-WORKDIR /var/www/html
-
 ARG deployment_env="Production"
 ENV deployment_env=${deployment_env}
 
 ARG TZ=Asia/Tehran
 ENV DEBIAN_FRONTEND=noninteractive
+
+WORKDIR /var/www/html
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
@@ -174,9 +174,9 @@ RUN apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
     && rm /var/log/lastlog /var/log/faillog
 
-COPY . /var/www/html/
+COPY . .
 
-COPY --from=vendor /var/www/html/vendor /var/www/html/vendor
+COPY --from=vendor /var/www/html/vendor ./vendor
 
 COPY ./deployment/octane/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY ./deployment/octane/php.ini /usr/local/etc/php/conf.d/octane.ini
@@ -184,9 +184,8 @@ COPY ./deployment/octane/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
 RUN chgrp -R octane ./storage/logs/ ./bootstrap/cache/
 RUN chmod +x ./deployment/octane/entrypoint.sh
-RUN ln -s /var/www/html/deployment/octane/entrypoint.sh /entrypoint.sh
 RUN cat ./deployment/octane/utilities.sh >> ~/.bashrc
 
 EXPOSE 9000
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["./deployment/octane/entrypoint.sh"]
