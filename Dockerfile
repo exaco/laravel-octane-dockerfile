@@ -55,7 +55,9 @@ RUN set -eux; \
             libwebp-dev \
             libmcrypt-dev \
             libonig-dev \
-            libzip-dev zip unzip
+            libzip-dev zip unzip \
+    		procps
+
 
 RUN set -xe; \
     docker-php-ext-configure zip \
