@@ -135,7 +135,7 @@ ARG INSTALL_SWOOLE=true
 
 RUN set -eux; \
     if [ ${INSTALL_SWOOLE} = true ]; then \
-      pecl install -D 'enable-openssl="yes" enable-http2="yes" enable-mysqlnd="yes"' swoole; \
+      pecl install -D 'enable-openssl="yes" enable-http2="yes" enable-swoole-curl="yes" enable-mysqlnd="yes"' swoole; \
       docker-php-ext-enable swoole; \
       php -m | grep -q 'swoole'; \
     fi
