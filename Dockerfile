@@ -57,7 +57,13 @@ RUN set -eux; \
             libmcrypt-dev \
             libonig-dev \
             libzip-dev zip unzip \
-    		procps
+            libargon2-1 \
+            libidn2-0 \
+            libpcre2-8-0 \
+            libpcre3 \
+            libxml2 \
+            libzstd1  \
+            procps
 
 
 RUN set -xe; \
