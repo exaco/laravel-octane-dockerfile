@@ -4,7 +4,12 @@ A pretty configurable and production ready multi-stage Dockerfile for [Octane](h
 The Docker configuration provides the following setup:
 - Debian Buster 10
 - PHP 8.0 with preconfigured JIT compiler and OPcache
-- Swoole Server
+- Swoole extension with support of:
+  - OpenSSL
+  - HTTP/2
+  - Native CURL hook for Swoole coroutines
+  - `mysqlnd`
+  - Asynchronous DNS
 
 
 ## PHP extensions
