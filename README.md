@@ -15,7 +15,7 @@ The Docker configuration provides the following setup:
 ## PHP extensions
 
 And the following PHP extensions are included:
-- [x] Swoole with HTTP/2 requirements
+- [x] Swoole
 - [x] OPcache
 - [x] Redis
 - [x] PCNTL
