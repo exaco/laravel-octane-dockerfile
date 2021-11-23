@@ -164,11 +164,7 @@ RUN if [ ${INSTALL_MYSQL_CLIENT} = true ]; then \
 ###########################################
 
 RUN groupadd --force -g $WWWGROUP octane
-RUN useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u 1337 octane
-
-RUN if [ ! -z "$WWWUSER" ]; then \
-    usermod -u $WWWUSER octane; \
-  fi
+RUN useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u $WWWUSER octane
 
 RUN apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
@@ -176,13 +172,23 @@ RUN apt-get clean \
 
 COPY . .
 
+RUN mkdir -p \
+  ./storage/framework/sessions \
+  ./storage/framework/views \
+  ./storage/framework/cache \
+  ./storage/logs \
+  ./bootstrap/cache \
+  && chown -R octane:octane \
+  ./storage \
+  ./bootstrap/cache \
+  && chmod -R ug+rwx ./storage ./bootstrap/cache
+
 COPY --from=vendor /var/www/html/vendor ./vendor
 
 COPY ./deployment/octane/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY ./deployment/octane/php.ini /usr/local/etc/php/conf.d/octane.ini
 COPY ./deployment/octane/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
-RUN chgrp -R octane ./storage/logs/ ./bootstrap/cache/
 RUN chmod +x ./deployment/octane/entrypoint.sh
 RUN cat ./deployment/octane/utilities.sh >> ~/.bashrc
 
