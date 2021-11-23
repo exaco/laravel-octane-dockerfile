@@ -47,6 +47,7 @@ RUN set -eux; \
             libmemcached-dev \
             libz-dev \
             libbrotli-dev \
+            libc-ares-dev \
             libpq-dev \
             libjpeg-dev \
             libpng-dev \
@@ -135,7 +136,7 @@ ARG INSTALL_SWOOLE=true
 
 RUN set -eux; \
     if [ ${INSTALL_SWOOLE} = true ]; then \
-      pecl install -D 'enable-openssl="yes" enable-http2="yes" enable-swoole-curl="yes" enable-mysqlnd="yes"' swoole; \
+      pecl install -D 'enable-openssl="yes" enable-http2="yes" enable-swoole-curl="yes" enable-mysqlnd="yes" enable-cares="yes"' swoole; \
       docker-php-ext-enable swoole; \
       php -m | grep -q 'swoole'; \
     fi
