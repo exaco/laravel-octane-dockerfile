@@ -17,7 +17,7 @@ RUN composer install \
 
 ###########################################
 
-FROM php:8.0-buster
+FROM php:8.0-cli-buster
 
 ARG WWWUSER=1000
 ARG WWWGROUP=1000
@@ -27,6 +27,8 @@ ENV deployment_env=${deployment_env}
 
 ARG TZ=Asia/Tehran
 ENV DEBIAN_FRONTEND=noninteractive
+
+ENV TERM=xterm-color
 
 WORKDIR /var/www/html
 
@@ -62,7 +64,7 @@ RUN set -eux; \
             libpcre2-8-0 \
             libpcre3 \
             libxml2 \
-            libzstd1  \
+            libzstd1 \
             procps
 
 
