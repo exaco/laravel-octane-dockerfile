@@ -108,6 +108,7 @@ RUN if [ ${INSTALL_PHPREDIS} = true ]; then \
 ###########################################
 
 ARG INSTALL_PCNTL=true
+
 RUN if [ ${INSTALL_PCNTL} = true ]; then \
     docker-php-ext-install pcntl; \
   fi
