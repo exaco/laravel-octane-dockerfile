@@ -1,7 +1,7 @@
 # Laravel Octane Dockerfile
 
-A pretty configurable and production ready multi-stage Dockerfile for [Octane](https://github.com/laravel/octane)
-powered Laravelish web services and microservices.
+A pretty configurable and production ready multi-stage Dockerfile for [Laravel Octane](https://github.com/laravel/octane)
+powered web services and microservices.
 
 The Docker configuration provides the following setup:
 
@@ -10,7 +10,7 @@ The Docker configuration provides the following setup:
 - Swoole extension with support of:
     - OpenSSL
     - HTTP/2
-    - Native CURL hook for Swoole coroutines
+    - Native cURL hook for coroutines
     - `mysqlnd`
     - Asynchronous DNS
 
