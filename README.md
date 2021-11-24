@@ -65,6 +65,18 @@ You can use this Dockerfile within Laravel Sail. Just change PHP container `cont
 to `ports` in `docker-compose.yml`. You maybe need to remove `WWWGROUP` in `args` and `WWWUSER` in `environment`
 configuration in this file.
 
+## Configuration
+
+There are something that you maybe want to configure:
+
+- Application request workers count in `supervisord.conf`
+- Max request count for request workers in `supervisord.conf`
+- The amount of workers available to process concurrent tasks in `supervisord.conf`
+- OPcache and JIT configurations in `opcache.ini`
+- PHP configurations in `php.ini`
+- `ENTRYPOINT` Bash script in `entrypoint.sh`
+- Set OS timezone using the `--build-arg` option along with the build command
+
 ### Recommended Swoole options in `octane.php`
 
 ```php
@@ -88,18 +100,6 @@ return [
         ]
 ];
 ```
-
-## Configuration
-
-There are something that you maybe want to configure:
-
-- Application request workers count in `supervisord.conf`
-- Max request count for request workers in `supervisord.conf`
-- The amount of workers available to process concurrent tasks in `supervisord.conf`
-- OPcache and JIT configurations in `opcache.ini`
-- PHP configurations in `php.ini`
-- `ENTRYPOINT` Bash script in `entrypoint.sh`
-- Set OS timezone using the `--build-arg` option along with the build command
 
 ## Utilities
 
