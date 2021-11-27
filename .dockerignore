@@ -18,6 +18,5 @@ phpstan.neon
 README.md
 phpunit.xml
 .editorconfig
-.
 tests
 storage/clockwork
