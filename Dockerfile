@@ -65,7 +65,8 @@ RUN set -eux; \
             libpcre3 \
             libxml2 \
             libzstd1 \
-            procps
+            procps \
+            libcurl4-openssl-dev
 
 
 RUN set -xe; \
