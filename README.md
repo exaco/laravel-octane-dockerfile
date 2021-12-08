@@ -108,6 +108,7 @@ Also, some useful Bash functions and aliases are added in `utilities.sh` that ma
 ## Notes
 
 - Laravel Octane logs requests information only in the `local` environment.
+- Please be aware about `.dockerignore` content
 
 ## Contributing
 
