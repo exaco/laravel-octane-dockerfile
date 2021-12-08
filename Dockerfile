@@ -22,10 +22,7 @@ FROM php:8.0-cli-buster
 ARG WWWUSER=1000
 ARG WWWGROUP=1000
 
-ARG deployment_env="Production"
-ENV deployment_env=${deployment_env}
-
-ARG TZ=Asia/Tehran
+ARG TZ=UTC
 ENV DEBIAN_FRONTEND=noninteractive
 
 ENV TERM=xterm-color
@@ -44,12 +41,12 @@ RUN set -eux; \
             gosu \
             git \
             curl \
+            libcurl4-openssl-dev \
             ca-certificates \
             supervisor \
             libmemcached-dev \
             libz-dev \
             libbrotli-dev \
-            libc-ares-dev \
             libpq-dev \
             libjpeg-dev \
             libpng-dev \
@@ -65,14 +62,11 @@ RUN set -eux; \
             libpcre3 \
             libxml2 \
             libzstd1 \
-            procps \
-            libcurl4-openssl-dev
-
+            procps
 
 RUN set -xe; \
     docker-php-ext-configure zip \
-            && docker-php-ext-install zip \
-            && php -m | grep -q 'zip'; \
+            && docker-php-ext-install zip; \
     docker-php-ext-install \
             mbstring \
             pdo_mysql; \
@@ -81,8 +75,7 @@ RUN set -xe; \
             --with-jpeg \
             --with-webp \
             --with-freetype \
-    && docker-php-ext-install gd; \
-    php -r 'var_dump(gd_info());'
+    && docker-php-ext-install gd;
 
 ###########################################
 # OPcache
@@ -133,7 +126,7 @@ RUN if [ ${INSTALL_BCMATH} = true ]; then \
 ARG INSTALL_RDKAFKA=true
 
 RUN if [ ${INSTALL_RDKAFKA} = true ]; then \
-      apt-get install -y librdkafka-dev \
+      apt-get install -yqq librdkafka-dev \
       && pecl install rdkafka \
       && docker-php-ext-enable rdkafka; \
   fi
@@ -146,9 +139,9 @@ ARG INSTALL_SWOOLE=true
 
 RUN set -eux; \
     if [ ${INSTALL_SWOOLE} = true ]; then \
-      pecl install -D 'enable-openssl="yes" enable-http2="yes" enable-swoole-curl="yes" enable-mysqlnd="yes" enable-cares="yes"' swoole; \
+      apt-get install -yqq libc-ares-dev \
+      && pecl install -D 'enable-openssl="yes" enable-http2="yes" enable-swoole-curl="yes" enable-mysqlnd="yes" enable-cares="yes"' swoole; \
       docker-php-ext-enable swoole; \
-      php -m | grep -q 'swoole'; \
     fi
 
 ###########################################################################
@@ -172,7 +165,7 @@ USER root
 ARG INSTALL_MYSQL_CLIENT=true
 
 RUN if [ ${INSTALL_MYSQL_CLIENT} = true ]; then \
-    apt-get -y install default-mysql-client; \
+    apt-get install -yqq default-mysql-client; \
   fi
 
 ###########################################
