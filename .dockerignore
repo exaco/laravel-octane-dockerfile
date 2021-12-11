@@ -20,3 +20,4 @@ phpunit.xml
 .editorconfig
 tests
 storage/clockwork
+bootstrap/cache/*.php
