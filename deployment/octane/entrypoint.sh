@@ -2,9 +2,11 @@
 set -e
 
 initialStuff() {
-    php artisan event:cache; \
     php artisan optimize:clear; \
-    php artisan package:discover --ansi;
+    php artisan package:discover --ansi; \
+    php artisan event:cache; \
+    php artisan config:cache; \
+    php artisan route:cache;
 }
 
 if [ "$1" != "" ]; then
@@ -13,4 +15,3 @@ else
     initialStuff
     exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
 fi
-
