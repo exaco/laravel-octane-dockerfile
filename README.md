@@ -65,7 +65,7 @@ You can use this Dockerfile within Laravel Sail. Just change PHP container `cont
 to `ports` in `docker-compose.yml`. You maybe need to remove `WWWGROUP` in `args` and `WWWUSER` in `environment`
 configuration in this file.
 
-> if you faced with `Class "Facade\Ignition\IgnitionServiceProvider" not found` error while running container, remove `composer.lock` and then rebuild the image.
+> If you faced with `Class "Facade\Ignition\IgnitionServiceProvider" not found` error while running container, remove `composer.lock` and then rebuild the image.
 
 ## Configuration
 
