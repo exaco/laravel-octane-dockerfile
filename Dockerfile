@@ -31,40 +31,40 @@ WORKDIR /var/www/html
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-RUN set -eux; \
+RUN set -eu; \
     apt-get update; \
     apt-get upgrade -yqq; \
-    pecl channel-update pecl.php.net \
-    && apt-get install -yqq --no-install-recommends \
-            apt-utils \
-            gnupg \
-            gosu \
-            git \
-            curl \
-            libcurl4-openssl-dev \
-            ca-certificates \
-            supervisor \
-            libmemcached-dev \
-            libz-dev \
-            libbrotli-dev \
-            libpq-dev \
-            libjpeg-dev \
-            libpng-dev \
-            libfreetype6-dev \
-            libssl-dev \
-            libwebp-dev \
-            libmcrypt-dev \
-            libonig-dev \
-            libzip-dev zip unzip \
-            libargon2-1 \
-            libidn2-0 \
-            libpcre2-8-0 \
-            libpcre3 \
-            libxml2 \
-            libzstd1 \
-            procps
+    pecl channel-update pecl.php.net; \
+    apt-get install -yqq --no-install-recommends \
+          apt-utils \
+          gnupg \
+          gosu \
+          git \
+          curl \
+          libcurl4-openssl-dev \
+          ca-certificates \
+          supervisor \
+          libmemcached-dev \
+          libz-dev \
+          libbrotli-dev \
+          libpq-dev \
+          libjpeg-dev \
+          libpng-dev \
+          libfreetype6-dev \
+          libssl-dev \
+          libwebp-dev \
+          libmcrypt-dev \
+          libonig-dev \
+          libzip-dev zip unzip \
+          libargon2-1 \
+          libidn2-0 \
+          libpcre2-8-0 \
+          libpcre3 \
+          libxml2 \
+          libzstd1 \
+          procps
 
-RUN set -xe; \
+RUN set -e; \
     docker-php-ext-configure zip \
             && docker-php-ext-install zip; \
     docker-php-ext-install \
