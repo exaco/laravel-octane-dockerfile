@@ -6,7 +6,7 @@ powered web services and microservices.
 The Docker configuration provides the following setup:
 
 - Debian Buster 10
-- PHP 8.0 with preconfigured JIT compiler and OPcache
+- PHP 8.1 with preconfigured JIT compiler and OPcache
 - Swoole extension with support of:
     - OpenSSL
     - HTTP/2
