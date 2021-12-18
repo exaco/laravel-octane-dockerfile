@@ -17,7 +17,7 @@ RUN composer install \
 
 ###########################################
 
-FROM php:8.0-cli-buster
+FROM php:8.1-cli-buster
 
 ARG WWWUSER=1000
 ARG WWWGROUP=1000
