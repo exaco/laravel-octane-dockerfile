@@ -182,7 +182,7 @@ RUN if [ ${INSTALL_PGSQL} = true ]; then \
 # pgsql client and postgis
 ###########################################
 
-ARG INSTALL_PG_CLIENT=true
+ARG INSTALL_PG_CLIENT=false
 ARG INSTALL_POSTGIS=false
 
 RUN if [ ${INSTALL_PG_CLIENT} = true ]; then \
