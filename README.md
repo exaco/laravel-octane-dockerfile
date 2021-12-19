@@ -26,7 +26,7 @@ And the following PHP extensions are included:
 - [x] RDKAFKA
 - [x] INTL
 - [x] pdo_mysql
-- [x] MySQL Client
+- [x] pgsql
 - [x] zip
 - [x] cURL
 - [x] GD
