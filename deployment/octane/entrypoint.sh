@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -e
 
+php() {
+  su octane -c "php $*"
+}
+
 initialStuff() {
     php artisan optimize:clear; \
     php artisan package:discover --ansi; \
