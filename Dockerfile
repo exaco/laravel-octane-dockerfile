@@ -1,3 +1,6 @@
+# Accepted values: 8.1 - 8.0
+ARG PHP_VERSION=8.1
+
 ###########################################
 # PHP dependencies
 ###########################################
@@ -16,9 +19,6 @@ RUN composer install \
   --no-scripts
 
 ###########################################
-
-# Accepted values: 8.1 - 8.0
-ARG PHP_VERSION=8.1
 
 FROM php:${PHP_VERSION}-cli-buster
 
