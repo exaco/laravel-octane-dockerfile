@@ -17,7 +17,10 @@ RUN composer install \
 
 ###########################################
 
-FROM php:8.1-cli-buster
+# Accepted values: 8.1 - 8.0
+ARG PHP_VERSION=8.1
+
+FROM php:${PHP_VERSION}-cli-buster
 
 ARG WWWUSER=1000
 ARG WWWGROUP=1000
