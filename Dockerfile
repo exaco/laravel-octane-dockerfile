@@ -207,9 +207,7 @@ RUN apt-get clean \
 COPY . .
 
 RUN mkdir -p \
-  ./storage/framework/sessions \
-  ./storage/framework/views \
-  ./storage/framework/cache \
+  ./storage/framework/{sessions,views,cache} \
   ./storage/logs \
   ./bootstrap/cache \
   && chown -R octane:octane \
