@@ -232,3 +232,5 @@ RUN cat ./deployment/octane/utilities.sh >> ~/.bashrc
 EXPOSE 9000
 
 ENTRYPOINT ["./deployment/octane/entrypoint.sh"]
+
+HEALTHCHECK --interval=20s --timeout=5s CMD php artisan octane:status || exit 1
