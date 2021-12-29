@@ -26,15 +26,15 @@ LABEL maintainer="smortexa <seyed.me720@gmail.com>"
 
 ARG WWWUSER=1000
 ARG WWWGROUP=1000
-
 ARG TZ=UTC
-ENV DEBIAN_FRONTEND=noninteractive
 
-ENV TERM=xterm-color
+ENV DEBIAN_FRONTEND=noninteractive \
+    TERM=xterm-color
 
 WORKDIR /var/www/html
 
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
+    && echo $TZ > /etc/timezone
 
 RUN set -eu; \
     apt-get update; \
@@ -165,8 +165,6 @@ RUN if [ ${INSTALL_INTL} = true ]; then \
 # MySQL Client
 ###########################################
 
-USER root
-
 ARG INSTALL_MYSQL_CLIENT=true
 
 RUN if [ ${INSTALL_MYSQL_CLIENT} = true ]; then \
@@ -202,35 +200,34 @@ RUN if [ ${INSTALL_PG_CLIENT} = true ]; then \
 
 ###########################################
 
-RUN groupadd --force -g $WWWGROUP octane
-RUN useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u $WWWUSER octane
+RUN groupadd --force -g $WWWGROUP octane \
+    && useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u $WWWUSER octane
 
 RUN apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
     && rm /var/log/lastlog /var/log/faillog
 
 COPY . .
+COPY --from=vendor /var/www/html/vendor vendor
 
 RUN mkdir -p \
-  ./storage/framework/{sessions,views,cache} \
-  ./storage/logs \
-  ./bootstrap/cache \
+  storage/framework/{sessions,views,cache} \
+  storage/logs \
+  bootstrap/cache \
   && chown -R octane:octane \
-  ./storage \
-  ./bootstrap/cache \
-  && chmod -R ug+rwx ./storage ./bootstrap/cache
+  storage \
+  bootstrap/cache \
+  && chmod -R ug+rwx storage bootstrap/cache
 
-COPY --from=vendor /var/www/html/vendor ./vendor
+COPY deployment/octane/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY deployment/octane/php.ini /usr/local/etc/php/conf.d/octane.ini
+COPY deployment/octane/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
-COPY ./deployment/octane/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-COPY ./deployment/octane/php.ini /usr/local/etc/php/conf.d/octane.ini
-COPY ./deployment/octane/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
-
-RUN chmod +x ./deployment/octane/entrypoint.sh
-RUN cat ./deployment/octane/utilities.sh >> ~/.bashrc
+RUN chmod +x deployment/octane/entrypoint.sh
+RUN cat deployment/octane/utilities.sh >> ~/.bashrc
 
 EXPOSE 9000
 
-ENTRYPOINT ["./deployment/octane/entrypoint.sh"]
+ENTRYPOINT ["deployment/octane/entrypoint.sh"]
 
 HEALTHCHECK --interval=20s --timeout=5s CMD php artisan octane:status || exit 1
