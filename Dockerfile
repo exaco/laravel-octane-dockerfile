@@ -230,4 +230,4 @@ EXPOSE 9000
 
 ENTRYPOINT ["deployment/octane/entrypoint.sh"]
 
-HEALTHCHECK --interval=20s --timeout=5s CMD php artisan octane:status || exit 1
+HEALTHCHECK --start-period=8s --interval=5s --timeout=5s CMD php artisan octane:status || exit 1
