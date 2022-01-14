@@ -85,20 +85,20 @@ return [
         ],
     ],
     'swoole' => [
-            'options' => [
-                'user' => 'octane',
-                'group' => 'octane',
-                'hook_flags' => SWOOLE_HOOK_NATIVE_CURL | SWOOLE_HOOK_TCP,
-                'http_compression' => true,
-                'http_compression_level' => 6, // 1 - 9
-                'compression_min_length' => 20,
-                'open_http2_protocol' => true,
-                'open_cpu_affinity' => true,
-                'tcp_fastopen' => true,
-                'open_tcp_keepalive' => true,
-                'open_tcp_nodelay' => true,
-                'enable_reuse_port' => true,
-            ]
+        'options' => [
+            'user' => 'octane',
+            'group' => 'octane',
+            'hook_flags' => SWOOLE_HOOK_NATIVE_CURL | SWOOLE_HOOK_TCP,
+            'http_compression' => true,
+            'http_compression_level' => 6, // 1 - 9
+            'compression_min_length' => 20,
+            'open_http2_protocol' => true,
+            'open_cpu_affinity' => true,
+            'tcp_fastopen' => true,
+            'open_tcp_keepalive' => true,
+            'open_tcp_nodelay' => true,
+            'enable_reuse_port' => true,
+        ]
     ]
 ];
 ```
