@@ -77,6 +77,13 @@ There are something that you maybe want to configure:
 // config/octane.php
 
 return [
+    'listeners' => [
+        OperationTerminated::class => [
+            FlushTemporaryContainerInstances::class,
+            DisconnectFromDatabases::class,
+            // CollectGarbage::class,
+        ],
+    ],
     'swoole' => [
             'options' => [
                 'user' => 'octane',
@@ -92,7 +99,7 @@ return [
                 'open_tcp_nodelay' => true,
                 'enable_reuse_port' => true,
             ]
-        ]
+    ]
 ];
 ```
 
