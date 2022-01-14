@@ -80,7 +80,7 @@ return [
     'listeners' => [
         OperationTerminated::class => [
             FlushTemporaryContainerInstances::class,
-            DisconnectFromDatabases::class,
+            DisconnectFromDatabases::class, // uncomment this line
             // CollectGarbage::class,
         ],
     ],
