@@ -5,8 +5,8 @@ powered web services and microservices.
 
 The Docker configuration provides the following setup:
 
-- Official PHP Debian Buster 10 base image
-- PHP 8.0 and 8.1 with preconfigured JIT compiler and OPcache
+- PHP 8.0 and 8.1 official DebianBuster-based images
+- Preconfigured JIT compiler and OPcache
 
 ## PHP extensions
 
