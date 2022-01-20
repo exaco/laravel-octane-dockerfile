@@ -5,7 +5,7 @@ powered web services and microservices.
 
 The Docker configuration provides the following setup:
 
-- Debian Buster 10
+- Official PHP Debian Buster 10 base image
 - PHP 8.0 and 8.1 with preconfigured JIT compiler and OPcache
 - Swoole extension with support of:
     - OpenSSL
@@ -71,7 +71,7 @@ There are something that you maybe want to configure:
 - Set `PHP_VERSION` using the `--build-arg` option along with the build command
 - Set `TZ` (OS timezone) using the `--build-arg` option along with the build command
 
-### Recommended Swoole options in `octane.php`
+### Recommended options for `octane.php`
 
 ```php
 // config/octane.php
