@@ -172,6 +172,16 @@ RUN if [ ${INSTALL_MYSQL_CLIENT} = true ]; then \
   fi
 
 ###########################################
+# pdo_pgsql
+###########################################
+
+ARG INSTALL_PDO_PGSQL=false
+
+RUN if [ ${INSTALL_PDO_PGSQL} = true ]; then \
+      docker-php-ext-install pdo_pgsql; \
+  fi
+
+###########################################
 # pgsql
 ###########################################
 
