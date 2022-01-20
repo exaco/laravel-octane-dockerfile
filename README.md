@@ -106,6 +106,10 @@ Also, some useful Bash functions and aliases are added in `utilities.sh` that ma
 - Laravel Octane logs requests information only in the `local` environment.
 - Please be aware about `.dockerignore` content
 
+## ToDo
+- [ ] Add support for Horizon
+- [ ] Add support for RoudRunner
+
 ## Contributing
 
 Thank you for considering contributing! If you find an issue, or have a better way to do something, feel free to open an
