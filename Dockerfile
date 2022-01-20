@@ -69,13 +69,29 @@ RUN set -eu; \
           libzstd1 \
           procps
 
-RUN set -e; \
-    docker-php-ext-configure zip \
-            && docker-php-ext-install zip; \
-    docker-php-ext-install \
-            mbstring \
-            pdo_mysql; \
-    docker-php-ext-configure gd \
+###########################################
+# pdo_mysql
+###########################################
+
+RUN docker-php-ext-install pdo_mysql;
+
+###########################################
+# zip
+###########################################
+
+RUN docker-php-ext-configure zip && docker-php-ext-install zip;
+
+###########################################
+# mbstring
+###########################################
+
+RUN docker-php-ext-install mbstring;
+
+###########################################
+# GD
+###########################################
+
+RUN docker-php-ext-configure gd \
             --prefix=/usr \
             --with-jpeg \
             --with-webp \
