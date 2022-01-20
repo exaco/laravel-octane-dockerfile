@@ -110,6 +110,7 @@ Also, some useful Bash functions and aliases are added in `utilities.sh` that ma
 - [ ] Add support for Horizon
 - [ ] Add support for RoudRunner
 - [ ] Add support for the full stack apps (Front-end assets)
+- [ ] Add support `testing` environment
 - [ ] Support more PHP extensions
 
 ## Contributing
