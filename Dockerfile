@@ -158,7 +158,7 @@ RUN if [ ${INSTALL_RDKAFKA} = true ]; then \
 
 ARG INSTALL_SWOOLE=true
 
-RUN set -eux; \
+RUN set -eu; \
     if [ ${INSTALL_SWOOLE} = true ]; then \
       apt-get install -yqq libc-ares-dev \
       && pecl install -D 'enable-openssl="yes" enable-http2="yes" enable-swoole-curl="yes" enable-mysqlnd="yes" enable-cares="yes"' swoole \
@@ -240,6 +240,7 @@ RUN groupadd --force -g $WWWGROUP octane \
     && useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u $WWWUSER octane
 
 RUN apt-get clean \
+    && docker-php-source delete \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
     && rm /var/log/lastlog /var/log/faillog
 
