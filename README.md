@@ -22,6 +22,7 @@ And the following PHP extensions are included:
 - [x] pdo_mysql
 - [x] pdo_pgsql (disabled by default)
 - [x] pgsql (disabled by default)
+- [x] Memcached (disabled by default)
 - [x] zip
 - [x] cURL
 - [x] GD
