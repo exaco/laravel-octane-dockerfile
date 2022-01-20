@@ -178,6 +178,16 @@ RUN if [ ${INSTALL_INTL} = true ]; then \
   fi
 
 ###########################################
+# Memcached
+###########################################
+
+ARG INSTALL_MEMCACHED=false
+
+RUN if [ ${INSTALL_MEMCACHED} = true ]; then \
+      pecl -q install memcached && docker-php-ext-enable memcached;
+  fi
+
+###########################################
 # MySQL Client
 ###########################################
 
