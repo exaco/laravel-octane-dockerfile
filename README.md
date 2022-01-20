@@ -7,18 +7,12 @@ The Docker configuration provides the following setup:
 
 - Official PHP Debian Buster 10 base image
 - PHP 8.0 and 8.1 with preconfigured JIT compiler and OPcache
-- Swoole extension with support of:
-    - OpenSSL
-    - HTTP/2
-    - Native cURL hook for coroutines
-    - `mysqlnd`
-    - Asynchronous DNS
 
 ## PHP extensions
 
 And the following PHP extensions are included:
 
-- [x] Swoole
+- [x] Swoole with support of OpenSSL, HTTP/2, Native cURL hook for coroutines, `mysqlnd` and Asynchronous DNS.
 - [x] OPcache
 - [x] Redis
 - [x] PCNTL
