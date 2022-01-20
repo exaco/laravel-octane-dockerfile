@@ -184,7 +184,7 @@ RUN if [ ${INSTALL_INTL} = true ]; then \
 ARG INSTALL_MEMCACHED=false
 
 RUN if [ ${INSTALL_MEMCACHED} = true ]; then \
-      pecl -q install memcached && docker-php-ext-enable memcached;
+      pecl -q install memcached && docker-php-ext-enable memcached; \
   fi
 
 ###########################################
