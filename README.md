@@ -80,9 +80,7 @@ configuration in this file.
 
 There are something that you maybe want to configure:
 
-- Application request workers count in `supervisord.conf`
-- Max request count for request workers in `supervisord.conf`
-- The amount of workers available to process concurrent tasks in `supervisord.conf`
+- Swoole HTTP server config in `supervisord.app.conf`
 - OPcache and JIT configurations in `opcache.ini`
 - PHP configurations in `php.ini`
 - `ENTRYPOINT` Bash script in `entrypoint.sh`
