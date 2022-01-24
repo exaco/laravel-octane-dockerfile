@@ -12,7 +12,7 @@ The Docker configuration provides the following setup:
 
 And the following PHP extensions are included:
 
-- [x] Swoole with support of OpenSSL, HTTP/2, Native cURL hook for coroutines, `mysqlnd` and Asynchronous DNS.
+- [x] Swoole with support of OpenSSL, HTTP/2, Native cURL hook for coroutines, `mysqlnd` and asynchronous DNS.
 - [x] OPcache
 - [x] Redis
 - [x] PCNTL
