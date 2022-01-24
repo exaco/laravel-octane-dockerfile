@@ -39,28 +39,26 @@ And the following PHP extensions are included:
 
 ## Usage
 
-### Container `app` mode
-
 1. Clone this repository:
-`git clone --depth 1 git@github.com:exaco/laravel-octane-dockerfile.git`
+```
+git clone --depth 1 git@github.com:exaco/laravel-octane-dockerfile.git
+```
 2. Copy cloned directory content including `deployment` directory, `Dockerfile` and `.dockerignore` into your Octane powered Laravel project
 3. Change directory to your Laravel project
 4. Build your image:
-`docker build -t <image-name>:<tag> .`
-5. Up the container:
-   `docker run -p <port>:9000 --rm <image-name>:<tag>`
-6. Visit `http://localhost:<port>`
 
-### Container `horizon` mode
-
-1. Clone this repository:
-`git clone --depth 1 git@github.com:exaco/laravel-octane-dockerfile.git`
-2. Copy cloned directory content including `deployment` directory, `Dockerfile` and `.dockerignore` into your Octane powered Laravel project
-3. Change directory to your Laravel project
-4. Build your image:
-`docker build -t <image-name>:<tag> --build-arg CONTAINER_MODE=horizon .`
+- Container `app` mode:
+```
+docker build -t <image-name>:<tag> .
+```
+- Container `horizon` mode:
+```
+docker build -t <image-name>:<tag> --build-arg CONTAINER_MODE=horizon .
+```
 5. Up the container:
-   `docker run -p <port>:9000 --rm <image-name>:<tag>`
+```
+docker run -p <port>:9000 --rm <image-name>:<tag>
+```
 
 ## Configuration
 
