@@ -10,7 +10,7 @@ The Docker configuration provides the following setup:
 
 ## Container modes
 
-| Mode | `CONTAINER_MODE` ARG | Supervisor command | HTTP server |
+| Mode | `CONTAINER_MODE` ARG | Supervisor config file | HTTP server |
 |------------ | ------------ | ------------ | ------------ |
 | Web Server (default) | `app` | `supervisord.app.conf` | Swoole |
 | Horizen | `horizon` | `supervisord.horizon.conf` | - |
