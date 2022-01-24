@@ -10,10 +10,10 @@ The Docker configuration provides the following setup:
 
 ## Container modes
 
-| Mode | `CONTAINER_MODE` ARG | Supervisor command | HTTP server | Exposed port |
-|------------ | ------------ | ------------ | ------------ | ------------ |
-| Web Server (default) | `app` | `supervisord.app.conf` | Swoole | 9000 |
-| Horizen | `horizon` | `supervisord.horizon.conf` | - | - |
+| Mode | `CONTAINER_MODE` ARG | Supervisor command | HTTP server |
+|------------ | ------------ | ------------ | ------------ |
+| Web Server (default) | `app` | `supervisord.app.conf` | Swoole |
+| Horizen | `horizon` | `supervisord.horizon.conf` | - |
 
 > If you want to run Horizon in the Octane container, then you should set `APP_WITH_HORIZON` build argument `true`.
 
