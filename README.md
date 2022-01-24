@@ -11,7 +11,7 @@ The Docker configuration provides the following setup:
 ## Container modes
 
 | Mode | `CONTAINER_MODE` ARG | Supervisor config file | HTTP server | Exposed port |
-|------------ | ------------ | ------------ | ------------ |
+|------------ | ------------ | ------------ | ------------ | ------------ |
 | Web Server (default) | `app` | `supervisord.app.conf` | Swoole | 9000 |
 | Horizen | `horizon` | `supervisord.horizon.conf` | - | - |
 
