@@ -51,12 +51,6 @@ And the following PHP extensions are included:
    `docker run -p <port>:9000 --rm <image-name>:<tag>`
 6. Visit `http://localhost:<port>`
 
-#### Use in Laravel Sail
-
-You can use this Dockerfile within Laravel Sail. Just change PHP container `context` to `.` and add `<port>:9000`
-to `ports` in `docker-compose.yml`. You maybe need to remove `WWWGROUP` in `args` and `WWWUSER` in `environment`
-configuration in this file.
-
 ### Container `horizon` mode
 
 1. Clone this repository:
