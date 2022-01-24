@@ -1,11 +1,13 @@
 # Accepted values: 8.1 - 8.0
 ARG PHP_VERSION=8.1
 
+ARG COMPOSER_VERSION=latest
+
 ###########################################
 # PHP dependencies
 ###########################################
 
-FROM composer:latest AS vendor
+FROM composer:${COMPOSER_VERSION} AS vendor
 WORKDIR /var/www/html
 COPY composer* ./
 RUN composer install \
@@ -22,14 +24,21 @@ RUN composer install \
 
 FROM php:${PHP_VERSION}-cli-buster
 
-LABEL maintainer="smortexa <seyed.me720@gmail.com>"
+LABEL maintainer="Seyed Morteza Ebadi <seyed.me720@gmail.com>"
 
 ARG WWWUSER=1000
 ARG WWWGROUP=1000
 ARG TZ=UTC
 
+# Accepted values: app - horizon
+ARG CONTAINER_MODE=app
+
+ARG APP_WITH_HORIZON=false
+
 ENV DEBIAN_FRONTEND=noninteractive \
-    TERM=xterm-color
+    TERM=xterm-color \
+    CONTAINER_MODE=${CONTAINER_MODE} \
+    APP_WITH_HORIZON=${APP_WITH_HORIZON}
 
 WORKDIR /var/www/html
 
@@ -256,7 +265,7 @@ RUN mkdir -p \
   bootstrap/cache \
   && chmod -R ug+rwx storage bootstrap/cache
 
-COPY deployment/octane/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY deployment/octane/supervisord.${CONTAINER_MODE}.conf /etc/supervisor/conf.d/supervisord.${CONTAINER_MODE}.conf
 COPY deployment/octane/php.ini /usr/local/etc/php/conf.d/octane.ini
 COPY deployment/octane/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 

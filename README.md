@@ -8,6 +8,23 @@ The Docker configuration provides the following setup:
 - PHP 8.0 and 8.1 official DebianBuster-based images
 - Preconfigured JIT compiler and OPcache
 
+## Container modes
+
+| Mode | `CONTAINER_MODE` ARG | Supervisor command | HTTP server | Exposed port |
+|------------ | ------------ | ------------ | ------------ | ------------ |
+| Web Server (default) | `app` | `supervisord.app.conf` | Swoole | 9000 |
+| Horizen | `horizon` | `supervisord.horizon.conf` | - | - |
+
+> If you want to run Horizon in the Octane container, then you should set `APP_WITH_HORIZON` build argument `true`.
+
+## Ports
+
+Exposed ports of container:
+
+| Software | Port |
+|-------------- | -------------- |
+| Octane | 9000 |
+
 ## PHP extensions
 
 And the following PHP extensions are included:
@@ -28,15 +45,9 @@ And the following PHP extensions are included:
 - [x] GD
 - [x] mbstring
 
-## Ports
-
-Exposed ports of container:
-
-| Software | Port |
-|-------------- | -------------- |
-| Swoole | 9000 |
-
 ## Usage
+
+### Container `app` mode
 
 1. Clone this repository:
 `git clone --depth 1 git@github.com:exaco/laravel-octane-dockerfile.git`
@@ -48,11 +59,22 @@ Exposed ports of container:
    `docker run -p <port>:9000 --rm <image-name>:<tag>`
 6. Visit `http://localhost:<port>`
 
-### Use in Laravel Sail
+#### Use in Laravel Sail
 
 You can use this Dockerfile within Laravel Sail. Just change PHP container `context` to `.` and add `<port>:9000`
 to `ports` in `docker-compose.yml`. You maybe need to remove `WWWGROUP` in `args` and `WWWUSER` in `environment`
 configuration in this file.
+
+### Container `horizon` mode
+
+1. Clone this repository:
+`git clone --depth 1 git@github.com:exaco/laravel-octane-dockerfile.git`
+2. Copy cloned directory content including `deployment` directory, `Dockerfile` and `.dockerignore` into your Octane powered Laravel project
+3. Change directory to your Laravel project
+4. Build your image:
+`docker build -t <image-name>:<tag> --build-arg CONTAINER_MODE=horizon .`
+5. Up the container:
+   `docker run -p <port>:9000 --rm <image-name>:<tag>`
 
 ## Configuration
 
@@ -82,8 +104,6 @@ return [
     ],
     'swoole' => [
         'options' => [
-            'user' => 'octane',
-            'group' => 'octane',
             'hook_flags' => SWOOLE_HOOK_NATIVE_CURL | SWOOLE_HOOK_TCP,
             'http_compression' => true,
             'http_compression_level' => 6, // 1 - 9
@@ -109,7 +129,7 @@ Also, some useful Bash functions and aliases are added in `utilities.sh` that ma
 - Please be aware about `.dockerignore` content
 
 ## ToDo
-- [ ] Add support for Horizon
+- [x] Add support for Horizon
 - [ ] Add support for RoudRunner
 - [ ] Add support for the full stack apps (Front-end assets)
 - [ ] Add support `testing` environment and CI
