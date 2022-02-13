@@ -86,7 +86,6 @@ return [
     ],
     'swoole' => [
         'options' => [
-            'hook_flags' => SWOOLE_HOOK_NATIVE_CURL | SWOOLE_HOOK_TCP,
             'http_compression' => true,
             'http_compression_level' => 6, // 1 - 9
             'compression_min_length' => 20,
