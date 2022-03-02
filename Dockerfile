@@ -162,16 +162,17 @@ RUN if [ ${INSTALL_RDKAFKA} = true ]; then \
   fi
 
 ###########################################
-# Swoole extension
+# OpenSwoole/Swoole extension
 ###########################################
 
 ARG INSTALL_SWOOLE=true
+ARG SERVER=openswoole
 
 RUN set -eu; \
     if [ ${INSTALL_SWOOLE} = true ]; then \
       apt-get install -yqq libc-ares-dev \
-      && pecl -q install -D 'enable-openssl="yes" enable-http2="yes" enable-swoole-curl="yes" enable-mysqlnd="yes" enable-cares="yes"' swoole \
-      && docker-php-ext-enable swoole; \
+      && pecl -q install -D 'enable-openssl="yes" enable-http2="yes" enable-swoole-curl="yes" enable-mysqlnd="yes" enable-cares="yes"' ${SERVER} \
+      && docker-php-ext-enable ${SERVER}; \
     fi
 
 ###########################################################################
