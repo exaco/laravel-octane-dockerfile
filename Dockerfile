@@ -48,7 +48,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
 RUN set -eu; \
     apt-get update; \
     apt-get upgrade -yqq; \
-    pecl channel-update pecl.php.net; \
+    pecl -q channel-update pecl.php.net; \
     apt-get install -yqq --no-install-recommends \
           apt-utils \
           gnupg \
@@ -124,7 +124,7 @@ RUN if [ ${INSTALL_OPCACHE} = true ]; then \
 ARG INSTALL_PHPREDIS=true
 
 RUN if [ ${INSTALL_PHPREDIS} = true ]; then \
-      pecl install -o -f redis \
+      pecl -q install -o -f redis \
       && rm -rf /tmp/pear \
       && docker-php-ext-enable redis; \
   fi
@@ -157,7 +157,7 @@ ARG INSTALL_RDKAFKA=true
 
 RUN if [ ${INSTALL_RDKAFKA} = true ]; then \
       apt-get install -yqq librdkafka-dev \
-      && pecl install rdkafka \
+      && pecl -q install rdkafka \
       && docker-php-ext-enable rdkafka; \
   fi
 
@@ -170,7 +170,7 @@ ARG INSTALL_SWOOLE=true
 RUN set -eu; \
     if [ ${INSTALL_SWOOLE} = true ]; then \
       apt-get install -yqq libc-ares-dev \
-      && pecl install -D 'enable-openssl="yes" enable-http2="yes" enable-swoole-curl="yes" enable-mysqlnd="yes" enable-cares="yes"' swoole \
+      && pecl -q install -D 'enable-openssl="yes" enable-http2="yes" enable-swoole-curl="yes" enable-mysqlnd="yes" enable-cares="yes"' swoole \
       && docker-php-ext-enable swoole; \
     fi
 
