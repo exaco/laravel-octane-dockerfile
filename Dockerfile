@@ -42,11 +42,12 @@ ENV DEBIAN_FRONTEND=noninteractive \
 
 WORKDIR /var/www/html
 
+SHELL ["/bin/bash", "-eou", "pipefail", "-c"]
+
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
     && echo $TZ > /etc/timezone
 
-RUN set -eu; \
-    apt-get update; \
+RUN apt-get update; \
     apt-get upgrade -yqq; \
     pecl -q channel-update pecl.php.net; \
     apt-get install -yqq --no-install-recommends --show-progress \
@@ -156,7 +157,6 @@ RUN if [ ${INSTALL_BCMATH} = true ]; then \
 ARG INSTALL_RDKAFKA=true
 
 RUN if [ ${INSTALL_RDKAFKA} = true ]; then \
-      set -eu; \
       apt-get install -yqq --no-install-recommends --show-progress librdkafka-dev \
       && pecl -q install -o -f rdkafka \
       && docker-php-ext-enable rdkafka; \
@@ -169,9 +169,7 @@ RUN if [ ${INSTALL_RDKAFKA} = true ]; then \
 ARG INSTALL_SWOOLE=true
 ARG SERVER=openswoole
 
-RUN set -eu; \
-    if [ ${INSTALL_SWOOLE} = true ]; then \
-      set -eu; \
+RUN if [ ${INSTALL_SWOOLE} = true ]; then \
       apt-get install -yqq --no-install-recommends --show-progress libc-ares-dev \
       && pecl -q install -o -f -D 'enable-openssl="yes" enable-http2="yes" enable-swoole-curl="yes" enable-mysqlnd="yes" enable-cares="yes"' ${SERVER} \
       && docker-php-ext-enable ${SERVER}; \
@@ -184,7 +182,6 @@ RUN set -eu; \
 ARG INSTALL_INTL=true
 
 RUN if [ ${INSTALL_INTL} = true ]; then \
-      set -eu; \
       apt-get install -yqq --no-install-recommends --show-progress zlib1g-dev libicu-dev g++ \
       && docker-php-ext-configure intl \
       && docker-php-ext-install intl; \
@@ -207,7 +204,6 @@ RUN if [ ${INSTALL_MEMCACHED} = true ]; then \
 ARG INSTALL_MYSQL_CLIENT=true
 
 RUN if [ ${INSTALL_MYSQL_CLIENT} = true ]; then \
-      set -eu; \
       apt-get install -yqq --no-install-recommends --show-progress default-mysql-client; \
   fi
 
@@ -239,7 +235,6 @@ ARG INSTALL_PG_CLIENT=false
 ARG INSTALL_POSTGIS=false
 
 RUN if [ ${INSTALL_PG_CLIENT} = true ]; then \
-      set -eu; \
       . /etc/os-release \
       && echo "deb http://apt.postgresql.org/pub/repos/apt $VERSION_CODENAME-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
       && curl -sL https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
