@@ -49,7 +49,7 @@ RUN set -eu; \
     apt-get update; \
     apt-get upgrade -yqq; \
     pecl -q channel-update pecl.php.net; \
-    apt-get install -yqq --no-install-recommends \
+    apt-get install -yqq --no-install-recommends --show-progress \
           apt-utils \
           gnupg \
           gosu \
@@ -156,8 +156,9 @@ RUN if [ ${INSTALL_BCMATH} = true ]; then \
 ARG INSTALL_RDKAFKA=true
 
 RUN if [ ${INSTALL_RDKAFKA} = true ]; then \
-      apt-get install -yqq librdkafka-dev \
-      && pecl -q install rdkafka \
+      set -eu; \
+      apt-get install -yqq --no-install-recommends --show-progress librdkafka-dev \
+      && pecl -q install -o -f rdkafka \
       && docker-php-ext-enable rdkafka; \
   fi
 
@@ -170,8 +171,9 @@ ARG SERVER=openswoole
 
 RUN set -eu; \
     if [ ${INSTALL_SWOOLE} = true ]; then \
-      apt-get install -yqq libc-ares-dev \
-      && pecl -q install -D 'enable-openssl="yes" enable-http2="yes" enable-swoole-curl="yes" enable-mysqlnd="yes" enable-cares="yes"' ${SERVER} \
+      set -eu; \
+      apt-get install -yqq --no-install-recommends --show-progress libc-ares-dev \
+      && pecl -q install -o -f -D 'enable-openssl="yes" enable-http2="yes" enable-swoole-curl="yes" enable-mysqlnd="yes" enable-cares="yes"' ${SERVER} \
       && docker-php-ext-enable ${SERVER}; \
     fi
 
@@ -182,7 +184,8 @@ RUN set -eu; \
 ARG INSTALL_INTL=true
 
 RUN if [ ${INSTALL_INTL} = true ]; then \
-      apt-get install -yqq zlib1g-dev libicu-dev g++ \
+      set -eu; \
+      apt-get install -yqq --no-install-recommends --show-progress zlib1g-dev libicu-dev g++ \
       && docker-php-ext-configure intl \
       && docker-php-ext-install intl; \
   fi
@@ -194,7 +197,7 @@ RUN if [ ${INSTALL_INTL} = true ]; then \
 ARG INSTALL_MEMCACHED=false
 
 RUN if [ ${INSTALL_MEMCACHED} = true ]; then \
-      pecl -q install memcached && docker-php-ext-enable memcached; \
+      pecl -q install -o -f memcached && docker-php-ext-enable memcached; \
   fi
 
 ###########################################
@@ -204,7 +207,8 @@ RUN if [ ${INSTALL_MEMCACHED} = true ]; then \
 ARG INSTALL_MYSQL_CLIENT=true
 
 RUN if [ ${INSTALL_MYSQL_CLIENT} = true ]; then \
-      apt-get install -yqq default-mysql-client; \
+      set -eu; \
+      apt-get install -yqq --no-install-recommends --show-progress default-mysql-client; \
   fi
 
 ###########################################
@@ -235,19 +239,20 @@ ARG INSTALL_PG_CLIENT=false
 ARG INSTALL_POSTGIS=false
 
 RUN if [ ${INSTALL_PG_CLIENT} = true ]; then \
+      set -eu; \
       . /etc/os-release \
       && echo "deb http://apt.postgresql.org/pub/repos/apt $VERSION_CODENAME-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
       && curl -sL https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
-      && apt-get install -yqq postgresql-client-12 postgis; \
+      && apt-get install -yqq --no-install-recommends --show-progress postgresql-client-12 postgis; \
       if [ ${INSTALL_POSTGIS} = true ]; then \
-        apt-get install -yqq postgis; \
+        apt-get install -yqq --no-install-recommends --show-progress postgis; \
       fi; \
   fi
 
 ###########################################
 
 RUN groupadd --force -g $WWWGROUP octane \
-    && useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u $WWWUSER octane
+    && useradd -ms /bin/bash --no-log-init --no-user-group -g $WWWGROUP -u $WWWUSER octane
 
 RUN apt-get clean \
     && docker-php-source delete \
@@ -277,4 +282,4 @@ EXPOSE 9000
 
 ENTRYPOINT ["deployment/octane/entrypoint.sh"]
 
-HEALTHCHECK --start-period=8s --interval=5s --timeout=5s CMD php artisan octane:status || exit 1
+HEALTHCHECK --start-period=5s --interval=2s --timeout=5s --retries=8 CMD php artisan octane:status || exit 1
