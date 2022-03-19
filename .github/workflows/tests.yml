@@ -1,0 +1,58 @@
+name: tests
+
+on:
+  push:
+    branches:
+      - main
+    tags-ignore:
+      - '**'
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  build:
+    name: Build docker image
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup PHP with composer and extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          extensions: dom, curl, libxml, mbstring, zip
+          tools: composer:v2
+          coverage: none
+
+      - name: Create app directory
+        run: mkdir -p /var/www
+
+      - name: Install a fresh Laravel app
+        run: composer create-project laravel/laravel app
+        working-directory: /var/www
+
+      - name: Install Lravel Octane
+        run: composer require laravel/octane
+        working-directory: /var/www/app
+
+      - name: Copy requried content to dockerize the app
+        run: cp -R Dockerfile .dockerignore deployment/ /var/www/app/
+
+      - name: Build image
+        run: docker build -t app:local -f Dockerfile .
+        working-directory: /var/www/app
+
+      - name: Run the Docker container
+        run: docker run -d --rm -p 9000:9000 -e "APP_KEY=base64:bPlPyIGMFY7f4gUD4YAok5mmblvMAwUe2R82e5waYNQ=" app:local
+        working-directory: /var/www/app
+
+      - name: Wait for the container
+        run: sleep 10s
+
+      - name: Check application health
+        run: curl -f -s -o /dev/null -w "%{http_code}" http://localhost:9000
