@@ -40,7 +40,7 @@ jobs:
         run: composer require laravel/octane
         working-directory: /var/www/app
 
-      - name: Copy requried content to dockerize the app
+      - name: Copy required content to dockerize the app
         run: cp -R Dockerfile .dockerignore deployment/ /var/www/app/
 
       - name: Build image
