@@ -36,7 +36,7 @@ jobs:
         run: sudo composer create-project laravel/laravel app
         working-directory: /var/www
 
-      - name: Install Lravel Octane
+      - name: Install Laravel Octane
         run: sudo composer require laravel/octane
         working-directory: /var/www/app
 
@@ -47,7 +47,7 @@ jobs:
         run: docker build -t app:local -f Dockerfile .
         working-directory: /var/www/app
 
-      - name: Run the Docker container
+      - name: Run the Docker image
         run: docker run -d --rm -p 9000:9000 app:local
         working-directory: /var/www/app
 
