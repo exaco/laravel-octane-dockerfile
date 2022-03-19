@@ -33,7 +33,7 @@ jobs:
         run: mkdir -p /var/www
 
       - name: Install a fresh Laravel app
-        run: composer create-project laravel/laravel app
+        run: sudo composer create-project laravel/laravel app
         working-directory: /var/www
 
       - name: Install Lravel Octane
