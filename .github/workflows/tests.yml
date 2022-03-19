@@ -14,14 +14,14 @@ on:
 
 jobs:
   build:
-    name: Build docker image
+    name: Build and Run Docker image
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Setup PHP with composer and extensions
+      - name: Setup PHP with Composer and extensions
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.1'
@@ -48,7 +48,7 @@ jobs:
         working-directory: /var/www/app
 
       - name: Run the Docker container
-        run: docker run -d --rm -p 9000:9000 -e "APP_KEY=base64:bPlPyIGMFY7f4gUD4YAok5mmblvMAwUe2R82e5waYNQ=" app:local
+        run: docker run -d --rm -p 9000:9000 app:local
         working-directory: /var/www/app
 
       - name: Wait for the container
