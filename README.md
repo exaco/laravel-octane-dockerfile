@@ -120,6 +120,7 @@ Also, some useful Bash functions and aliases are added in `utilities.sh` that ma
 - [ ] Add support for Laravel scheduler
 - [ ] Add support for Laravel Dusk
 - [ ] Support more PHP extensions
+- [x] Add tests
 
 ## Contributing
 
