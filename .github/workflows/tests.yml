@@ -16,6 +16,10 @@ jobs:
   build:
     name: Build and Run Docker image
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        php: [ 8.0, 8.1 ]
     timeout-minutes: 15
     steps:
       - name: Checkout code
@@ -24,7 +28,7 @@ jobs:
       - name: Setup PHP with Composer and extensions
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: "${{ matrix.php }}"
           extensions: dom, curl, libxml, mbstring, zip
           tools: composer:v2
           coverage: none
