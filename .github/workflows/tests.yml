@@ -37,11 +37,11 @@ jobs:
         working-directory: /var/www
 
       - name: Install Lravel Octane
-        run: composer require laravel/octane
+        run: sudo composer require laravel/octane
         working-directory: /var/www/app
 
       - name: Copy required content to dockerize the app
-        run: cp -R Dockerfile .dockerignore deployment/ /var/www/app/
+        run: sudo cp -R Dockerfile .dockerignore deployment/ /var/www/app/
 
       - name: Build image
         run: docker build -t app:local -f Dockerfile .
