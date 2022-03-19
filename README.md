@@ -1,4 +1,5 @@
 # Laravel Octane Dockerfile
+![GitHub](https://img.shields.io/github/license/exaco/laravel-octane-dockerfile) ![GitHub release (latest by date)](https://img.shields.io/github/v/release/exaco/laravel-octane-dockerfile) ![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/exaco/laravel-octane-dockerfile)
 
 A pretty configurable, production-ready and multi-stage Dockerfile for [Laravel Octane](https://github.com/laravel/octane)
 powered web services and microservices.
