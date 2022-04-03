@@ -58,6 +58,7 @@ RUN apt-get update; \
           gosu \
           git \
           curl \
+          wget \
           libcurl4-openssl-dev \
           ca-certificates \
           supervisor \
@@ -256,7 +257,7 @@ RUN if [ ${CONTAINER_MODE} = 'scheduler' ] || [ ${APP_WITH_SCHEDULER} = true ]; 
            -O /usr/bin/supercronic \
       && chmod +x /usr/bin/supercronic \
       && mkdir -p /etc/supercronic \
-      && echo "*/1 * * * * su octane -c php ${ROOT}/artisan schedule:run --verbose --no-interaction" > /etc/supercronic/laravel; \
+      && echo "*/1 * * * * su octane -c \"php ${ROOT}/artisan schedule:run --verbose --no-interaction\"" > /etc/supercronic/laravel; \
   fi
 
 ###########################################
@@ -281,7 +282,7 @@ RUN mkdir -p \
   bootstrap/cache \
   && chmod -R ug+rwx storage bootstrap/cache
 
-COPY deployment/octane/supervisord.${CONTAINER_MODE}*.conf /etc/supervisor/conf.d/
+COPY deployment/octane/supervisord.*.conf /etc/supervisor/conf.d/
 COPY deployment/octane/php.ini /usr/local/etc/php/conf.d/octane.ini
 COPY deployment/octane/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
