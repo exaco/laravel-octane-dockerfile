@@ -30,17 +30,19 @@ ARG WWWUSER=1000
 ARG WWWGROUP=1000
 ARG TZ=UTC
 
-# Accepted values: app - horizon
+# Accepted values: app - horizon - scheduler
 ARG CONTAINER_MODE=app
 
 ARG APP_WITH_HORIZON=false
+ARG APP_WITH_SCHEDULER=false
 
 ENV DEBIAN_FRONTEND=noninteractive \
     TERM=xterm-color \
     CONTAINER_MODE=${CONTAINER_MODE} \
     APP_WITH_HORIZON=${APP_WITH_HORIZON}
 
-WORKDIR /var/www/html
+ENV ROOT=/var/www/html
+WORKDIR $ROOT
 
 SHELL ["/bin/bash", "-eou", "pipefail", "-c"]
 
@@ -244,6 +246,19 @@ RUN if [ ${INSTALL_PG_CLIENT} = true ]; then \
       fi; \
   fi
 
+
+###########################################
+# Laravel scheduler
+###########################################
+
+RUN if [ ${CONTAINER_MODE} = 'scheduler' ] || [ ${APP_WITH_SCHEDULER} = true ]; then \
+      wget -q "https://github.com/aptible/supercronic/releases/download/v0.1.12/supercronic-linux-amd64" \
+           -O /usr/bin/supercronic \
+      && chmod +x /usr/bin/supercronic \
+      && mkdir -p /etc/supercronic \
+      && echo "*/1 * * * * su octane -c php ${ROOT}/artisan schedule:run --verbose --no-interaction" > /etc/supercronic/laravel; \
+  fi
+
 ###########################################
 
 RUN groupadd --force -g $WWWGROUP octane \
@@ -255,7 +270,7 @@ RUN apt-get clean \
     && rm /var/log/lastlog /var/log/faillog
 
 COPY . .
-COPY --from=vendor /var/www/html/vendor vendor
+COPY --from=vendor ${ROOT}/vendor vendor
 
 RUN mkdir -p \
   storage/framework/{sessions,views,cache} \
@@ -266,7 +281,7 @@ RUN mkdir -p \
   bootstrap/cache \
   && chmod -R ug+rwx storage bootstrap/cache
 
-COPY deployment/octane/supervisord.${CONTAINER_MODE}.conf /etc/supervisor/conf.d/supervisord.${CONTAINER_MODE}.conf
+COPY deployment/octane/supervisord.${CONTAINER_MODE}*.conf /etc/supervisor/conf.d/
 COPY deployment/octane/php.ini /usr/local/etc/php/conf.d/octane.ini
 COPY deployment/octane/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 

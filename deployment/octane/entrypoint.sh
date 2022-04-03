@@ -24,6 +24,9 @@ elif [ "$container_mode" = "app" ]; then
 elif [ "$container_mode" = "horizon" ]; then
     initialStuff
     exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.horizon.conf
+elif [ "$container_mode" = "scheduler" ]; then
+    initialStuff
+    exec supercronic /etc/supercronic/laravel
 else
     echo "Container mode mismatched."
     exit 1
