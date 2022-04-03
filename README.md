@@ -13,12 +13,15 @@ The Docker configuration provides the following setup:
 
 ## Container modes
 
-| Mode | `CONTAINER_MODE` ARG | Supervisor config file | HTTP server | Exposed port |
-|------------ | ------------ | ------------ | ------------ | ------------ |
-| Octane (default) | `app` | [supervisord.app.conf](deployment/octane/supervisord.app.conf) | Swoole | 9000 |
-| Horizen | `horizon` | [supervisord.horizon.conf](deployment/octane/supervisord.horizon.conf) | - | - |
+| Mode             | `CONTAINER_MODE` ARG | Supervisor config file                                                 | HTTP server | Exposed port |
+|------------------|----------------------|------------------------------------------------------------------------| ------------ | ------------ |
+| Octane (default) | `app`                | [supervisord.app.conf](deployment/octane/supervisord.app.conf)         | Swoole | 9000 |
+| Horizen          | `horizon`            | [supervisord.horizon.conf](deployment/octane/supervisord.horizon.conf) | - | - |
+| Scheduler        | `scheduler`          | -                                                                      | - | - |
 
 > If you want to run Horizon in the Octane container, then you should set `APP_WITH_HORIZON` build argument `true`.
+
+> If you want to run Scheduler in the Octane container, then you should set `APP_WITH_SCHEDULER` build argument `true`.
 
 ## PHP extensions
 
@@ -58,6 +61,10 @@ docker build -t <image-name>:<tag> .
 ```
 docker build -t <image-name>:<tag> --build-arg CONTAINER_MODE=horizon .
 ```
+- Container `scheduler` mode:
+```
+docker build -t <image-name>:<tag> --build-arg CONTAINER_MODE=scheduler .
+```
 5. Up the container:
 ```
 docker run -p <port>:9000 --rm <image-name>:<tag>
@@ -80,13 +87,6 @@ There are something that you maybe want to configure:
 // config/octane.php
 
 return [
-    'listeners' => [
-        OperationTerminated::class => [
-            FlushTemporaryContainerInstances::class,
-            DisconnectFromDatabases::class, // uncomment this line
-            // CollectGarbage::class,
-        ],
-    ],
     'swoole' => [
         'options' => [
             'http_compression' => true,
@@ -117,7 +117,7 @@ Also, some useful Bash functions and aliases are added in `utilities.sh` that ma
 - [ ] Add support for RoadRunner
 - [ ] Add support for the full stack apps (Front-end assets)
 - [ ] Add support `testing` environment and CI
-- [ ] Add support for Laravel scheduler
+- [x] Add support for Laravel scheduler
 - [ ] Add support for Laravel Dusk
 - [ ] Support more PHP extensions
 - [x] Add tests
