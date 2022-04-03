@@ -39,7 +39,8 @@ ARG APP_WITH_SCHEDULER=false
 ENV DEBIAN_FRONTEND=noninteractive \
     TERM=xterm-color \
     CONTAINER_MODE=${CONTAINER_MODE} \
-    APP_WITH_HORIZON=${APP_WITH_HORIZON}
+    APP_WITH_HORIZON=${APP_WITH_HORIZON} \
+    APP_WITH_SCHEDULER=${APP_WITH_SCHEDULER}
 
 ENV ROOT=/var/www/html
 WORKDIR $ROOT
@@ -270,7 +271,7 @@ RUN apt-get clean \
     && rm /var/log/lastlog /var/log/faillog
 
 COPY . .
-COPY --from=vendor /var/www/html/vendor vendor
+COPY --from=vendor ${ROOT}/vendor vendor
 
 RUN mkdir -p \
   storage/framework/{sessions,views,cache} \
