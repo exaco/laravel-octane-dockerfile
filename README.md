@@ -61,6 +61,10 @@ docker build -t <image-name>:<tag> .
 ```
 docker build -t <image-name>:<tag> --build-arg CONTAINER_MODE=horizon .
 ```
+- Container `scheduler` mode:
+```
+docker build -t <image-name>:<tag> --build-arg CONTAINER_MODE=scheduler .
+```
 5. Up the container:
 ```
 docker run -p <port>:9000 --rm <image-name>:<tag>
@@ -83,13 +87,6 @@ There are something that you maybe want to configure:
 // config/octane.php
 
 return [
-    'listeners' => [
-        OperationTerminated::class => [
-            FlushTemporaryContainerInstances::class,
-            DisconnectFromDatabases::class, // uncomment this line
-            // CollectGarbage::class,
-        ],
-    ],
     'swoole' => [
         'options' => [
             'http_compression' => true,
@@ -120,7 +117,7 @@ Also, some useful Bash functions and aliases are added in `utilities.sh` that ma
 - [ ] Add support for RoadRunner
 - [ ] Add support for the full stack apps (Front-end assets)
 - [ ] Add support `testing` environment and CI
-- [ ] Add support for Laravel scheduler
+- [x] Add support for Laravel scheduler
 - [ ] Add support for Laravel Dusk
 - [ ] Support more PHP extensions
 - [x] Add tests
