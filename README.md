@@ -123,6 +123,10 @@ Also, some useful Bash functions and aliases are added in `utilities.sh` that ma
 Thank you for considering contributing! If you find an issue, or have a better way to do something, feel free to open an
 issue, or a PR.
 
+## Credits
+- [SMorteza Ebadi](https://github.com/smortexa)
+- [All contributors](https://github.com/exaco/laravel-octane-dockerfile/graphs/contributors)
+
 ## License
 
 This repository is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
