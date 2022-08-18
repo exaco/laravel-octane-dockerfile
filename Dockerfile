@@ -18,7 +18,8 @@ RUN composer install \
   --optimize-autoloader \
   --apcu-autoloader \
   --ansi \
-  --no-scripts
+  --no-scripts \
+  --audit
 
 ###########################################
 
