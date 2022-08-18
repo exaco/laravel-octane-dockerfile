@@ -253,11 +253,11 @@ RUN if [ ${INSTALL_PG_CLIENT} = true ]; then \
 ###########################################
 
 RUN if [ ${CONTAINER_MODE} = 'scheduler' ] || [ ${APP_WITH_SCHEDULER} = true ]; then \
-      wget -q "https://github.com/aptible/supercronic/releases/download/v0.1.12/supercronic-linux-amd64" \
+      wget -q "https://github.com/aptible/supercronic/releases/download/v0.2.1/supercronic-linux-amd64" \
            -O /usr/bin/supercronic \
       && chmod +x /usr/bin/supercronic \
       && mkdir -p /etc/supercronic \
-      && echo "*/1 * * * * su octane -c \"php ${ROOT}/artisan schedule:run --verbose --no-interaction\"" > /etc/supercronic/laravel; \
+      && echo "*/1 * * * * php ${ROOT}/artisan schedule:run --verbose --no-interaction" > /etc/supercronic/laravel; \
   fi
 
 ###########################################
