@@ -13,6 +13,8 @@ The Docker configuration provides the following setup:
 
 ## Container modes
 
+You can build the Docker image in different modes:
+
 | Mode             | `CONTAINER_MODE` ARG | Supervisor config file                                                 | HTTP server | Exposed port |
 |------------------|----------------------|------------------------------------------------------------------------| ------------ | ------------ |
 | Octane (default) | `app`                | [supervisord.app.conf](deployment/octane/supervisord.app.conf)         | Swoole | 9000 |
