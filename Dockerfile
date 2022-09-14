@@ -240,13 +240,16 @@ ARG INSTALL_PG_CLIENT=false
 ARG INSTALL_POSTGIS=false
 
 RUN if [ ${INSTALL_PG_CLIENT} = true ]; then \
-      . /etc/os-release \
-      && echo "deb http://apt.postgresql.org/pub/repos/apt $VERSION_CODENAME-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
-      && curl -sL https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
-      && apt-get install -yqq --no-install-recommends --show-progress postgresql-client-12 postgis; \
-      if [ ${INSTALL_POSTGIS} = true ]; then \
-        apt-get install -yqq --no-install-recommends --show-progress postgis; \
-      fi; \
+        apt-get install -yqq gnupg \
+        && . /etc/os-release \
+        && echo "deb http://apt.postgresql.org/pub/repos/apt $VERSION_CODENAME-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
+        && curl -sL https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
+        && apt-get update -yqq \
+        && apt-get install -yqq --no-install-recommends --show-progress postgresql-client-12 postgis; \
+        if [ ${INSTALL_POSTGIS} = true ]; then \
+          apt-get install -yqq --no-install-recommends --show-progress postgis; \
+        fi \
+        && apt-get purge -yqq gnupg; \
   fi
 
 ###########################################
