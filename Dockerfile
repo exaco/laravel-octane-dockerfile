@@ -82,7 +82,8 @@ RUN apt-get update; \
           libpcre3 \
           libxml2 \
           libzstd1 \
-          procps
+          procps \
+          libbz2-dev
 
 
 ###########################################
