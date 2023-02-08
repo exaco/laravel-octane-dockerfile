@@ -82,7 +82,15 @@ RUN apt-get update; \
           libpcre3 \
           libxml2 \
           libzstd1 \
-          procps
+          procps \
+          libbz2-dev
+
+
+###########################################
+# bzip2
+###########################################
+
+RUN docker-php-ext-install bz2;
 
 ###########################################
 # pdo_mysql
