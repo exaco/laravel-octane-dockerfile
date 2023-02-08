@@ -44,6 +44,7 @@ And the following PHP extensions are included:
 - [x] cURL
 - [x] GD
 - [x] mbstring
+- [x] bz2
 
 ## Usage
 
