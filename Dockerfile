@@ -22,6 +22,19 @@ RUN composer install \
   --audit
 
 ###########################################
+# RoadRunner
+#
+# Assumes that roadrunner is a dependency in composer.json
+###########################################
+
+ARG INSTALL_ROADRUNNER=true
+
+RUN if [ ${INSTALL_ROADRUNNER} = true ]; then \
+  ./vendor/bin/rr get-binary; \
+  chmod +x ./rr; \
+  fi
+
+###########################################
 
 FROM php:${PHP_VERSION}-cli-buster
 
@@ -30,6 +43,9 @@ LABEL maintainer="Seyed Morteza Ebadi <seyed.me720@gmail.com>"
 ARG WWWUSER=1000
 ARG WWWGROUP=1000
 ARG TZ=UTC
+
+# Accepted values: swoole - roadrunner
+ARG OCTANE_SERVER=swoole
 
 # Accepted values: app - horizon - scheduler
 ARG CONTAINER_MODE=app
@@ -41,7 +57,8 @@ ENV DEBIAN_FRONTEND=noninteractive \
     TERM=xterm-color \
     CONTAINER_MODE=${CONTAINER_MODE} \
     APP_WITH_HORIZON=${APP_WITH_HORIZON} \
-    APP_WITH_SCHEDULER=${APP_WITH_SCHEDULER}
+    APP_WITH_SCHEDULER=${APP_WITH_SCHEDULER} \
+    OCTANE_SERVER=${OCTANE_SERVER}
 
 ENV ROOT=/var/www/html
 WORKDIR $ROOT
@@ -284,6 +301,7 @@ RUN apt-get clean \
 
 COPY . .
 COPY --from=vendor ${ROOT}/vendor vendor
+COPY --from=vendor ${ROOT}/rr ${ROOT}
 
 RUN mkdir -p \
   storage/framework/{sessions,views,cache} \
@@ -297,11 +315,13 @@ RUN mkdir -p \
 COPY deployment/octane/supervisord* /etc/supervisor/conf.d/
 COPY deployment/octane/php.ini /usr/local/etc/php/conf.d/octane.ini
 COPY deployment/octane/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+COPY deployment/octane/.rr.prod.yaml ./.rr.yaml
 
 RUN chmod +x deployment/octane/entrypoint.sh
 RUN cat deployment/octane/utilities.sh >> ~/.bashrc
 
 EXPOSE 9000
+EXPOSE 6001
 
 ENTRYPOINT ["deployment/octane/entrypoint.sh"]
 
