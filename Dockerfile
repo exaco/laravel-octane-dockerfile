@@ -27,7 +27,7 @@ RUN composer install \
 # Assumes that roadrunner is a dependency in composer.json
 ###########################################
 
-ARG INSTALL_ROADRUNNER=true
+ARG INSTALL_ROADRUNNER=false
 
 RUN if [ ${INSTALL_ROADRUNNER} = true ]; then \
   ./vendor/bin/rr get-binary; \

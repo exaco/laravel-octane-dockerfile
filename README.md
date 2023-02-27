@@ -87,9 +87,10 @@ There are something that you maybe want to configure:
 ## Using Roadrunner instead of Swoole
 
 1. Ensure you have roadrunner as a dependency in your composer.json
-2. Set the OCTANE_SERVER env variable to 'roadrunner'
-3. Optionally, set the build arg INSTALL_SWOOLE=false to avoid installing swoole in the container
-4. Build normally
+2. Set the build arg INSTALL_ROADRUNNER=true
+3. Set the env variable OCTANE_SERVER=roadrunner
+4. Optionally, set the build arg INSTALL_SWOOLE=false to avoid installing swoole in the container
+5. Build normally
 
 ### Recommended options for `octane.php`
 
