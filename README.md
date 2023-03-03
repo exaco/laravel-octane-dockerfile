@@ -8,7 +8,7 @@ powered web services and microservices.
 
 The Docker configuration provides the following setup:
 
-- PHP 8.0 and 8.1 official DebianBuster-based images
+- PHP 8.0, 8.1, and 8.2 official DebianBuster-based images
 - Preconfigured JIT compiler and OPcache
 
 ## Container modes
@@ -84,15 +84,13 @@ There are something that you maybe want to configure:
 - Set `PHP_VERSION` using the `--build-arg` option along with the build command
 - Set `TZ` (OS timezone) using the `--build-arg` option along with the build command
 
-## Using Roadrunner instead of Swoole
+## Using RoadRunner instead of Swoole
 
-1. Ensure you have roadrunner as a dependency in your composer.json
-2. Set the build arg INSTALL_ROADRUNNER=true
-3. Set the env variable OCTANE_SERVER=roadrunner
-4. Optionally, set the build arg INSTALL_SWOOLE=false to avoid installing swoole in the container
-5. Build normally
+1. Ensure you have roadrunner as a dependency in your `composer.json`
+2. Set `OCTANE_SERVER=roadrunner` using the `--build-arg` option along with the build command
+3. Build normally
 
-### Recommended options for `octane.php`
+### Recommended Swoole options for `octane.php`
 
 ```php
 // config/octane.php
