@@ -22,9 +22,9 @@ if [ "$1" != "" ]; then
 elif [ ${container_mode} = "app" ]; then
     echo "Octane server: $octane_server"
     initialStuff
-    if [ ${OCTANE_SERVER}  = "swoole" ]; then
+    if [ ${octane_server}  = "swoole" ]; then
         exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.app.conf
-    elif [ ${OCTANE_SERVER}  = "roadrunner" ]; then
+    elif [ ${octane_server}  = "roadrunner" ]; then
         exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.app.roadrunner.conf
     else
         echo "Invalid Octane server supplied."
