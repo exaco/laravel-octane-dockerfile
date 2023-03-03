@@ -21,3 +21,4 @@ phpunit.xml
 tests
 storage/clockwork
 bootstrap/cache/*.php
+rr

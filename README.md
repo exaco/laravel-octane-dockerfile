@@ -17,7 +17,7 @@ You can build the Docker image in different modes:
 
 | Mode             | `CONTAINER_MODE` ARG | Supervisor config file                                                 | HTTP server | Exposed port |
 |------------------|----------------------|------------------------------------------------------------------------| ------------ | ------------ |
-| Octane (default) | `app`                | [supervisord.app.conf](deployment/octane/supervisord.app.conf)         | Swoole | 9000 |
+| Octane (default) | `app`                | [supervisord.app.conf](deployment/octane/supervisord.app.conf)         | Swoole / RoadRunner | 9000 |
 | Horizen          | `horizon`            | [supervisord.horizon.conf](deployment/octane/supervisord.horizon.conf) | - | - |
 | Scheduler        | `scheduler`          | -                                                                      | - | - |
 
@@ -84,7 +84,14 @@ There are something that you maybe want to configure:
 - Set `PHP_VERSION` using the `--build-arg` option along with the build command
 - Set `TZ` (OS timezone) using the `--build-arg` option along with the build command
 
-### Recommended options for `octane.php`
+## Using RoadRunner instead of Swoole
+
+1. Ensure you have roadrunner as a dependency in your `composer.json`
+2. Set `OCTANE_SERVER=roadrunner` using the `--build-arg` option along with the build command
+
+> You can configure RoadRunner through `deployment/octane/.rr.prod.yaml`.
+
+### Recommended Swoole options for `octane.php`
 
 ```php
 // config/octane.php
@@ -112,7 +119,7 @@ Also, some useful Bash functions and aliases are added in `utilities.sh` that ma
 
 ## ToDo
 - [x] Add support for Horizon
-- [ ] Add support for RoadRunner
+- [x] Add support for RoadRunner
 - [ ] Add support for the full stack apps (Front-end assets)
 - [ ] Add support `testing` environment and CI
 - [x] Add support for Laravel scheduler

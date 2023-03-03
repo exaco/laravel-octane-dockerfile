@@ -2,7 +2,9 @@
 set -e
 
 container_mode=${CONTAINER_MODE:-app}
+octane_server=${OCTANE_SERVER:-swoole}
 echo "Container mode: $container_mode"
+echo "Octane server: $octane_server"
 
 php() {
   su octane -c "php $*"
@@ -20,7 +22,14 @@ if [ "$1" != "" ]; then
     exec "$@"
 elif [ "$container_mode" = "app" ]; then
     initialStuff
-    exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.app.conf
+    if [ "$OCTANE_SERVER"  = "swoole" ]; then
+        exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.app.conf
+    elif [ "$OCTANE_SERVER"  = "roadrunner" ]; then
+        exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.app.roadrunner.conf
+    else
+        echo "Invalid Octane server supplied."
+        exit 1
+    fi
 elif [ "$container_mode" = "horizon" ]; then
     initialStuff
     exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.horizon.conf

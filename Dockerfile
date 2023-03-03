@@ -3,11 +3,15 @@ ARG PHP_VERSION=8.2
 
 ARG COMPOSER_VERSION=latest
 
+# Accepted values: swoole - roadrunner
+ARG OCTANE_SERVER="swoole"
+
 ###########################################
 # PHP dependencies
 ###########################################
 
 FROM composer:${COMPOSER_VERSION} AS vendor
+ARG OCTANE_SERVER
 WORKDIR /var/www/html
 COPY composer* ./
 RUN composer install \
@@ -22,6 +26,17 @@ RUN composer install \
   --audit
 
 ###########################################
+# RoadRunner binary
+###########################################
+
+RUN if [ ${OCTANE_SERVER} = "roadrunner" ]; then \
+      if composer show | grep spiral/roadrunner >/dev/null; then \
+       ./vendor/bin/rr get-binary; else \
+       echo "spiral/roadrunner package is not installed. exiting..."; exit 1; \
+      fi \
+    fi
+
+###########################################
 
 FROM php:${PHP_VERSION}-cli-buster
 
@@ -30,6 +45,8 @@ LABEL maintainer="Seyed Morteza Ebadi <seyed.me720@gmail.com>"
 ARG WWWUSER=1000
 ARG WWWGROUP=1000
 ARG TZ=UTC
+
+ARG OCTANE_SERVER
 
 # Accepted values: app - horizon - scheduler
 ARG CONTAINER_MODE=app
@@ -41,7 +58,8 @@ ENV DEBIAN_FRONTEND=noninteractive \
     TERM=xterm-color \
     CONTAINER_MODE=${CONTAINER_MODE} \
     APP_WITH_HORIZON=${APP_WITH_HORIZON} \
-    APP_WITH_SCHEDULER=${APP_WITH_SCHEDULER}
+    APP_WITH_SCHEDULER=${APP_WITH_SCHEDULER} \
+    OCTANE_SERVER=${OCTANE_SERVER}
 
 ENV ROOT=/var/www/html
 WORKDIR $ROOT
@@ -179,14 +197,13 @@ RUN if [ ${INSTALL_RDKAFKA} = true ]; then \
 # OpenSwoole/Swoole extension
 ###########################################
 
-ARG INSTALL_SWOOLE=true
-ARG SERVER=openswoole
+ARG SERVER=swoole
 
-RUN if [ ${INSTALL_SWOOLE} = true ]; then \
+RUN if [ ${OCTANE_SERVER} = "swoole" ]; then \
       apt-get install -yqq --no-install-recommends --show-progress libc-ares-dev \
       && pecl -q install -o -f -D 'enable-openssl="yes" enable-http2="yes" enable-swoole-curl="yes" enable-mysqlnd="yes" enable-cares="yes"' ${SERVER} \
       && docker-php-ext-enable ${SERVER}; \
-    fi
+  fi
 
 ###########################################################################
 # Human Language and Character Encoding Support
@@ -284,6 +301,7 @@ RUN apt-get clean \
 
 COPY . .
 COPY --from=vendor ${ROOT}/vendor vendor
+COPY --from=vendor ${ROOT}/rr* ${ROOT}/composer.json ./
 
 RUN mkdir -p \
   storage/framework/{sessions,views,cache} \
@@ -297,11 +315,16 @@ RUN mkdir -p \
 COPY deployment/octane/supervisord* /etc/supervisor/conf.d/
 COPY deployment/octane/php.ini /usr/local/etc/php/conf.d/octane.ini
 COPY deployment/octane/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+COPY deployment/octane/.rr.prod.yaml ./.rr.yaml
 
 RUN chmod +x deployment/octane/entrypoint.sh
+RUN if [ -f "rr" ]; then \
+    chmod +x rr; \
+  fi
 RUN cat deployment/octane/utilities.sh >> ~/.bashrc
 
 EXPOSE 9000
+EXPOSE 6001
 
 ENTRYPOINT ["deployment/octane/entrypoint.sh"]
 
