@@ -26,7 +26,7 @@ elif [ "$container_mode" = "app" ]; then
     elif [ "$OCTANE_SERVER"  = "roadrunner" ]; then
         exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.app.roadrunner.conf
     else
-        echo "Invalid octane server supplied."
+        echo "Invalid Octane server supplied."
         exit 1
     fi
 elif [ "$container_mode" = "horizon" ]; then
