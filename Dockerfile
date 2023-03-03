@@ -317,7 +317,9 @@ COPY deployment/octane/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 COPY deployment/octane/.rr.prod.yaml ./.rr.yaml
 
 RUN chmod +x deployment/octane/entrypoint.sh
-RUN chmod +x rr
+RUN if [ -f "rr" ]; then \
+    chmod +x rr; \
+  fi
 RUN cat deployment/octane/utilities.sh >> ~/.bashrc
 
 EXPOSE 9000
