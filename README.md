@@ -88,7 +88,6 @@ There are something that you maybe want to configure:
 
 1. Ensure you have roadrunner as a dependency in your `composer.json`
 2. Set `OCTANE_SERVER=roadrunner` using the `--build-arg` option along with the build command
-3. Build normally
 
 > You can configure RoadRunner through `deployment/octane/.rr.prod.yaml`.
 
