@@ -13,7 +13,7 @@ ARG OCTANE_SERVER="swoole"
 FROM composer:${COMPOSER_VERSION} AS vendor
 ARG OCTANE_SERVER
 WORKDIR /var/www/html
-COPY ./composer* ./
+COPY composer* ./
 RUN composer install \
   --no-dev \
   --no-interaction \
