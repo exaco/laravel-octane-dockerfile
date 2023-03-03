@@ -90,6 +90,8 @@ There are something that you maybe want to configure:
 2. Set `OCTANE_SERVER=roadrunner` using the `--build-arg` option along with the build command
 3. Build normally
 
+> You can configure RoadRunner through `deployment/octane/.rr.prod.yaml`.
+
 ### Recommended Swoole options for `octane.php`
 
 ```php
