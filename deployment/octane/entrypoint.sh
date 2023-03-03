@@ -2,8 +2,9 @@
 set -e
 
 container_mode=${CONTAINER_MODE:-app}
+octane_server=${OCTANE_SERVER:-swoole}
 echo "Container mode: $container_mode"
-echo "Octane server: $OCTANE_SERVER"
+echo "Octane server: $octane_server"
 
 php() {
   su octane -c "php $*"
