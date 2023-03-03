@@ -300,8 +300,7 @@ RUN apt-get clean \
     && rm /var/log/lastlog /var/log/faillog
 
 COPY . .
-COPY --from=vendor ${ROOT}/vendor vendor
-COPY --from=vendor ${ROOT}/rr* rr
+COPY --from=vendor ${ROOT}/vendor ${ROOT}/rr* ./
 
 RUN mkdir -p \
   storage/framework/{sessions,views,cache} \
