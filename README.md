@@ -17,7 +17,7 @@ You can build the Docker image in different modes:
 
 | Mode             | `CONTAINER_MODE` ARG | Supervisor config file                                                 | HTTP server | Exposed port |
 |------------------|----------------------|------------------------------------------------------------------------| ------------ | ------------ |
-| Octane (default) | `app`                | [supervisord.app.conf](deployment/octane/supervisord.app.conf)         | Swoole / Roadrunner | 9000 |
+| Octane (default) | `app`                | [supervisord.app.conf](deployment/octane/supervisord.app.conf)         | Swoole / RoadRunner | 9000 |
 | Horizen          | `horizon`            | [supervisord.horizon.conf](deployment/octane/supervisord.horizon.conf) | - | - |
 | Scheduler        | `scheduler`          | -                                                                      | - | - |
 
