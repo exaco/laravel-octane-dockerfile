@@ -91,7 +91,7 @@ There are something that you maybe want to configure:
 
 > You can configure RoadRunner through `deployment/octane/.rr.prod.yaml`.
 
-### Recommended Swoole options for `octane.php`
+## Recommended Swoole options for `octane.php`
 
 ```php
 // config/octane.php
@@ -102,7 +102,10 @@ return [
             'http_compression' => true,
             'http_compression_level' => 6, // 1 - 9
             'compression_min_length' => 20,
-            'open_http2_protocol' => true
+            'package_max_length' => 20 * 1024 * 1024, // 20MB
+            'open_http2_protocol' => true,
+            'document_root' => public_path(),
+            'enable_static_handler' => true,
         ]
     ]
 ];
