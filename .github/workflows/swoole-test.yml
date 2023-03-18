@@ -1,4 +1,4 @@
-name: tests
+name: Swoole test
 
 on:
   push:
