@@ -297,6 +297,7 @@ RUN groupadd --force -g $WWWGROUP octane \
 RUN apt-get clean \
     && docker-php-source delete \
     && pecl clear-cache \
+    && rm -R /tmp/pear \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
     && rm /var/log/lastlog /var/log/faillog
 
