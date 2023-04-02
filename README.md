@@ -15,11 +15,11 @@ The Docker configuration provides the following setup:
 
 You can build the Docker image in different modes:
 
-| Mode             | `CONTAINER_MODE` ARG | Supervisor config file                                                 | HTTP server | Exposed port |
-|------------------|----------------------|------------------------------------------------------------------------| ------------ | ------------ |
-| Octane (default) | `app`                | [supervisord.app.conf](deployment/octane/supervisord.app.conf)         | Swoole / RoadRunner | 9000 |
-| Horizen          | `horizon`            | [supervisord.horizon.conf](deployment/octane/supervisord.horizon.conf) | - | - |
-| Scheduler        | `scheduler`          | -                                                                      | - | - |
+| Mode             | `CONTAINER_MODE` ARG | HTTP server | Exposed port |
+|------------------|----------------------|------------| ------------|
+| Octane (default) | `app`                | Swoole / RoadRunner | 9000 |
+| Horizen          | `horizon`            | - | - |
+| Scheduler        | `scheduler`          | - | - |
 
 > If you want to run Horizon in the Octane container, then you should set `APP_WITH_HORIZON` build argument `true`.
 
