@@ -1,4 +1,4 @@
-# Accepted values: 8.2 - 8.1 - 8.0
+# Accepted values: 8.2 - 8.1
 ARG PHP_VERSION=8.2
 
 ARG COMPOSER_VERSION=latest
