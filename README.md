@@ -3,12 +3,12 @@
 <a href="https://github.com/exaco/laravel-octane-dockerfile/releases"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/exaco/laravel-octane-dockerfile"></a>
 <a href="https://github.com/exaco/laravel-octane-dockerfile/pulls"><img alt="GitHub closed pull requests" src="https://img.shields.io/github/issues-pr-closed/exaco/laravel-octane-dockerfile"></a> <a href="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/tests.yml"><img alt="GitHub Workflow Status" src="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/roadrunner-test.yml/badge.svg"></a> <a href="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/tests.yml"><img alt="GitHub Workflow Status" src="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/swoole-test.yml/badge.svg"></a>
 
-A pretty configurable, production-ready and multi-stage Dockerfile for [Laravel Octane](https://github.com/laravel/octane)
+A pretty configurable, production-ready, and multi-stage Dockerfile for [Laravel Octane](https://github.com/laravel/octane)
 powered web services and microservices.
 
 The Docker configuration provides the following setup:
 
-- PHP 8.0, 8.1 and 8.2 official DebianBuster-based images
+- PHP 8.1 and 8.2 official DebianBuster-based images
 - Preconfigured JIT compiler and OPcache
 
 ## Container modes
@@ -29,7 +29,7 @@ You can build the Docker image in different modes:
 
 And the following PHP extensions are included:
 
-- [x] OpenSwoole/Swoole with support of OpenSSL, HTTP/2, Native cURL hook for coroutines, `mysqlnd` and asynchronous DNS.
+- [x] OpenSwoole/Swoole with support of OpenSSL, HTTP/2, Native cURL hook for coroutines, `mysqlnd`, and asynchronous DNS.
 - [x] OPcache
 - [x] Redis
 - [x] PCNTL
@@ -52,8 +52,8 @@ And the following PHP extensions are included:
 ```
 git clone --depth 1 git@github.com:exaco/laravel-octane-dockerfile.git
 ```
-2. Copy cloned directory content including `deployment` directory, `Dockerfile` and `.dockerignore` into your Octane powered Laravel project
-3. Change directory to your Laravel project
+2. Copy cloned directory content including `deployment` directory, `Dockerfile`, and `.dockerignore` into your Octane powered Laravel project
+3. Change the directory to your Laravel project
 4. Build your image:
 
 - Container `app` mode:
@@ -75,7 +75,7 @@ docker run -p <port>:9000 --rm <image-name>:<tag>
 
 ## Configuration
 
-There are something that you maybe want to configure:
+There is something that you maybe want to configure:
 
 - Swoole HTTP server config in `supervisord.app.conf`
 - OPcache and JIT configurations in `opcache.ini`
@@ -117,15 +117,15 @@ Also, some useful Bash functions and aliases are added in `utilities.sh` that ma
 
 ## Notes
 
-- Laravel Octane logs requests information only in the `local` environment.
-- Please be aware about `.dockerignore` content
+- Laravel Octane logs request information only in the `local` environment.
+- Please be aware of `.dockerignore` content
 
 ## ToDo
 - [x] Add support for Horizon
 - [x] Add support for RoadRunner
-- [ ] Add support for the full stack apps (Front-end assets)
+- [ ] Add support for the full-stack apps (Front-end assets)
 - [ ] Add support `testing` environment and CI
-- [x] Add support for Laravel scheduler
+- [x] Add support for the Laravel scheduler
 - [ ] Add support for Laravel Dusk
 - [ ] Support more PHP extensions
 - [x] Add tests
