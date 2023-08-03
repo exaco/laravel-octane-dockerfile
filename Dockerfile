@@ -30,9 +30,9 @@ RUN composer install \
 ###########################################
 
 RUN if [ ${OCTANE_SERVER} = "roadrunner" ]; then \
-      if composer show | grep spiral/roadrunner >/dev/null; then \
+      if composer show | grep spiral/roadrunner-cli >/dev/null; then \
        ./vendor/bin/rr get-binary; else \
-       echo "spiral/roadrunner package is not installed. exiting..."; exit 1; \
+       echo "spiral/roadrunner-cli package is not installed. exiting..."; exit 1; \
       fi \
     fi
 
@@ -282,7 +282,7 @@ RUN if [ ${INSTALL_PG_CLIENT} = true ]; then \
 ###########################################
 
 RUN if [ ${CONTAINER_MODE} = 'scheduler' ] || [ ${APP_WITH_SCHEDULER} = true ]; then \
-      wget -q "https://github.com/aptible/supercronic/releases/download/v0.2.1/supercronic-linux-amd64" \
+      wget -q "https://github.com/aptible/supercronic/releases/download/v0.2.26/supercronic-linux-amd64" \
            -O /usr/bin/supercronic \
       && chmod +x /usr/bin/supercronic \
       && mkdir -p /etc/supercronic \
