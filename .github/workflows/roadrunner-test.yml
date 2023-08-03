@@ -52,7 +52,7 @@ jobs:
         working-directory: /var/www
 
       - name: Install Laravel Octane
-        run: sudo composer require laravel/octane spiral/roadrunner
+        run: sudo composer require laravel/octane spiral/roadrunner-cli spiral/roadrunner-http
         working-directory: /var/www/app
 
       - name: Copy required content to dockerize the app
