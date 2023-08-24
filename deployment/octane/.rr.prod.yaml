@@ -1,6 +1,8 @@
 version: '2.7'
 rpc:
   listen: 'tcp://127.0.0.1:6001'
+server:
+  relay: pipes
 http:
   middleware: [ "static", "gzip", "headers" ]
   max_request_size: 20
@@ -19,3 +21,5 @@ logs:
   mode: production
   level: debug
   encoding: json
+status:
+    address: localhost:2114
