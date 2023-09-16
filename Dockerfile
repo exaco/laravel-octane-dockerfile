@@ -7,6 +7,20 @@ ARG COMPOSER_VERSION=latest
 ARG OCTANE_SERVER="swoole"
 
 ###########################################
+# Vite Build
+###########################################
+
+FROM node:18-bullseye-slim as vite
+
+RUN mkdir -p /var/www/html
+
+WORKDIR /var/www/html
+
+COPY . .
+
+RUN npm install && npm run build
+
+###########################################
 # PHP dependencies
 ###########################################
 
@@ -302,6 +316,7 @@ RUN apt-get clean \
     && rm /var/log/lastlog /var/log/faillog
 
 COPY . .
+COPY --from=vite ${ROOT}/public public
 COPY --from=vendor ${ROOT}/vendor vendor
 COPY --from=vendor ${ROOT}/rr* ${ROOT}/composer.json ./
 
