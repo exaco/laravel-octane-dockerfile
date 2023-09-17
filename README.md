@@ -123,7 +123,7 @@ Also, some useful Bash functions and aliases are added in `utilities.sh` that ma
 ## ToDo
 - [x] Add support for Horizon
 - [x] Add support for RoadRunner
-- [x] Add support for the full-stack apps (Front-end assets)
+- [ ] Add support for the full-stack apps (Front-end assets)
 - [ ] Add support `testing` environment and CI
 - [x] Add support for the Laravel scheduler
 - [ ] Add support for Laravel Dusk
