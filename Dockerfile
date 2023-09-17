@@ -7,18 +7,34 @@ ARG COMPOSER_VERSION=latest
 ARG OCTANE_SERVER="swoole"
 
 ###########################################
-# Vite Build
+# Build frontend assets with NPM
 ###########################################
 
-FROM node:18-bullseye-slim as vite
+ARG NODE_VERSION=18-bullseye-slim
 
-RUN mkdir -p /var/www/html
+FROM node:${NODE_VERSION} as build
 
-WORKDIR /var/www/html
+ENV ROOT=/var/www/html
+
+WORKDIR $ROOT
+
+RUN npm config set update-notifier false && npm set progress=false
+
+COPY package*.json ./
+
+RUN if [ -f $ROOT/package-lock.json ]; \
+  then \
+  NODE_ENV=production npm ci --no-optional --loglevel=error --no-audit; \
+  else \
+  NODE_ENV=production npm install --no-optional --loglevel=error --no-audit; \
+  fi
 
 COPY . .
 
-RUN npm install && npm run build
+RUN if [ -f $ROOT/package.json ] || [ -f $ROOT/package-lock.json ]; \
+  then \
+  npm install && npm run build; \
+  fi
 
 ###########################################
 # PHP dependencies
@@ -44,11 +60,11 @@ RUN composer install \
 ###########################################
 
 RUN if [ ${OCTANE_SERVER} = "roadrunner" ]; then \
-      if composer show | grep spiral/roadrunner-cli >/dev/null; then \
-       ./vendor/bin/rr get-binary; else \
-       echo "spiral/roadrunner-cli package is not installed. exiting..."; exit 1; \
-      fi \
-    fi
+  if composer show | grep spiral/roadrunner-cli >/dev/null; then \
+  ./vendor/bin/rr get-binary; else \
+  echo "spiral/roadrunner-cli package is not installed. exiting..."; exit 1; \
+  fi \
+  fi
 
 ###########################################
 
@@ -69,11 +85,11 @@ ARG APP_WITH_HORIZON=false
 ARG APP_WITH_SCHEDULER=false
 
 ENV DEBIAN_FRONTEND=noninteractive \
-    TERM=xterm-color \
-    CONTAINER_MODE=${CONTAINER_MODE} \
-    APP_WITH_HORIZON=${APP_WITH_HORIZON} \
-    APP_WITH_SCHEDULER=${APP_WITH_SCHEDULER} \
-    OCTANE_SERVER=${OCTANE_SERVER}
+  TERM=xterm-color \
+  CONTAINER_MODE=${CONTAINER_MODE} \
+  APP_WITH_HORIZON=${APP_WITH_HORIZON} \
+  APP_WITH_SCHEDULER=${APP_WITH_SCHEDULER} \
+  OCTANE_SERVER=${OCTANE_SERVER}
 
 ENV ROOT=/var/www/html
 WORKDIR $ROOT
@@ -81,41 +97,41 @@ WORKDIR $ROOT
 SHELL ["/bin/bash", "-eou", "pipefail", "-c"]
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
-    && echo $TZ > /etc/timezone
+  && echo $TZ > /etc/timezone
 
 RUN apt-get update; \
-    apt-get upgrade -yqq; \
-    pecl -q channel-update pecl.php.net; \
-    apt-get install -yqq --no-install-recommends --show-progress \
-          apt-utils \
-          gnupg \
-          gosu \
-          git \
-          curl \
-          wget \
-          libcurl4-openssl-dev \
-          ca-certificates \
-          supervisor \
-          libmemcached-dev \
-          libz-dev \
-          libbrotli-dev \
-          libpq-dev \
-          libjpeg-dev \
-          libpng-dev \
-          libfreetype6-dev \
-          libssl-dev \
-          libwebp-dev \
-          libmcrypt-dev \
-          libonig-dev \
-          libzip-dev zip unzip \
-          libargon2-1 \
-          libidn2-0 \
-          libpcre2-8-0 \
-          libpcre3 \
-          libxml2 \
-          libzstd1 \
-          procps \
-          libbz2-dev
+  apt-get upgrade -yqq; \
+  pecl -q channel-update pecl.php.net; \
+  apt-get install -yqq --no-install-recommends --show-progress \
+  apt-utils \
+  gnupg \
+  gosu \
+  git \
+  curl \
+  wget \
+  libcurl4-openssl-dev \
+  ca-certificates \
+  supervisor \
+  libmemcached-dev \
+  libz-dev \
+  libbrotli-dev \
+  libpq-dev \
+  libjpeg-dev \
+  libpng-dev \
+  libfreetype6-dev \
+  libssl-dev \
+  libwebp-dev \
+  libmcrypt-dev \
+  libonig-dev \
+  libzip-dev zip unzip \
+  libargon2-1 \
+  libidn2-0 \
+  libpcre2-8-0 \
+  libpcre3 \
+  libxml2 \
+  libzstd1 \
+  procps \
+  libbz2-dev
 
 
 ###########################################
@@ -147,11 +163,11 @@ RUN docker-php-ext-install mbstring;
 ###########################################
 
 RUN docker-php-ext-configure gd \
-            --prefix=/usr \
-            --with-jpeg \
-            --with-webp \
-            --with-freetype \
-    && docker-php-ext-install gd;
+  --prefix=/usr \
+  --with-jpeg \
+  --with-webp \
+  --with-freetype \
+  && docker-php-ext-install gd;
 
 ###########################################
 # OPcache
@@ -160,7 +176,7 @@ RUN docker-php-ext-configure gd \
 ARG INSTALL_OPCACHE=true
 
 RUN if [ ${INSTALL_OPCACHE} = true ]; then \
-      docker-php-ext-install opcache; \
+  docker-php-ext-install opcache; \
   fi
 
 ###########################################
@@ -170,9 +186,9 @@ RUN if [ ${INSTALL_OPCACHE} = true ]; then \
 ARG INSTALL_PHPREDIS=true
 
 RUN if [ ${INSTALL_PHPREDIS} = true ]; then \
-      pecl -q install -o -f redis \
-      && rm -rf /tmp/pear \
-      && docker-php-ext-enable redis; \
+  pecl -q install -o -f redis \
+  && rm -rf /tmp/pear \
+  && docker-php-ext-enable redis; \
   fi
 
 ###########################################
@@ -182,7 +198,7 @@ RUN if [ ${INSTALL_PHPREDIS} = true ]; then \
 ARG INSTALL_PCNTL=true
 
 RUN if [ ${INSTALL_PCNTL} = true ]; then \
-      docker-php-ext-install pcntl; \
+  docker-php-ext-install pcntl; \
   fi
 
 ###########################################
@@ -192,7 +208,7 @@ RUN if [ ${INSTALL_PCNTL} = true ]; then \
 ARG INSTALL_BCMATH=true
 
 RUN if [ ${INSTALL_BCMATH} = true ]; then \
-      docker-php-ext-install bcmath; \
+  docker-php-ext-install bcmath; \
   fi
 
 ###########################################
@@ -202,9 +218,9 @@ RUN if [ ${INSTALL_BCMATH} = true ]; then \
 ARG INSTALL_RDKAFKA=true
 
 RUN if [ ${INSTALL_RDKAFKA} = true ]; then \
-      apt-get install -yqq --no-install-recommends --show-progress librdkafka-dev \
-      && pecl -q install -o -f rdkafka \
-      && docker-php-ext-enable rdkafka; \
+  apt-get install -yqq --no-install-recommends --show-progress librdkafka-dev \
+  && pecl -q install -o -f rdkafka \
+  && docker-php-ext-enable rdkafka; \
   fi
 
 ###########################################
@@ -214,9 +230,9 @@ RUN if [ ${INSTALL_RDKAFKA} = true ]; then \
 ARG SERVER=swoole
 
 RUN if [ ${OCTANE_SERVER} = "swoole" ]; then \
-      apt-get install -yqq --no-install-recommends --show-progress libc-ares-dev \
-      && pecl -q install -o -f -D 'enable-openssl="yes" enable-http2="yes" enable-swoole-curl="yes" enable-mysqlnd="yes" enable-cares="yes"' ${SERVER} \
-      && docker-php-ext-enable ${SERVER}; \
+  apt-get install -yqq --no-install-recommends --show-progress libc-ares-dev \
+  && pecl -q install -o -f -D 'enable-openssl="yes" enable-http2="yes" enable-swoole-curl="yes" enable-mysqlnd="yes" enable-cares="yes"' ${SERVER} \
+  && docker-php-ext-enable ${SERVER}; \
   fi
 
 ###########################################################################
@@ -226,9 +242,9 @@ RUN if [ ${OCTANE_SERVER} = "swoole" ]; then \
 ARG INSTALL_INTL=true
 
 RUN if [ ${INSTALL_INTL} = true ]; then \
-      apt-get install -yqq --no-install-recommends --show-progress zlib1g-dev libicu-dev g++ \
-      && docker-php-ext-configure intl \
-      && docker-php-ext-install intl; \
+  apt-get install -yqq --no-install-recommends --show-progress zlib1g-dev libicu-dev g++ \
+  && docker-php-ext-configure intl \
+  && docker-php-ext-install intl; \
   fi
 
 ###########################################
@@ -238,7 +254,7 @@ RUN if [ ${INSTALL_INTL} = true ]; then \
 ARG INSTALL_MEMCACHED=false
 
 RUN if [ ${INSTALL_MEMCACHED} = true ]; then \
-      pecl -q install -o -f memcached && docker-php-ext-enable memcached; \
+  pecl -q install -o -f memcached && docker-php-ext-enable memcached; \
   fi
 
 ###########################################
@@ -248,7 +264,7 @@ RUN if [ ${INSTALL_MEMCACHED} = true ]; then \
 ARG INSTALL_MYSQL_CLIENT=true
 
 RUN if [ ${INSTALL_MYSQL_CLIENT} = true ]; then \
-      apt-get install -yqq --no-install-recommends --show-progress default-mysql-client; \
+  apt-get install -yqq --no-install-recommends --show-progress default-mysql-client; \
   fi
 
 ###########################################
@@ -258,7 +274,7 @@ RUN if [ ${INSTALL_MYSQL_CLIENT} = true ]; then \
 ARG INSTALL_PDO_PGSQL=false
 
 RUN if [ ${INSTALL_PDO_PGSQL} = true ]; then \
-      docker-php-ext-install pdo_pgsql; \
+  docker-php-ext-install pdo_pgsql; \
   fi
 
 ###########################################
@@ -268,7 +284,7 @@ RUN if [ ${INSTALL_PDO_PGSQL} = true ]; then \
 ARG INSTALL_PGSQL=false
 
 RUN if [ ${INSTALL_PGSQL} = true ]; then \
-      docker-php-ext-install pgsql; \
+  docker-php-ext-install pgsql; \
   fi
 
 ###########################################
@@ -279,16 +295,16 @@ ARG INSTALL_PG_CLIENT=false
 ARG INSTALL_POSTGIS=false
 
 RUN if [ ${INSTALL_PG_CLIENT} = true ]; then \
-        apt-get install -yqq gnupg \
-        && . /etc/os-release \
-        && echo "deb http://apt.postgresql.org/pub/repos/apt $VERSION_CODENAME-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
-        && curl -sL https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
-        && apt-get update -yqq \
-        && apt-get install -yqq --no-install-recommends --show-progress postgresql-client-12 postgis; \
-        if [ ${INSTALL_POSTGIS} = true ]; then \
-          apt-get install -yqq --no-install-recommends --show-progress postgis; \
-        fi \
-        && apt-get purge -yqq gnupg; \
+  apt-get install -yqq gnupg \
+  && . /etc/os-release \
+  && echo "deb http://apt.postgresql.org/pub/repos/apt $VERSION_CODENAME-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
+  && curl -sL https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
+  && apt-get update -yqq \
+  && apt-get install -yqq --no-install-recommends --show-progress postgresql-client-12 postgis; \
+  if [ ${INSTALL_POSTGIS} = true ]; then \
+  apt-get install -yqq --no-install-recommends --show-progress postgis; \
+  fi \
+  && apt-get purge -yqq gnupg; \
   fi
 
 ###########################################
@@ -296,27 +312,27 @@ RUN if [ ${INSTALL_PG_CLIENT} = true ]; then \
 ###########################################
 
 RUN if [ ${CONTAINER_MODE} = 'scheduler' ] || [ ${APP_WITH_SCHEDULER} = true ]; then \
-      wget -q "https://github.com/aptible/supercronic/releases/download/v0.2.26/supercronic-linux-amd64" \
-           -O /usr/bin/supercronic \
-      && chmod +x /usr/bin/supercronic \
-      && mkdir -p /etc/supercronic \
-      && echo "*/1 * * * * php ${ROOT}/artisan schedule:run --verbose --no-interaction" > /etc/supercronic/laravel; \
+  wget -q "https://github.com/aptible/supercronic/releases/download/v0.2.26/supercronic-linux-amd64" \
+  -O /usr/bin/supercronic \
+  && chmod +x /usr/bin/supercronic \
+  && mkdir -p /etc/supercronic \
+  && echo "*/1 * * * * php ${ROOT}/artisan schedule:run --verbose --no-interaction" > /etc/supercronic/laravel; \
   fi
 
 ###########################################
 
 RUN groupadd --force -g $WWWGROUP octane \
-    && useradd -ms /bin/bash --no-log-init --no-user-group -g $WWWGROUP -u $WWWUSER octane
+  && useradd -ms /bin/bash --no-log-init --no-user-group -g $WWWGROUP -u $WWWUSER octane
 
 RUN apt-get clean \
-    && docker-php-source delete \
-    && pecl clear-cache \
-    && rm -R /tmp/pear \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-    && rm /var/log/lastlog /var/log/faillog
+  && docker-php-source delete \
+  && pecl clear-cache \
+  && rm -R /tmp/pear \
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+  && rm /var/log/lastlog /var/log/faillog
 
 COPY . .
-COPY --from=vite ${ROOT}/public public
+COPY --from=build ${ROOT}/public public
 COPY --from=vendor ${ROOT}/vendor vendor
 COPY --from=vendor ${ROOT}/rr* ${ROOT}/composer.json ./
 
@@ -335,7 +351,7 @@ COPY deployment/octane/.rr.prod.yaml ./.rr.yaml
 
 RUN chmod +x deployment/octane/entrypoint.sh
 RUN if [ -f "rr" ]; then \
-    chmod +x rr; \
+  chmod +x rr; \
   fi
 RUN cat deployment/octane/utilities.sh >> ~/.bashrc
 
