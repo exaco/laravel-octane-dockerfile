@@ -32,7 +32,10 @@ RUN if [ -f $ROOT/package-lock.json ]; \
 
 COPY . .
 
-RUN npm run build
+RUN if [ -f $ROOT/package.json ] || [ -f $ROOT/package-lock.json ]; \
+  then \
+  npm run build; \
+  fi
 
 ###########################################
 # PHP dependencies
