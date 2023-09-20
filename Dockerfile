@@ -20,14 +20,14 @@ WORKDIR $ROOT
 
 RUN npm config set update-notifier false && npm set progress=false
 
-COPY ./package*.json ./
+COPY package*.json ./
 
 RUN if [ -f $ROOT/package-lock.json ]; \
   then \
-  npm ci --no-optional --loglevel=error --no-audit; \
+  NODE_ENV=production npm ci --no-optional --loglevel=error --no-audit; \
   elif [ -f $ROOT/package.json ]; \
   then \
-  npm install --no-optional --loglevel=error --no-audit; \
+  NODE_ENV=production npm install --no-optional --loglevel=error --no-audit; \
   fi
 
 COPY . .
