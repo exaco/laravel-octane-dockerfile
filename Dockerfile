@@ -110,6 +110,7 @@ RUN apt-get update; \
   git \
   curl \
   wget \
+  nano \
   libcurl4-openssl-dev \
   ca-certificates \
   supervisor \
