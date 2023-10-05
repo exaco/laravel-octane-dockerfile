@@ -1,8 +1,3 @@
-php() {
-  echo "Running PHP as octane user ..."
-  su octane -c "php $*"
-}
-
 tinker() {
   if [ -z "$1" ]; then
     php artisan tinker

@@ -90,7 +90,8 @@ ENV DEBIAN_FRONTEND=noninteractive \
   CONTAINER_MODE=${CONTAINER_MODE} \
   APP_WITH_HORIZON=${APP_WITH_HORIZON} \
   APP_WITH_SCHEDULER=${APP_WITH_SCHEDULER} \
-  OCTANE_SERVER=${OCTANE_SERVER}
+  OCTANE_SERVER=${OCTANE_SERVER} \
+  NON_ROOT_USER=octane
 
 ENV ROOT=/var/www/html
 WORKDIR $ROOT
@@ -233,7 +234,7 @@ ARG SERVER=swoole
 
 RUN if [ ${OCTANE_SERVER} = "swoole" ]; then \
   apt-get install -yqq --no-install-recommends --show-progress libc-ares-dev \
-  && pecl -q install -o -f -D 'enable-openssl="yes" enable-http2="yes" enable-swoole-curl="yes" enable-mysqlnd="yes" enable-cares="yes"' ${SERVER} \
+  && printf "\n" | pecl -q install -o -f -D 'enable-openssl="yes" enable-http2="yes" enable-swoole-curl="yes" enable-mysqlnd="yes" enable-cares="yes"' ${SERVER} \
   && docker-php-ext-enable ${SERVER}; \
   fi
 
@@ -323,9 +324,6 @@ RUN if [ ${CONTAINER_MODE} = 'scheduler' ] || [ ${APP_WITH_SCHEDULER} = true ]; 
 
 ###########################################
 
-RUN groupadd --force -g $WWWGROUP octane \
-  && useradd -ms /bin/bash --no-log-init --no-user-group -g $WWWGROUP -u $WWWUSER octane
-
 RUN apt-get clean \
   && docker-php-source delete \
   && pecl clear-cache \
@@ -333,33 +331,41 @@ RUN apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
   && rm /var/log/lastlog /var/log/faillog
 
-COPY . .
-COPY --from=build ${ROOT}/public public
-COPY --from=vendor ${ROOT}/vendor vendor
-COPY --from=vendor ${ROOT}/rr* ${ROOT}/composer.json ./
+RUN groupadd --force -g $WWWGROUP $NON_ROOT_USER \
+  && useradd -ms /bin/bash --no-log-init --no-user-group -g $WWWGROUP -u $WWWUSER $NON_ROOT_USER
+
+RUN chown -R $NON_ROOT_USER:$NON_ROOT_USER $ROOT /var/log/
+
+RUN chmod -R ug+rw /var/log/
+
+USER $NON_ROOT_USER
+
+COPY --chown=$NON_ROOT_USER:$NON_ROOT_USER . .
+COPY --chown=$NON_ROOT_USER:$NON_ROOT_USER --from=build ${ROOT}/public public
+COPY --chown=$NON_ROOT_USER:$NON_ROOT_USER --from=vendor ${ROOT}/vendor vendor
+COPY --chown=$NON_ROOT_USER:$NON_ROOT_USER --from=vendor ${ROOT}/rr* ${ROOT}/composer.json ./
 
 RUN mkdir -p \
   storage/framework/{sessions,views,cache} \
   storage/logs \
-  bootstrap/cache \
-  && chown -R octane:octane \
-  storage \
-  bootstrap/cache \
-  && chmod -R ug+rwx storage bootstrap/cache
+  bootstrap/cache
 
-COPY deployment/octane/supervisord* /etc/supervisor/conf.d/
-COPY deployment/octane/php.ini /usr/local/etc/php/conf.d/octane.ini
-COPY deployment/octane/.rr.prod.yaml ./.rr.yaml
+COPY --chown=$NON_ROOT_USER:$NON_ROOT_USER deployment/octane/supervisord* /etc/supervisor/conf.d/
+COPY --chown=$NON_ROOT_USER:$NON_ROOT_USER deployment/octane/php.ini /usr/local/etc/php/conf.d/99-octane.ini
+COPY --chown=$NON_ROOT_USER:$NON_ROOT_USER deployment/octane/.rr.prod.yaml ./.rr.yaml
+COPY --chown=$NON_ROOT_USER:$NON_ROOT_USER deployment/octane/start-container /usr/local/bin/start-container
 
-RUN chmod +x deployment/octane/entrypoint.sh
+RUN chmod +x /usr/local/bin/start-container
+
 RUN if [ -f "rr" ]; then \
   chmod +x rr; \
   fi
+
 RUN cat deployment/octane/utilities.sh >> ~/.bashrc
 
 EXPOSE 9000
 EXPOSE 6001
 
-ENTRYPOINT ["deployment/octane/entrypoint.sh"]
+ENTRYPOINT ["start-container"]
 
 HEALTHCHECK --start-period=5s --interval=2s --timeout=5s --retries=8 CMD php artisan octane:status || exit 1
