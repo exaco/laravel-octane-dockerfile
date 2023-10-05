@@ -5,10 +5,6 @@ container_mode=${CONTAINER_MODE:-app}
 octane_server=${OCTANE_SERVER:-swoole}
 echo "Container mode: $container_mode"
 
-php() {
-  su octane -c "php $*"
-}
-
 initialStuff() {
     php artisan optimize:clear; \
     php artisan package:discover --ansi; \
