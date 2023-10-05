@@ -7,7 +7,7 @@ ARG COMPOSER_VERSION=latest
 ARG OCTANE_SERVER="swoole"
 
 ###########################################
-# Build frontend assets with NPM
+# Build frontend assets with PNPM
 ###########################################
 
 ARG NODE_VERSION=18-bullseye-slim
@@ -18,23 +18,23 @@ ENV ROOT=/var/www/html
 
 WORKDIR $ROOT
 
-RUN npm config set update-notifier false && npm set progress=false
+RUN npm install -g pnpm
 
-COPY package*.json ./
+COPY package.json pnpm-lock.yaml ./
 
-RUN if [ -f $ROOT/package-lock.json ]; \
+RUN if [ -f $ROOT/pnpm-lock.yaml ]; \
   then \
-  npm ci --no-optional --loglevel=error --no-audit; \
+  pnpm install --frozen-lockfile --no-optional --prefer-offline; \
   elif [ -f $ROOT/package.json ]; \
   then \
-  npm install --no-optional --loglevel=error --no-audit; \
+  pnpm install --no-optional --prefer-offline; \
   fi
 
 COPY . .
 
-RUN if [ -f $ROOT/package.json ] || [ -f $ROOT/package-lock.json ]; \
+RUN if [ -f $ROOT/package.json ] || [ -f $ROOT/pnpm-lock.yaml ]; \
   then \
-  npm run build; \
+  pnpm run build; \
   fi
 
 ###########################################
