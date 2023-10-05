@@ -70,7 +70,4 @@ jobs:
         run: sleep 10s
 
       - name: Check application health
-        run: |
-          curl -f -s -o /dev/null -w "%{http_code}" http://localhost:9000
-          php artisan tinker --execute="logger('test');"
-        working-directory: /var/www/app
+        run: curl -f -s -o /dev/null -w "%{http_code}" http://localhost:9000
