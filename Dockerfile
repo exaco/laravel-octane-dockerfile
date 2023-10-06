@@ -121,7 +121,7 @@ RUN apt-get update; \
   libicu-dev \
   g++ \
   # Install PHP extensions
-  docker-php-ext-install \
+  && docker-php-ext-install \
   bz2 \
   pcntl \
   mbstring \
