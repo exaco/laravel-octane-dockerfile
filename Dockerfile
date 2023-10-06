@@ -37,38 +37,6 @@ RUN if [ -f $ROOT/package.json ] || [ -f $ROOT/pnpm-lock.yaml ]; \
   pnpm run build; \
   fi
 
-###########################################
-# PHP dependencies
-###########################################
-
-FROM composer:${COMPOSER_VERSION} AS vendor
-ARG OCTANE_SERVER
-WORKDIR /var/www/html
-COPY composer* ./
-RUN composer install \
-  --no-dev \
-  --no-interaction \
-  --prefer-dist \
-  --ignore-platform-reqs \
-  --optimize-autoloader \
-  --apcu-autoloader \
-  --ansi \
-  --no-scripts \
-  --audit
-
-###########################################
-# RoadRunner binary
-###########################################
-
-RUN if [ ${OCTANE_SERVER} = "roadrunner" ]; then \
-  if composer show | grep spiral/roadrunner-cli >/dev/null; then \
-  ./vendor/bin/rr get-binary; else \
-  echo "spiral/roadrunner-cli package is not installed. exiting..."; exit 1; \
-  fi \
-  fi
-
-###########################################
-
 FROM php:${PHP_VERSION}-cli-bookworm
 
 LABEL maintainer="Seyed Morteza Ebadi <seyed.me720@gmail.com>"
@@ -331,7 +299,8 @@ RUN apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
   && rm /var/log/lastlog /var/log/faillog
 
-RUN groupadd --force -g $WWWGROUP $NON_ROOT_USER \
+RUN userdel --remove --force www-data \
+  && groupadd --force -g $WWWGROUP $NON_ROOT_USER \
   && useradd -ms /bin/bash --no-log-init --no-user-group -g $WWWGROUP -u $WWWUSER $NON_ROOT_USER
 
 RUN chown -R $NON_ROOT_USER:$NON_ROOT_USER $ROOT /var/log/
@@ -340,9 +309,27 @@ RUN chmod -R ug+rw /var/log/
 
 USER $NON_ROOT_USER
 
+COPY --chown=$NON_ROOT_USER:$NON_ROOT_USER --from=composer:${COMPOSER_VERSION} /usr/bin/composer /usr/bin/composer
+COPY --chown=$NON_ROOT_USER:$NON_ROOT_USER composer* ./
+
+RUN if [ ${OCTANE_SERVER} = "roadrunner" ]; then \
+  if composer show | grep spiral/roadrunner-cli >/dev/null; then \
+  ./vendor/bin/rr get-binary; else \
+  echo "spiral/roadrunner-cli package is not installed. exiting..."; exit 1; \
+  fi \
+  fi
+
+RUN composer install \
+  --no-dev \
+  --no-interaction \
+  --prefer-dist \
+  --no-autoloader \
+  --ansi \
+  --no-scripts \
+  --audit
+
 COPY --chown=$NON_ROOT_USER:$NON_ROOT_USER . .
 COPY --chown=$NON_ROOT_USER:$NON_ROOT_USER --from=build ${ROOT}/public public
-COPY --chown=$NON_ROOT_USER:$NON_ROOT_USER --from=vendor ${ROOT}/vendor vendor
 COPY --chown=$NON_ROOT_USER:$NON_ROOT_USER --from=vendor ${ROOT}/rr* ${ROOT}/composer.json ./
 
 RUN mkdir -p \
@@ -355,11 +342,18 @@ COPY --chown=$NON_ROOT_USER:$NON_ROOT_USER deployment/octane/php.ini /usr/local/
 COPY --chown=$NON_ROOT_USER:$NON_ROOT_USER deployment/octane/.rr.prod.yaml ./.rr.yaml
 COPY --chown=$NON_ROOT_USER:$NON_ROOT_USER deployment/octane/start-container /usr/local/bin/start-container
 
-RUN chmod +x /usr/local/bin/start-container
+RUN composer dump-autoload \
+  --optimize-autoloader \
+  --apcu \
+  --no-dev \
+  --no-interaction \
+  && php artisan storage:link
 
 RUN if [ -f "rr" ]; then \
   chmod +x rr; \
   fi
+
+RUN chmod +x /usr/local/bin/start-container
 
 RUN cat deployment/octane/utilities.sh >> ~/.bashrc
 
