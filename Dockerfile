@@ -1,8 +1,6 @@
 # Accepted values: 8.2 - 8.1
 ARG PHP_VERSION=8.2
 
-ARG COMPOSER_VERSION=latest
-
 # Accepted values: swoole - roadrunner
 ARG OCTANE_SERVER="swoole"
 
@@ -46,6 +44,7 @@ ARG WWWGROUP=1000
 ARG TZ=UTC
 
 ARG OCTANE_SERVER
+ARG COMPOSER_VERSION=latest
 
 # Accepted values: app - horizon - scheduler
 ARG CONTAINER_MODE=app
