@@ -3,9 +3,6 @@ ARG PHP_VERSION=8.2
 
 ARG COMPOSER_VERSION=latest
 
-# Accepted values: swoole - roadrunner
-ARG OCTANE_SERVER="swoole"
-
 ###########################################
 # Build frontend assets with PNPM
 ###########################################
@@ -49,7 +46,8 @@ ARG WWWUSER=1000
 ARG WWWGROUP=1000
 ARG TZ=UTC
 
-ARG OCTANE_SERVER
+# Accepted values: swoole - roadrunner
+ARG OCTANE_SERVER="swoole"
 
 # Accepted values: app - horizon - scheduler
 ARG CONTAINER_MODE=app
@@ -214,7 +212,7 @@ COPY --chown=$NON_ROOT_USER:$NON_ROOT_USER deployment/octane/.rr.prod.yaml ./.rr
 COPY --chown=$NON_ROOT_USER:$NON_ROOT_USER deployment/octane/start-container /usr/local/bin/start-container
 
 RUN composer dump-autoload \
-  --optimize-autoloader \
+  --optimize \
   --apcu \
   --no-dev \
   --no-interaction \
