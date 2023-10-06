@@ -13,23 +13,23 @@ FROM node:${NODE_VERSION} as build
 
 ENV ROOT=/var/www/html
 
-WORKDIR $ROOT
+WORKDIR ${ROOT}
 
 RUN npm install -g pnpm
 
 COPY package.json pnpm-lock.yaml* ./
 
-RUN if [ -f $ROOT/pnpm-lock.yaml ]; \
+RUN if [ -f ${ROOT}/pnpm-lock.yaml ]; \
   then \
   pnpm install --frozen-lockfile --no-optional --prefer-offline; \
-  elif [ -f $ROOT/package.json ]; \
+  elif [ -f ${ROOT}/package.json ]; \
   then \
   pnpm install --no-optional --prefer-offline; \
   fi
 
 COPY . .
 
-RUN if [ -f $ROOT/package.json ] || [ -f $ROOT/pnpm-lock.yaml ]; \
+RUN if [ -f ${ROOT}/package.json ] || [ -f ${ROOT}/pnpm-lock.yaml ]; \
   then \
   pnpm run build; \
   fi
@@ -64,12 +64,12 @@ ENV DEBIAN_FRONTEND=noninteractive \
   NON_ROOT_USER=octane
 
 ENV ROOT=/var/www/html
-WORKDIR $ROOT
+WORKDIR ${ROOT}
 
 SHELL ["/bin/bash", "-eou", "pipefail", "-c"]
 
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime \
-  && echo $TZ > /etc/timezone
+RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime \
+  && echo ${TZ} > /etc/timezone
 
 RUN apt-get update; \
   apt-get upgrade -yqq; \
@@ -155,11 +155,11 @@ RUN apt-get update; \
   && rm /var/log/lastlog /var/log/faillog
 
 
-  ###########################################
-  # Laravel scheduler
-  ###########################################
+###########################################
+# Laravel scheduler
+###########################################
 
-  RUN if [ ${CONTAINER_MODE} = 'scheduler' ] || [ ${APP_WITH_SCHEDULER} = true ]; then \
+RUN if [ ${CONTAINER_MODE} = 'scheduler' ] || [ ${APP_WITH_SCHEDULER} = true ]; then \
   wget -q "https://github.com/aptible/supercronic/releases/download/v0.2.26/supercronic-linux-amd64" \
   -O /usr/bin/supercronic \
   && chmod +x /usr/bin/supercronic \
@@ -170,17 +170,17 @@ RUN apt-get update; \
 ###########################################
 
 RUN userdel --remove --force www-data \
-  && groupadd --force -g $WWWGROUP $NON_ROOT_USER \
-  && useradd -ms /bin/bash --no-log-init --no-user-group -g $WWWGROUP -u $WWWUSER $NON_ROOT_USER
+  && groupadd --force -g ${WWWGROUP} ${NON_ROOT_USER} \
+  && useradd -ms /bin/bash --no-log-init --no-user-group -g ${WWWGROUP} -u ${WWWUSER} ${NON_ROOT_USER}
 
-RUN chown -R $NON_ROOT_USER:$NON_ROOT_USER $ROOT /var/log/
+RUN chown -R ${NON_ROOT_USER}:${NON_ROOT_USER} ${ROOT} /var/log/
 
 RUN chmod -R ug+rw /var/log/
 
-USER $NON_ROOT_USER
+USER ${NON_ROOT_USER}
 
-COPY --chown=$NON_ROOT_USER:$NON_ROOT_USER --from=vendor /usr/bin/composer /usr/bin/composer
-COPY --chown=$NON_ROOT_USER:$NON_ROOT_USER composer* ./
+COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} --from=vendor /usr/bin/composer /usr/bin/composer
+COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} composer* ./
 
 RUN composer install \
   --no-dev \
@@ -191,25 +191,18 @@ RUN composer install \
   --no-scripts \
   --audit
 
-RUN if [ ${OCTANE_SERVER} = "roadrunner" ]; then \
-  if composer show | grep spiral/roadrunner-cli >/dev/null; then \
-  ./vendor/bin/rr get-binary; else \
-  echo "spiral/roadrunner-cli package is not installed. exiting..."; exit 1; \
-  fi \
-  fi
-
-COPY --chown=$NON_ROOT_USER:$NON_ROOT_USER . .
-COPY --chown=$NON_ROOT_USER:$NON_ROOT_USER --from=build ${ROOT}/public public
+COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} . .
+COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} --from=build ${ROOT}/public public
 
 RUN mkdir -p \
   storage/framework/{sessions,views,cache} \
   storage/logs \
   bootstrap/cache
 
-COPY --chown=$NON_ROOT_USER:$NON_ROOT_USER deployment/octane/supervisord* /etc/supervisor/conf.d/
-COPY --chown=$NON_ROOT_USER:$NON_ROOT_USER deployment/octane/php.ini /usr/local/etc/php/conf.d/99-octane.ini
-COPY --chown=$NON_ROOT_USER:$NON_ROOT_USER deployment/octane/.rr.prod.yaml ./.rr.yaml
-COPY --chown=$NON_ROOT_USER:$NON_ROOT_USER deployment/octane/start-container /usr/local/bin/start-container
+COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/octane/supervisord* /etc/supervisor/conf.d/
+COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/octane/php.ini /usr/local/etc/php/conf.d/99-octane.ini
+COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/octane/.rr.prod.yaml ./.rr.yaml
+COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/octane/start-container /usr/local/bin/start-container
 
 RUN composer dump-autoload \
   --optimize \
@@ -218,6 +211,13 @@ RUN composer dump-autoload \
   --no-interaction \
   && composer clear-cache \
   && php artisan storage:link
+
+RUN if [ ${OCTANE_SERVER} = "roadrunner" ]; then \
+  if composer show | grep spiral/roadrunner-cli >/dev/null; then \
+  ./vendor/bin/rr get-binary; else \
+  echo "spiral/roadrunner-cli package is not installed. exiting..."; exit 1; \
+  fi \
+  fi
 
 RUN if [ -f "rr" ]; then \
   chmod +x rr; \
