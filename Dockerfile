@@ -1,6 +1,8 @@
 # Accepted values: 8.2 - 8.1
 ARG PHP_VERSION=8.2
 
+ARG COMPOSER_VERSION=latest
+
 # Accepted values: swoole - roadrunner
 ARG OCTANE_SERVER="swoole"
 
@@ -35,6 +37,10 @@ RUN if [ -f $ROOT/package.json ] || [ -f $ROOT/pnpm-lock.yaml ]; \
   pnpm run build; \
   fi
 
+###########################################
+
+FROM composer:${COMPOSER_VERSION} AS vendor
+
 FROM php:${PHP_VERSION}-cli-bookworm
 
 LABEL maintainer="Seyed Morteza Ebadi <seyed.me720@gmail.com>"
@@ -44,7 +50,6 @@ ARG WWWGROUP=1000
 ARG TZ=UTC
 
 ARG OCTANE_SERVER
-ARG COMPOSER_VERSION=latest
 
 # Accepted values: app - horizon - scheduler
 ARG CONTAINER_MODE=app
@@ -114,7 +119,7 @@ RUN docker-php-ext-install bz2;
 # pdo_mysql
 ###########################################
 
-RUN docker-php-ext-install pdo_mysql;
+RUN docker-php-ext-configure pdo_mysql --with-pdo-mysql=mysqlnd && docker-php-ext-install pdo_mysql;
 
 ###########################################
 # zip
@@ -308,7 +313,7 @@ RUN chmod -R ug+rw /var/log/
 
 USER $NON_ROOT_USER
 
-COPY --chown=$NON_ROOT_USER:$NON_ROOT_USER --from=composer:${COMPOSER_VERSION} /usr/bin/composer /usr/bin/composer
+COPY --chown=$NON_ROOT_USER:$NON_ROOT_USER --from=vendor /usr/bin/composer /usr/bin/composer
 COPY --chown=$NON_ROOT_USER:$NON_ROOT_USER composer* ./
 
 RUN composer install \
