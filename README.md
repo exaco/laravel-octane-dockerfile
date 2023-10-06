@@ -25,27 +25,6 @@ You can build the Docker image in different modes:
 
 > If you want to run Scheduler in the Octane container, then you should set `APP_WITH_SCHEDULER` build argument `true`.
 
-## PHP extensions
-
-And the following PHP extensions are included:
-
-- [x] Swoole with support of OpenSSL, HTTP/2, Native cURL hook for coroutines, `mysqlnd`, and asynchronous DNS.
-- [x] OPcache
-- [x] Redis
-- [x] PCNTL
-- [x] BCMath
-- [x] RDKAFKA
-- [x] INTL
-- [x] pdo_mysql
-- [x] pdo_pgsql (disabled by default)
-- [x] pgsql (disabled by default)
-- [x] Memcached (disabled by default)
-- [x] zip
-- [x] cURL
-- [x] GD
-- [x] mbstring
-- [x] bz2
-
 ## Usage
 
 1. Clone this repository:
