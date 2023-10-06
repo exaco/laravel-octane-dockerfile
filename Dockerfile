@@ -107,11 +107,11 @@ RUN apt-get update; \
   apt-get install -yqq --no-install-recommends --show-progress \
   apt-utils \
   gnupg \
-  gosu \
   git \
   curl \
   wget \
   nano \
+  sqlite3 \
   libcurl4-openssl-dev \
   ca-certificates \
   supervisor \
