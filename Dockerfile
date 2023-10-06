@@ -311,13 +311,6 @@ USER $NON_ROOT_USER
 COPY --chown=$NON_ROOT_USER:$NON_ROOT_USER --from=composer:${COMPOSER_VERSION} /usr/bin/composer /usr/bin/composer
 COPY --chown=$NON_ROOT_USER:$NON_ROOT_USER composer* ./
 
-RUN if [ ${OCTANE_SERVER} = "roadrunner" ]; then \
-  if composer show | grep spiral/roadrunner-cli >/dev/null; then \
-  ./vendor/bin/rr get-binary; else \
-  echo "spiral/roadrunner-cli package is not installed. exiting..."; exit 1; \
-  fi \
-  fi
-
 RUN composer install \
   --no-dev \
   --no-interaction \
@@ -327,9 +320,15 @@ RUN composer install \
   --no-scripts \
   --audit
 
+RUN if [ ${OCTANE_SERVER} = "roadrunner" ]; then \
+  if composer show | grep spiral/roadrunner-cli >/dev/null; then \
+  ./vendor/bin/rr get-binary; else \
+  echo "spiral/roadrunner-cli package is not installed. exiting..."; exit 1; \
+  fi \
+  fi
+
 COPY --chown=$NON_ROOT_USER:$NON_ROOT_USER . .
 COPY --chown=$NON_ROOT_USER:$NON_ROOT_USER --from=build ${ROOT}/public public
-COPY --chown=$NON_ROOT_USER:$NON_ROOT_USER --from=vendor ${ROOT}/rr* ${ROOT}/composer.json ./
 
 RUN mkdir -p \
   storage/framework/{sessions,views,cache} \
