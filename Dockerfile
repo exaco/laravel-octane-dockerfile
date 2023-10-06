@@ -115,7 +115,7 @@ RUN apt-get update; \
   procps \
   postgresql-client \
   postgis \
-  mysql-client \
+  default-mysql-client \
   libbz2-dev \
   zlib1g-dev \
   libicu-dev \
