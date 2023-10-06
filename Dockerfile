@@ -83,6 +83,7 @@ RUN apt-get update; \
   curl \
   wget \
   nano \
+  rsync \
   sqlite3 \
   libcurl4-openssl-dev \
   ca-certificates \
@@ -93,200 +94,74 @@ RUN apt-get update; \
   libpq-dev \
   libjpeg-dev \
   libpng-dev \
+  librsvg2-bin \
   libfreetype6-dev \
   libssl-dev \
   libwebp-dev \
   libmcrypt-dev \
+  libldap2-dev \
   libonig-dev \
+  libmagickwand-dev \
   libzip-dev zip unzip \
   libargon2-1 \
   libidn2-0 \
   libpcre2-8-0 \
+  librdkafka-dev \
   libpcre3 \
   libxml2 \
+  libxslt-dev \
   libzstd1 \
+  libc-ares-dev \
   procps \
-  libbz2-dev
-
-
-###########################################
-# bzip2
-###########################################
-
-RUN docker-php-ext-install bz2;
-
-###########################################
-# pdo_mysql
-###########################################
-
-RUN docker-php-ext-configure pdo_mysql --with-pdo-mysql=mysqlnd && docker-php-ext-install pdo_mysql;
-
-###########################################
-# zip
-###########################################
-
-RUN docker-php-ext-configure zip && docker-php-ext-install zip;
-
-###########################################
-# mbstring
-###########################################
-
-RUN docker-php-ext-install mbstring;
-
-###########################################
-# GD
-###########################################
-
-RUN docker-php-ext-configure gd \
+  postgresql-client \
+  postgis \
+  mysql-client \
+  libbz2-dev \
+  zlib1g-dev \
+  libicu-dev \
+  g++ \
+  # Install PHP extensions
+  docker-php-ext-install \
+  bz2 \
+  pcntl \
+  mbstring \
+  bcmath \
+  sockets \
+  pgsql \
+  pdo_pgsql \
+  opcache \
+  && docker-php-ext-configure pdo_mysql --with-pdo-mysql=mysqlnd && docker-php-ext-install pdo_mysql \
+  && docker-php-ext-configure zip && docker-php-ext-install zip \
+  && docker-php-ext-configure intl && docker-php-ext-install intl \
+  && docker-php-ext-configure gd \
   --prefix=/usr \
   --with-jpeg \
   --with-webp \
-  --with-freetype \
-  && docker-php-ext-install gd;
-
-###########################################
-# OPcache
-###########################################
-
-ARG INSTALL_OPCACHE=true
-
-RUN if [ ${INSTALL_OPCACHE} = true ]; then \
-  docker-php-ext-install opcache; \
-  fi
-
-###########################################
-# PHP Redis
-###########################################
-
-ARG INSTALL_PHPREDIS=true
-
-RUN if [ ${INSTALL_PHPREDIS} = true ]; then \
-  pecl -q install -o -f redis \
-  && rm -rf /tmp/pear \
-  && docker-php-ext-enable redis; \
-  fi
-
-###########################################
-# PCNTL
-###########################################
-
-ARG INSTALL_PCNTL=true
-
-RUN if [ ${INSTALL_PCNTL} = true ]; then \
-  docker-php-ext-install pcntl; \
-  fi
-
-###########################################
-# BCMath
-###########################################
-
-ARG INSTALL_BCMATH=true
-
-RUN if [ ${INSTALL_BCMATH} = true ]; then \
-  docker-php-ext-install bcmath; \
-  fi
-
-###########################################
-# RDKAFKA
-###########################################
-
-ARG INSTALL_RDKAFKA=true
-
-RUN if [ ${INSTALL_RDKAFKA} = true ]; then \
-  apt-get install -yqq --no-install-recommends --show-progress librdkafka-dev \
-  && pecl -q install -o -f rdkafka \
-  && docker-php-ext-enable rdkafka; \
-  fi
-
-###########################################
-# OpenSwoole/Swoole extension
-###########################################
-
-ARG SERVER=swoole
-
-RUN if [ ${OCTANE_SERVER} = "swoole" ]; then \
-  apt-get install -yqq --no-install-recommends --show-progress libc-ares-dev \
-  && printf "\n" | pecl -q install -o -f -D 'enable-openssl="yes" enable-http2="yes" enable-swoole-curl="yes" enable-mysqlnd="yes" enable-cares="yes"' ${SERVER} \
-  && docker-php-ext-enable ${SERVER}; \
-  fi
-
-###########################################################################
-# Human Language and Character Encoding Support
-###########################################################################
-
-ARG INSTALL_INTL=true
-
-RUN if [ ${INSTALL_INTL} = true ]; then \
-  apt-get install -yqq --no-install-recommends --show-progress zlib1g-dev libicu-dev g++ \
-  && docker-php-ext-configure intl \
-  && docker-php-ext-install intl; \
-  fi
-
-###########################################
-# Memcached
-###########################################
-
-ARG INSTALL_MEMCACHED=false
-
-RUN if [ ${INSTALL_MEMCACHED} = true ]; then \
-  pecl -q install -o -f memcached && docker-php-ext-enable memcached; \
-  fi
-
-###########################################
-# MySQL Client
-###########################################
-
-ARG INSTALL_MYSQL_CLIENT=true
-
-RUN if [ ${INSTALL_MYSQL_CLIENT} = true ]; then \
-  apt-get install -yqq --no-install-recommends --show-progress default-mysql-client; \
-  fi
-
-###########################################
-# pdo_pgsql
-###########################################
-
-ARG INSTALL_PDO_PGSQL=false
-
-RUN if [ ${INSTALL_PDO_PGSQL} = true ]; then \
-  docker-php-ext-install pdo_pgsql; \
-  fi
-
-###########################################
-# pgsql
-###########################################
-
-ARG INSTALL_PGSQL=false
-
-RUN if [ ${INSTALL_PGSQL} = true ]; then \
-  docker-php-ext-install pgsql; \
-  fi
-
-###########################################
-# pgsql client and postgis
-###########################################
-
-ARG INSTALL_PG_CLIENT=false
-ARG INSTALL_POSTGIS=false
-
-RUN if [ ${INSTALL_PG_CLIENT} = true ]; then \
-  apt-get install -yqq gnupg \
-  && . /etc/os-release \
-  && echo "deb http://apt.postgresql.org/pub/repos/apt $VERSION_CODENAME-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
-  && curl -sL https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
-  && apt-get update -yqq \
-  && apt-get install -yqq --no-install-recommends --show-progress postgresql-client-12 postgis; \
-  if [ ${INSTALL_POSTGIS} = true ]; then \
-  apt-get install -yqq --no-install-recommends --show-progress postgis; \
+  --with-freetype && docker-php-ext-install gd \
+  && pecl -q install -o -f redis && docker-php-ext-enable redis \
+  && pecl -q install -o -f imagick && docker-php-ext-enable imagick \
+  && pecl -q install -o -f rdkafka && docker-php-ext-enable rdkafka \
+  && pecl -q install -o -f memcached && docker-php-ext-enable memcached \
+  && pecl -q install -o -f igbinary && docker-php-ext-enable igbinary \
+  && docker-php-ext-configure ldap --with-libdir=lib/$(gcc -dumpmachine) && docker-php-ext-install ldap \
+  && if [ ${OCTANE_SERVER} = "swoole" ]; then \
+  printf "\n" | pecl -q install -o -f -D 'enable-openssl="yes" enable-http2="yes" enable-swoole-curl="yes" enable-mysqlnd="yes" enable-cares="yes"' swoole \
+  && docker-php-ext-enable swoole; \
   fi \
-  && apt-get purge -yqq gnupg; \
-  fi
+  && apt-get -y autoremove \
+  && apt-get clean \
+  && docker-php-source delete \
+  && pecl clear-cache \
+  && rm -R /tmp/pear \
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+  && rm /var/log/lastlog /var/log/faillog
 
-###########################################
-# Laravel scheduler
-###########################################
 
-RUN if [ ${CONTAINER_MODE} = 'scheduler' ] || [ ${APP_WITH_SCHEDULER} = true ]; then \
+  ###########################################
+  # Laravel scheduler
+  ###########################################
+
+  RUN if [ ${CONTAINER_MODE} = 'scheduler' ] || [ ${APP_WITH_SCHEDULER} = true ]; then \
   wget -q "https://github.com/aptible/supercronic/releases/download/v0.2.26/supercronic-linux-amd64" \
   -O /usr/bin/supercronic \
   && chmod +x /usr/bin/supercronic \
@@ -295,13 +170,6 @@ RUN if [ ${CONTAINER_MODE} = 'scheduler' ] || [ ${APP_WITH_SCHEDULER} = true ]; 
   fi
 
 ###########################################
-
-RUN apt-get clean \
-  && docker-php-source delete \
-  && pecl clear-cache \
-  && rm -R /tmp/pear \
-  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-  && rm /var/log/lastlog /var/log/faillog
 
 RUN userdel --remove --force www-data \
   && groupadd --force -g $WWWGROUP $NON_ROOT_USER \
@@ -350,6 +218,7 @@ RUN composer dump-autoload \
   --apcu \
   --no-dev \
   --no-interaction \
+  && composer clear-cache \
   && php artisan storage:link
 
 RUN if [ -f "rr" ]; then \

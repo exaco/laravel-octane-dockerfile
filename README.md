@@ -29,7 +29,7 @@ You can build the Docker image in different modes:
 
 And the following PHP extensions are included:
 
-- [x] OpenSwoole/Swoole with support of OpenSSL, HTTP/2, Native cURL hook for coroutines, `mysqlnd`, and asynchronous DNS.
+- [x] Swoole with support of OpenSSL, HTTP/2, Native cURL hook for coroutines, `mysqlnd`, and asynchronous DNS.
 - [x] OPcache
 - [x] Redis
 - [x] PCNTL
