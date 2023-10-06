@@ -10,7 +10,7 @@ ARG OCTANE_SERVER="swoole"
 # Build frontend assets with PNPM
 ###########################################
 
-ARG NODE_VERSION=18-bullseye-slim
+ARG NODE_VERSION=20-alpine
 
 FROM node:${NODE_VERSION} as build
 
@@ -69,7 +69,7 @@ RUN if [ ${OCTANE_SERVER} = "roadrunner" ]; then \
 
 ###########################################
 
-FROM php:${PHP_VERSION}-cli-buster
+FROM php:${PHP_VERSION}-cli-bookworm
 
 LABEL maintainer="Seyed Morteza Ebadi <seyed.me720@gmail.com>"
 
