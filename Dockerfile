@@ -128,6 +128,7 @@ RUN apt-get update; \
   pgsql \
   pdo_pgsql \
   opcache \
+  exif \
   && docker-php-ext-configure pdo_mysql --with-pdo-mysql=mysqlnd && docker-php-ext-install pdo_mysql \
   && docker-php-ext-configure zip && docker-php-ext-install zip \
   && docker-php-ext-configure intl && docker-php-ext-install intl \
