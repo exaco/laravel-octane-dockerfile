@@ -190,7 +190,8 @@ RUN composer install \
   --no-autoloader \
   --ansi \
   --no-scripts \
-  --audit
+  --audit \
+  && composer clear-cache
 
 COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} . .
 COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} --from=build ${ROOT}/public public
@@ -210,7 +211,6 @@ RUN composer dump-autoload \
   --apcu \
   --no-dev \
   --no-interaction \
-  && composer clear-cache \
   && php artisan storage:link
 
 RUN if [ ${OCTANE_SERVER} = "roadrunner" ]; then \
