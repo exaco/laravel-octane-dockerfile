@@ -189,7 +189,6 @@ RUN composer install \
   --no-autoloader \
   --no-ansi \
   --no-scripts \
-  --no-suggest \
   --audit
 
 COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} . .
@@ -210,7 +209,6 @@ RUN composer install \
   --no-interaction \
   --no-ansi \
   --no-dev \
-  --no-suggest \
   && composer clear-cache \
   && php artisan storage:link
 
