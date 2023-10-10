@@ -186,12 +186,11 @@ COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} composer* ./
 RUN composer install \
   --no-dev \
   --no-interaction \
-  --prefer-dist \
   --no-autoloader \
-  --ansi \
+  --no-ansi \
   --no-scripts \
-  --audit \
-  && composer clear-cache
+  --no-suggest \
+  --audit
 
 COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} . .
 COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} --from=build ${ROOT}/public public
@@ -206,11 +205,13 @@ COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/octane/php.ini /usr/lo
 COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/octane/.rr.prod.yaml ./.rr.yaml
 COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/octane/start-container /usr/local/bin/start-container
 
-RUN composer dump-autoload \
-  --optimize \
-  --apcu \
-  --no-dev \
+RUN composer install \
+  --classmap-authoritative \
   --no-interaction \
+  --no-ansi \
+  --no-dev \
+  --no-suggest \
+  && composer clear-cache \
   && php artisan storage:link
 
 RUN if [ ${OCTANE_SERVER} = "roadrunner" ]; then \
