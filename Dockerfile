@@ -29,10 +29,7 @@ RUN if [ -f ${ROOT}/pnpm-lock.yaml ]; \
 
 COPY . .
 
-RUN if [ -f ${ROOT}/package.json ] || [ -f ${ROOT}/pnpm-lock.yaml ]; \
-  then \
-  pnpm run build; \
-  fi
+RUN pnpm run build
 
 ###########################################
 
