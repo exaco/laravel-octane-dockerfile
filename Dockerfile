@@ -192,7 +192,7 @@ COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} . .
 COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} --from=build ${ROOT}/public public
 
 RUN mkdir -p \
-  storage/framework/{sessions,views,cache} \
+  storage/framework/{sessions,views,cache,testing} \
   storage/logs \
   bootstrap/cache
 
