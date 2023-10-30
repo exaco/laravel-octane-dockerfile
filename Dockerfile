@@ -171,9 +171,9 @@ RUN userdel --remove --force www-data \
   && groupadd --force -g ${WWWGROUP} ${NON_ROOT_USER} \
   && useradd -ms /bin/bash --no-log-init --no-user-group -g ${WWWGROUP} -u ${WWWUSER} ${NON_ROOT_USER}
 
-RUN chown -R ${NON_ROOT_USER}:${NON_ROOT_USER} ${ROOT} /var/log/
+RUN chown -R ${NON_ROOT_USER}:${NON_ROOT_USER} ${ROOT} /var/{log,run}
 
-RUN chmod -R ug+rw /var/log/
+RUN chmod -R ug+rw /var/{log,run}
 
 USER ${NON_ROOT_USER}
 
