@@ -229,6 +229,4 @@ EXPOSE 6001
 
 ENTRYPOINT ["start-container"]
 
-CMD ["php", "-a"]
-
 HEALTHCHECK --start-period=5s --interval=2s --timeout=5s --retries=8 CMD php artisan octane:status || exit 1
