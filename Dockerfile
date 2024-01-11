@@ -4,7 +4,7 @@ ARG PHP_VERSION=8.2
 ARG COMPOSER_VERSION=latest
 
 ###########################################
-# Build frontend assets with PNPM
+# Build frontend assets with NPM
 ###########################################
 
 ARG NODE_VERSION=20-alpine
@@ -15,16 +15,15 @@ ENV ROOT=/var/www/html
 
 WORKDIR ${ROOT}
 
-RUN npm install -g pnpm
+RUN npm config set update-notifier false && npm set progress=false
 
-COPY package.json pnpm-lock.yaml* ./
+COPY package*.json ./
 
-RUN if [ -f ${ROOT}/pnpm-lock.yaml ]; \
+RUN if [ -f $ROOT/package-lock.json ]; \
   then \
-  pnpm install --frozen-lockfile --no-optional --prefer-offline; \
-  elif [ -f ${ROOT}/package.json ]; \
-  then \
-  pnpm install --no-optional --prefer-offline; \
+    NODE_ENV=production npm ci --no-optional --loglevel=error --no-audit; \
+  else \
+    NODE_ENV=production npm install --no-optional --loglevel=error --no-audit; \
   fi
 
 COPY . .
