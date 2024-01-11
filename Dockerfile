@@ -29,7 +29,7 @@ RUN if [ -f ${ROOT}/pnpm-lock.yaml ]; \
 
 COPY . .
 
-RUN pnpm run build
+RUN npm run build
 
 ###########################################
 
