@@ -21,9 +21,9 @@ COPY package*.json ./
 
 RUN if [ -f $ROOT/package-lock.json ]; \
   then \
-    NODE_ENV=production npm ci --no-optional --loglevel=error --no-audit; \
+    npm ci --no-optional --loglevel=error --no-audit; \
   else \
-    NODE_ENV=production npm install --no-optional --loglevel=error --no-audit; \
+    npm install --no-optional --loglevel=error --no-audit; \
   fi
 
 COPY . .
