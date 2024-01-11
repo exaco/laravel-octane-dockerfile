@@ -55,6 +55,10 @@ jobs:
         run: sudo composer require laravel/octane
         working-directory: /var/www/app
 
+      - name: Install @rollup/rollup-linux-x64-musl
+        run: sudo npm i @rollup/rollup-linux-x64-musl --save-dev
+        working-directory: /var/www/app
+
       - name: Copy required content to dockerize the app
         run: sudo cp -R Dockerfile .dockerignore deployment/ /var/www/app/
 
