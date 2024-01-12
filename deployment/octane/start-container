@@ -2,7 +2,7 @@
 set -e
 
 container_mode=${CONTAINER_MODE:-app}
-octane_server=${OCTANE_SERVER:-swoole}
+octane_server=${OCTANE_SERVER}
 echo "Container mode: $container_mode"
 
 initialStuff() {
@@ -14,13 +14,15 @@ initialStuff() {
 
 if [ "$1" != "" ]; then
     exec "$@"
-elif [ ${container_mode} = "app" ]; then
-    echo "Octane server: $octane_server"
+elif [ ${container_mode} = "http" ]; then
+    echo "Octane Server: $octane_server"
     initialStuff
     if [ ${octane_server}  = "swoole" ]; then
-        exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.app.conf
+        exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.swoole.conf
     elif [ ${octane_server}  = "roadrunner" ]; then
-        exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.app.roadrunner.conf
+        exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.roadrunner.conf
+    elif [ ${octane_server}  = "frankenphp" ]; then
+        exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.frankenphp.conf
     else
         echo "Invalid Octane server supplied."
         exit 1

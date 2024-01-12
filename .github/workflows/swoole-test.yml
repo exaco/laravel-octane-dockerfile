@@ -63,15 +63,15 @@ jobs:
         run: sudo cp -R Dockerfile .dockerignore deployment/ /var/www/app/
 
       - name: Build image
-        run: docker build -t app:local -f Dockerfile .
+        run: docker build -t app:local -f Dockerfile.Swoole .
         working-directory: /var/www/app
 
-      - name: Run the Docker image
-        run: docker run -d --rm -p 9000:9000 app:local
+      - name: Run the Docker container
+        run: docker run -d --rm -p 80:80 app:local
         working-directory: /var/www/app
 
       - name: Wait for the container
         run: sleep 10s
 
       - name: Check application health
-        run: curl -f -s -o /dev/null -w "%{http_code}" http://localhost:9000
+        run: curl -f -s -o /dev/null -w "%{http_code}" http://localhost
