@@ -4,7 +4,6 @@
 <a href="https://github.com/exaco/laravel-octane-dockerfile/pulls"><img alt="GitHub closed pull requests" src="https://img.shields.io/github/issues-pr-closed/exaco/laravel-octane-dockerfile"></a>
 <a href="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/tests.yml"><img alt="GitHub Workflow Status" src="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/roadrunner-test.yml/badge.svg"></a>
 <a href="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/tests.yml"><img alt="GitHub Workflow Status" src="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/swoole-test.yml/badge.svg"></a>
-<a href="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/tests.yml"><img alt="GitHub Workflow Status" src="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/frankenphp-test.yml/badge.svg"></a>
 
 
 A pretty configurable, production-ready, and multi-stage Dockerfile for [Laravel Octane](https://github.com/laravel/octane)
@@ -21,7 +20,7 @@ You can run the Docker container in different modes:
 
 | Mode             | `CONTAINER_MODE` | HTTP server |
 |------------------|----------------------|------------|
-| Octane (default) | `http`                | Swoole / RoadRunner / FrankenPHP |
+| Octane (default) | `http`                | Swoole / RoadRunner |
 | Horizon          | `horizon`            | - |
 | Scheduler        | `scheduler`          | - |
 

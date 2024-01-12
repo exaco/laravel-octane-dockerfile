@@ -21,8 +21,6 @@ elif [ ${container_mode} = "http" ]; then
         exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.swoole.conf
     elif [ ${octane_server}  = "roadrunner" ]; then
         exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.roadrunner.conf
-    elif [ ${octane_server}  = "frankenphp" ]; then
-        exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.frankenphp.conf
     else
         echo "Invalid Octane server supplied."
         exit 1
