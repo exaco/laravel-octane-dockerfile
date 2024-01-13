@@ -21,9 +21,9 @@ COPY package*.json ./
 
 RUN if [ -f $ROOT/package-lock.json ]; \
   then \
-    npm ci --no-optional --loglevel=error --no-audit; \
+  npm ci --no-optional --loglevel=error --no-audit; \
   else \
-    npm install --no-optional --loglevel=error --no-audit; \
+  npm install --no-optional --loglevel=error --no-audit; \
   fi
 
 COPY . .
@@ -42,24 +42,14 @@ ARG WWWUSER=1000
 ARG WWWGROUP=1000
 ARG TZ=UTC
 
-# Accepted values: swoole - roadrunner
-ARG OCTANE_SERVER="swoole"
-
-# Accepted values: app - horizon - scheduler
-ARG CONTAINER_MODE=app
-
-ARG APP_WITH_HORIZON=false
-ARG APP_WITH_SCHEDULER=false
-
 ENV DEBIAN_FRONTEND=noninteractive \
   TERM=xterm-color \
-  CONTAINER_MODE=${CONTAINER_MODE} \
-  APP_WITH_HORIZON=${APP_WITH_HORIZON} \
-  APP_WITH_SCHEDULER=${APP_WITH_SCHEDULER} \
-  OCTANE_SERVER=${OCTANE_SERVER} \
-  NON_ROOT_USER=octane
+  WITH_HORIZON=false \
+  WITH_SCHEDULER=false \
+  OCTANE_SERVER=roadrunner \
+  NON_ROOT_USER=octane \
+  ROOT=/var/www/html
 
-ENV ROOT=/var/www/html
 WORKDIR ${ROOT}
 
 SHELL ["/bin/bash", "-eou", "pipefail", "-c"]
@@ -78,6 +68,7 @@ RUN apt-get update; \
   wget \
   nano \
   rsync \
+  ncdu \
   sqlite3 \
   libcurl4-openssl-dev \
   ca-certificates \
@@ -139,10 +130,6 @@ RUN apt-get update; \
   && pecl -q install -o -f memcached && docker-php-ext-enable memcached \
   && pecl -q install -o -f igbinary && docker-php-ext-enable igbinary \
   && docker-php-ext-configure ldap --with-libdir=lib/$(gcc -dumpmachine) && docker-php-ext-install ldap \
-  && if [ ${OCTANE_SERVER} = "swoole" ]; then \
-  printf "\n" | pecl -q install -o -f -D 'enable-openssl="yes" enable-http2="yes" enable-swoole-curl="yes" enable-mysqlnd="yes" enable-cares="yes"' swoole \
-  && docker-php-ext-enable swoole; \
-  fi \
   && apt-get -y autoremove \
   && apt-get clean \
   && docker-php-source delete \
@@ -151,20 +138,11 @@ RUN apt-get update; \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
   && rm /var/log/lastlog /var/log/faillog
 
-
-###########################################
-# Laravel scheduler
-###########################################
-
-RUN if [ ${CONTAINER_MODE} = 'scheduler' ] || [ ${APP_WITH_SCHEDULER} = true ]; then \
-  wget -q "https://github.com/aptible/supercronic/releases/download/v0.2.26/supercronic-linux-amd64" \
+RUN wget -q "https://github.com/aptible/supercronic/releases/download/v0.2.29/supercronic-linux-amd64" \
   -O /usr/bin/supercronic \
   && chmod +x /usr/bin/supercronic \
   && mkdir -p /etc/supercronic \
-  && echo "*/1 * * * * php ${ROOT}/artisan schedule:run --verbose --no-interaction" > /etc/supercronic/laravel; \
-  fi
-
-###########################################
+  && echo "*/1 * * * * php ${ROOT}/artisan schedule:run --verbose --no-interaction" > /etc/supercronic/laravel
 
 RUN userdel --remove --force www-data \
   && groupadd --force -g ${WWWGROUP} ${NON_ROOT_USER} \
@@ -195,10 +173,12 @@ RUN mkdir -p \
   storage/logs \
   bootstrap/cache
 
-COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/octane/supervisord* /etc/supervisor/conf.d/
-COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/octane/php.ini /usr/local/etc/php/conf.d/99-octane.ini
-COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/octane/.rr.prod.yaml ./.rr.yaml
-COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/octane/start-container /usr/local/bin/start-container
+COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/octane/RoadRunner/supervisord.roadrunner.conf /etc/supervisor/conf.d
+COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/supervisord.scheduler.conf /etc/supervisor/conf.d/
+COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/supervisord.horizon.conf /etc/supervisor/conf.d/
+COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/php.ini /usr/local/etc/php/conf.d/99-octane.ini
+COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/octane/RoadRunner/.rr.prod.yaml ./.rr.yaml
+COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/start-container /usr/local/bin/start-container
 
 RUN composer install \
   --classmap-authoritative \
@@ -208,22 +188,16 @@ RUN composer install \
   && composer clear-cache \
   && php artisan storage:link
 
-RUN if [ ${OCTANE_SERVER} = "roadrunner" ]; then \
-  if composer show | grep spiral/roadrunner-cli >/dev/null; then \
+RUN if composer show | grep spiral/roadrunner-cli >/dev/null; then \
   ./vendor/bin/rr get-binary; else \
-  echo "spiral/roadrunner-cli package is not installed. exiting..."; exit 1; \
-  fi \
+  echo "`spiral/roadrunner-cli` package is not installed. Exiting..."; exit 1; \
   fi
 
-RUN if [ -f "rr" ]; then \
-  chmod +x rr; \
-  fi
+RUN chmod +x rr /usr/local/bin/start-container
 
-RUN chmod +x /usr/local/bin/start-container
+RUN cat deployment/utilities.sh >> ~/.bashrc
 
-RUN cat deployment/octane/utilities.sh >> ~/.bashrc
-
-EXPOSE 9000
+EXPOSE 80
 EXPOSE 6001
 
 ENTRYPOINT ["start-container"]

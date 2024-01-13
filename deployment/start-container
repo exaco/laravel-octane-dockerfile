@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
-container_mode=${CONTAINER_MODE:-app}
-octane_server=${OCTANE_SERVER:-swoole}
+container_mode=${CONTAINER_MODE:-http}
+octane_server=${OCTANE_SERVER}
 echo "Container mode: $container_mode"
 
 initialStuff() {
@@ -14,13 +14,13 @@ initialStuff() {
 
 if [ "$1" != "" ]; then
     exec "$@"
-elif [ ${container_mode} = "app" ]; then
-    echo "Octane server: $octane_server"
+elif [ ${container_mode} = "http" ]; then
+    echo "Octane Server: $octane_server"
     initialStuff
     if [ ${octane_server}  = "swoole" ]; then
-        exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.app.conf
+        exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.swoole.conf
     elif [ ${octane_server}  = "roadrunner" ]; then
-        exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.app.roadrunner.conf
+        exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.roadrunner.conf
     else
         echo "Invalid Octane server supplied."
         exit 1
@@ -30,8 +30,7 @@ elif [ ${container_mode} = "horizon" ]; then
     exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.horizon.conf
 elif [ ${container_mode} = "scheduler" ]; then
     initialStuff
-    php artisan schedule:clear-cache
-    exec supercronic -overlapping /etc/supercronic/laravel
+    exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.scheduler.conf
 else
     echo "Container mode mismatched."
     exit 1
