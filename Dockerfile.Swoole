@@ -68,6 +68,7 @@ RUN apt-get update; \
   wget \
   nano \
   rsync \
+  ncdu \
   sqlite3 \
   libcurl4-openssl-dev \
   ca-certificates \
@@ -138,18 +139,11 @@ RUN apt-get update; \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
   && rm /var/log/lastlog /var/log/faillog
 
-
-###########################################
-# Laravel scheduler
-###########################################
-
 RUN wget -q "https://github.com/aptible/supercronic/releases/download/v0.2.29/supercronic-linux-amd64" \
   -O /usr/bin/supercronic \
   && chmod +x /usr/bin/supercronic \
   && mkdir -p /etc/supercronic \
   && echo "*/1 * * * * php ${ROOT}/artisan schedule:run --verbose --no-interaction" > /etc/supercronic/laravel
-
-###########################################
 
 RUN userdel --remove --force www-data \
   && groupadd --force -g ${WWWGROUP} ${NON_ROOT_USER} \
@@ -180,9 +174,11 @@ RUN mkdir -p \
   storage/logs \
   bootstrap/cache
 
-COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/octane/supervisord.swoole.conf /etc/supervisor/conf.d/
-COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/octane/php.ini /usr/local/etc/php/conf.d/99-octane.ini
-COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/octane/start-container /usr/local/bin/start-container
+COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/Octane/Swoole/supervisord.swoole.conf /etc/supervisor/conf.d/
+COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/supervisord.scheduler.conf /etc/supervisor/conf.d/
+COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/supervisord.horizon.conf /etc/supervisor/conf.d/
+COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/php.ini /usr/local/etc/php/conf.d/99-octane.ini
+COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/start-container /usr/local/bin/start-container
 
 RUN composer install \
   --classmap-authoritative \
@@ -194,7 +190,7 @@ RUN composer install \
 
 RUN chmod +x /usr/local/bin/start-container
 
-RUN cat deployment/octane/utilities.sh >> ~/.bashrc
+RUN cat deployment/utilities.sh >> ~/.bashrc
 
 EXPOSE 80
 

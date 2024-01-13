@@ -77,6 +77,7 @@ Also, some useful Bash functions and aliases are added in `utilities.sh` that ma
 - Please be aware of `.dockerignore` content
 
 ## ToDo
+- [ ] Add support for PHP 8.3
 - [x] Add support for Horizon
 - [x] Add support for RoadRunner
 - [ ] Add support for FrankenPHP

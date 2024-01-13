@@ -30,8 +30,7 @@ elif [ ${container_mode} = "horizon" ]; then
     exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.horizon.conf
 elif [ ${container_mode} = "scheduler" ]; then
     initialStuff
-    php artisan schedule:clear-cache
-    exec supercronic -overlapping /etc/supercronic/laravel
+    exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.scheduler.conf
 else
     echo "Container mode mismatched."
     exit 1
