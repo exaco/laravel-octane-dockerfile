@@ -41,8 +41,19 @@ docker build -t <image-name>:<tag> -f Dockerfile.<your-octane-driver> .
 
 ```bash
 # http mode
+docker run -p <port>:9000 --rm <image-name>:<tag>
+
 # horizon mode
+docker run -e CONTAINER_MODE=horizon -p <port>:9000 --rm <image-name>:<tag>
+
 # scheduler mode
+docker run -e CONTAINER_MODE=scheduler -p <port>:9000 --rm <image-name>:<tag>
+
+# http mode with horizon
+docker run -e WITH_HORIZON=true -p <port>:9000 --rm <image-name>:<tag>
+
+# http mode with scheduler
+docker run -e WITH_SCHEDULER=true -p <port>:9000 --rm <image-name>:<tag>
 ```
 
 ## Configuration

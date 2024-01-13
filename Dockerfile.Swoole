@@ -44,8 +44,8 @@ ARG TZ=UTC
 
 ENV DEBIAN_FRONTEND=noninteractive \
   TERM=xterm-color \
-  APP_WITH_HORIZON=false \
-  APP_WITH_SCHEDULER=false \
+  WITH_HORIZON=false \
+  WITH_SCHEDULER=false \
   OCTANE_SERVER=swoole \
   NON_ROOT_USER=octane \
   ROOT=/var/www/html
