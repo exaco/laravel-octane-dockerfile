@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-container_mode=${CONTAINER_MODE:-app}
+container_mode=${CONTAINER_MODE:-http}
 octane_server=${OCTANE_SERVER}
 echo "Container mode: $container_mode"
 
