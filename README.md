@@ -20,7 +20,7 @@ You can run the Docker container in different modes:
 
 | Mode             | `CONTAINER_MODE` | HTTP server |
 |------------------|----------------------|------------|
-| Octane (default) | `http`                | Swoole / RoadRunner |
+| HTTP Server (default) | `http`                | Swoole / RoadRunner |
 | Horizon          | `horizon`            | - |
 | Scheduler        | `scheduler`          | - |
 
