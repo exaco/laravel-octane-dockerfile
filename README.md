@@ -11,7 +11,7 @@ powered web services and microservices.
 
 The Docker configuration provides the following setup:
 
-- PHP 8.1 and 8.2 official DebianBookworm-based images
+- PHP 8.1, 8.2 and 8.3 official DebianBookworm-based images
 - Preconfigured JIT compiler and OPcache
 
 ## Container modes
@@ -88,7 +88,7 @@ Also, some useful Bash functions and aliases are added in `utilities.sh` that ma
 - Please be aware of `.dockerignore` content
 
 ## ToDo
-- [ ] Add support for PHP 8.3
+- [x] Add support for PHP 8.3
 - [ ] Create standalone and self-executable app
 - [x] Add support for Horizon
 - [x] Add support for RoadRunner
