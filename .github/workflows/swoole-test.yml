@@ -60,10 +60,10 @@ jobs:
         working-directory: /var/www/app
 
       - name: Copy required content to dockerize the app
-        run: sudo cp -R Dockerfile.Swoole .dockerignore deployment/ /var/www/app/
+        run: sudo cp -R Swoole.Dockerfile .dockerignore deployment/ /var/www/app/
 
       - name: Build image
-        run: docker build -t app:local -f Dockerfile.Swoole .
+        run: docker build -t app:local -f Swoole.Dockerfile .
         working-directory: /var/www/app
 
       - name: Run the Docker container
