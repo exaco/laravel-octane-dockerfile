@@ -11,7 +11,7 @@ powered web services and microservices.
 
 The Docker configuration provides the following setup:
 
-- PHP 8.1, 8.2 and 8.3 official DebianBookworm-based images
+- PHP 8.1, 8.2 and 8.3 official Debian-based images
 - Preconfigured JIT compiler and OPcache
 
 ## Container modes
@@ -20,7 +20,7 @@ You can run the Docker container in different modes:
 
 | Mode             | `CONTAINER_MODE` | HTTP server |
 |------------------|----------------------|------------|
-| HTTP Server (default) | `http`                | Swoole / RoadRunner |
+| HTTP Server (default) | `http`                | FrankenPHP / Swoole / RoadRunner |
 | Horizon          | `horizon`            | - |
 | Scheduler        | `scheduler`          | - |
 
@@ -35,7 +35,7 @@ git clone --depth 1 git@github.com:exaco/laravel-octane-dockerfile.git
 3. Change the directory to your Laravel project
 4. Build your image:
 ```
-docker build -t <image-name>:<tag> -f Dockerfile.<your-octane-driver> .
+docker build -t <image-name>:<tag> -f <your-octane-driver>.Dockerfile .
 ```
 ### Running the Docker container
 

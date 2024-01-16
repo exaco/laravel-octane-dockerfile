@@ -36,7 +36,7 @@ FROM composer:${COMPOSER_VERSION} AS vendor
 
 FROM php:${PHP_VERSION}-cli-bookworm
 
-LABEL maintainer="Seyed Morteza Ebadi <seyed.me720@gmail.com>"
+LABEL maintainer="SMortexa <seyed.me720@gmail.com>"
 
 ARG WWWUSER=1000
 ARG WWWGROUP=1000
