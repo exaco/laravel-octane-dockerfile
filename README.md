@@ -107,7 +107,7 @@ Thank you for considering contributing! If you find an issue, or have a better w
 issue, or a PR.
 
 ## Credits
-- [SMorteza Ebadi](https://github.com/smortexa)
+- [SMortexa](https://github.com/smortexa)
 - [All contributors](https://github.com/exaco/laravel-octane-dockerfile/graphs/contributors)
 
 ## License
