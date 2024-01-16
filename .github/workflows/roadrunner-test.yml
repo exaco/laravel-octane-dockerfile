@@ -60,10 +60,10 @@ jobs:
         working-directory: /var/www/app
 
       - name: Copy required content to dockerize the app
-        run: sudo cp -R Dockerfile.RoadRunner .dockerignore deployment/ /var/www/app/
+        run: sudo cp -R RoadRunner.Dockerfile .dockerignore deployment/ /var/www/app/
 
       - name: Build image
-        run: docker build -t app:local -f Dockerfile.RoadRunner .
+        run: docker build -t app:local -f RoadRunner.Dockerfile .
         working-directory: /var/www/app
 
       - name: Run the Docker container
