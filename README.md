@@ -35,7 +35,7 @@ git clone --depth 1 git@github.com:exaco/laravel-octane-dockerfile.git
 3. Change the directory to your Laravel project
 4. Build your image:
 ```
-docker build -t <image-name>:<tag> -f Dockerfile.<your-octane-driver> .
+docker build -t <image-name>:<tag> -f <your-octane-driver>.Dockerfile .
 ```
 ### Running the Docker container
 
@@ -43,16 +43,16 @@ docker build -t <image-name>:<tag> -f Dockerfile.<your-octane-driver> .
 # http mode
 docker run -p <port>:9000 --rm <image-name>:<tag>
 
-# horizon mode
-docker run -e CONTAINER_MODE=horizon -p <port>:9000 --rm <image-name>:<tag>
+# Horizon mode
+docker run -e CONTAINER_MODE=horizon --rm <image-name>:<tag>
 
-# scheduler mode
-docker run -e CONTAINER_MODE=scheduler -p <port>:9000 --rm <image-name>:<tag>
+# Scheduler mode
+docker run -e CONTAINER_MODE=scheduler --rm <image-name>:<tag>
 
-# http mode with horizon
+# http mode with Horizon
 docker run -e WITH_HORIZON=true -p <port>:9000 --rm <image-name>:<tag>
 
-# http mode with scheduler
+# http mode with Scheduler
 docker run -e WITH_SCHEDULER=true -p <port>:9000 --rm <image-name>:<tag>
 ```
 
