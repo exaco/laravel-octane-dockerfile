@@ -11,7 +11,7 @@ powered web services and microservices.
 
 The Docker configuration provides the following setup:
 
-- PHP 8.1, 8.2 and 8.3 official DebianBookworm-based images
+- PHP 8.1, 8.2 and 8.3 official Debian-based images
 - Preconfigured JIT compiler and OPcache
 
 ## Container modes
