@@ -1,12 +1,12 @@
-FROM debian:trixie-slim
+ARG NODE_VERSION=20-alpine
 
 ARG COMPOSER_VERSION=latest
+
+FROM composer:${COMPOSER_VERSION} AS vendor
 
 ###########################################
 # Build frontend assets with NPM
 ###########################################
-
-ARG NODE_VERSION=20-alpine
 
 FROM node:${NODE_VERSION} as build
 
@@ -31,6 +31,8 @@ RUN npm run build
 
 ###########################################
 
+FROM php:8.3-cli-bookworm
+
 LABEL maintainer="SMortexa <seyed.me720@gmail.com>"
 
 ARG WWWUSER=1000
@@ -54,7 +56,6 @@ RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime \
 
 RUN apt-get update; \
     apt-get upgrade -yqq; \
-    pecl -q channel-update pecl.php.net; \
     apt-get install -yqq --no-install-recommends --show-progress \
     apt-utils \
     gnupg \
@@ -70,9 +71,6 @@ RUN apt-get update; \
     libzip-dev zip unzip \
     && apt-get -y autoremove \
     && apt-get clean \
-    && docker-php-source delete \
-    && pecl clear-cache \
-    && rm -R /tmp/pear \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
     && rm /var/log/lastlog /var/log/faillog
 
@@ -92,7 +90,7 @@ RUN chmod -R ug+rw /var/{log,run}
 
 USER ${NON_ROOT_USER}
 
-COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} --from=composer:${COMPOSER_VERSION} /usr/bin/composer /usr/bin/composer
+COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} --from=vendor /usr/bin/composer /usr/bin/composer
 COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} composer* ./
 
 RUN composer install \
@@ -117,7 +115,7 @@ COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/supervisord.horizon.co
 COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/start-container /usr/local/bin/start-container
 
 COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/php.ini /usr/local/etc/php/conf.d/99-octane.ini
-RUN sed -i 's/variables_order = "GPCS"/variables_order = "EGPCS"/' /usr/local/etc/php/conf.d/99-octane.ini
+# RUN sed -i 's/variables_order = "GPCS"/variables_order = "EGPCS"/' /usr/local/etc/php/conf.d/99-octane.ini
 
 RUN composer install \
     --classmap-authoritative \
