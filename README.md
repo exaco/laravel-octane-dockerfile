@@ -89,6 +89,7 @@ Also, some useful Bash functions and aliases are added in `utilities.sh` that ma
 
 ## ToDo
 - [x] Add support for PHP 8.3
+- [ ] Add support for worker mode
 - [ ] Create standalone and self-executable app
 - [x] Add support for Horizon
 - [x] Add support for RoadRunner
