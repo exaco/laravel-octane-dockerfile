@@ -86,6 +86,9 @@ RUN apt-get update; \
   libmcrypt-dev \
   libldap2-dev \
   libonig-dev \
+  libreadline-dev \
+  libsodium-dev \
+  libsqlite3-dev \
   libmagickwand-dev \
   libzip-dev zip unzip \
   libargon2-1 \

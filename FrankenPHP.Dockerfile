@@ -86,6 +86,9 @@ RUN apt-get update; \
     libmcrypt-dev \
     libldap2-dev \
     libonig-dev \
+    libreadline-dev \
+    libsodium-dev \
+    libsqlite3-dev \
     libmagickwand-dev \
     libzip-dev zip unzip \
     libargon2-1 \
@@ -192,6 +195,9 @@ RUN chmod +x /usr/local/bin/start-container frankenphp
 RUN cat deployment/utilities.sh >> ~/.bashrc
 
 EXPOSE 80
+EXPOSE 443
+EXPOSE 443/udp
+EXPOSE 2019
 
 ENTRYPOINT ["start-container"]
 
