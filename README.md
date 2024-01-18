@@ -24,6 +24,7 @@ You can run the Docker container in different modes:
 | HTTP Server (default) | `http`           | FrankenPHP / Swoole / RoadRunner |
 | Horizon               | `horizon`        | -                   |
 | Scheduler             | `scheduler`      | -                   |
+| Worker                | `worker`         | -                   |
 
 ## Usage
 
