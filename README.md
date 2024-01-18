@@ -39,7 +39,7 @@ git clone --depth 1 git@github.com:exaco/laravel-octane-dockerfile.git
 ```
 docker build -t <image-name>:<tag> -f <your-octane-driver>.Dockerfile .
 ```
-### Running the Docker container
+### Running Docker container
 
 ```bash
 # HTTP mode
