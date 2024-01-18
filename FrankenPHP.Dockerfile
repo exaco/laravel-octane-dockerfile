@@ -1,3 +1,6 @@
+# Accepted values: 8.3 - 8.2 - 8.1
+ARG PHP_VERSION=8.2
+
 ARG NODE_VERSION=20-alpine
 
 ARG COMPOSER_VERSION=latest
@@ -31,7 +34,7 @@ RUN npm run build
 
 ###########################################
 
-FROM php:8.3.1-cli-bookworm
+FROM php:${PHP_VERSION}-cli-bookworm
 
 LABEL maintainer="SMortexa <seyed.me720@gmail.com>"
 
