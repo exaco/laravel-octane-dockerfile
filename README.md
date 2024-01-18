@@ -4,6 +4,7 @@
 <a href="https://github.com/exaco/laravel-octane-dockerfile/pulls"><img alt="GitHub closed pull requests" src="https://img.shields.io/github/issues-pr-closed/exaco/laravel-octane-dockerfile"></a>
 <a href="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/tests.yml"><img alt="GitHub Workflow Status" src="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/roadrunner-test.yml/badge.svg"></a>
 <a href="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/tests.yml"><img alt="GitHub Workflow Status" src="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/swoole-test.yml/badge.svg"></a>
+<a href="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/tests.yml"><img alt="GitHub Workflow Status" src="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/frankenphp-test.yml/badge.svg"></a>
 
 
 A pretty configurable, production-ready, and multi-stage Dockerfile for [Laravel Octane](https://github.com/laravel/octane)
@@ -18,11 +19,11 @@ The Docker configuration provides the following setup:
 
 You can run the Docker container in different modes:
 
-| Mode             | `CONTAINER_MODE` | HTTP server |
-|------------------|----------------------|------------|
-| HTTP Server (default) | `http`                | Swoole / RoadRunner |
-| Horizon          | `horizon`            | - |
-| Scheduler        | `scheduler`          | - |
+| Mode                  | `CONTAINER_MODE` | HTTP server         |
+| --------------------- | ---------------- | ------------------- |
+| HTTP Server (default) | `http`           | Swoole / RoadRunner |
+| Horizon               | `horizon`        | -                   |
+| Scheduler             | `scheduler`      | -                   |
 
 ## Usage
 
@@ -90,6 +91,7 @@ Also, some useful Bash functions and aliases are added in `utilities.sh` that ma
 ## ToDo
 - [x] Add support for PHP 8.3
 - [ ] Add support for worker mode
+- [ ] Build assets with Bun
 - [ ] Create standalone and self-executable app
 - [x] Add support for Horizon
 - [x] Add support for RoadRunner

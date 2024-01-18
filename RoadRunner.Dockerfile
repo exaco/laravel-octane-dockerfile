@@ -36,7 +36,7 @@ FROM composer:${COMPOSER_VERSION} AS vendor
 
 FROM php:${PHP_VERSION}-cli-bookworm
 
-LABEL maintainer="Seyed Morteza Ebadi <seyed.me720@gmail.com>"
+LABEL maintainer="SMortexa <seyed.me720@gmail.com>"
 
 ARG WWWUSER=1000
 ARG WWWGROUP=1000
@@ -150,7 +150,7 @@ RUN userdel --remove --force www-data \
 
 RUN chown -R ${NON_ROOT_USER}:${NON_ROOT_USER} ${ROOT} /var/{log,run}
 
-RUN chmod -R ug+rw /var/{log,run}
+RUN chmod -R a+rw /var/{log,run}
 
 USER ${NON_ROOT_USER}
 
