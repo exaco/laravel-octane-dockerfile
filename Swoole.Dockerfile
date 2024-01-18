@@ -151,7 +151,7 @@ RUN userdel --remove --force www-data \
 
 RUN chown -R ${NON_ROOT_USER}:${NON_ROOT_USER} ${ROOT} /var/{log,run}
 
-RUN chmod -R ug+rw /var/{log,run}
+RUN chmod -R a+rw /var/{log,run}
 
 USER ${NON_ROOT_USER}
 

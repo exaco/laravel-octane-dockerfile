@@ -4,6 +4,7 @@
 <a href="https://github.com/exaco/laravel-octane-dockerfile/pulls"><img alt="GitHub closed pull requests" src="https://img.shields.io/github/issues-pr-closed/exaco/laravel-octane-dockerfile"></a>
 <a href="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/tests.yml"><img alt="GitHub Workflow Status" src="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/roadrunner-test.yml/badge.svg"></a>
 <a href="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/tests.yml"><img alt="GitHub Workflow Status" src="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/swoole-test.yml/badge.svg"></a>
+<a href="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/tests.yml"><img alt="GitHub Workflow Status" src="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/frankenphp-test.yml/badge.svg"></a>
 
 
 A pretty configurable, production-ready, and multi-stage Dockerfile for [Laravel Octane](https://github.com/laravel/octane)
@@ -18,11 +19,11 @@ The Docker configuration provides the following setup:
 
 You can run the Docker container in different modes:
 
-| Mode             | `CONTAINER_MODE` | HTTP server |
-|------------------|----------------------|------------|
-| HTTP Server (default) | `http`                | FrankenPHP / Swoole / RoadRunner |
-| Horizon          | `horizon`            | - |
-| Scheduler        | `scheduler`          | - |
+| Mode                  | `CONTAINER_MODE` | HTTP server         |
+| --------------------- | ---------------- | ------------------- |
+| HTTP Server (default) | `http`           | Swoole / RoadRunner |
+| Horizon               | `horizon`        | -                   |
+| Scheduler             | `scheduler`      | -                   |
 
 ## Usage
 
@@ -41,19 +42,19 @@ docker build -t <image-name>:<tag> -f <your-octane-driver>.Dockerfile .
 
 ```bash
 # http mode
-docker run -p <port>:9000 --rm <image-name>:<tag>
+docker run -p <port>:80 --rm <image-name>:<tag>
 
-# horizon mode
-docker run -e CONTAINER_MODE=horizon -p <port>:9000 --rm <image-name>:<tag>
+# Horizon mode
+docker run -e CONTAINER_MODE=horizon --rm <image-name>:<tag>
 
-# scheduler mode
-docker run -e CONTAINER_MODE=scheduler -p <port>:9000 --rm <image-name>:<tag>
+# Scheduler mode
+docker run -e CONTAINER_MODE=scheduler --rm <image-name>:<tag>
 
-# http mode with horizon
-docker run -e WITH_HORIZON=true -p <port>:9000 --rm <image-name>:<tag>
+# http mode with Horizon
+docker run -e WITH_HORIZON=true -p <port>:80 --rm <image-name>:<tag>
 
-# http mode with scheduler
-docker run -e WITH_SCHEDULER=true -p <port>:9000 --rm <image-name>:<tag>
+# http mode with Scheduler
+docker run -e WITH_SCHEDULER=true -p <port>:80 --rm <image-name>:<tag>
 ```
 
 ## Configuration
@@ -89,6 +90,8 @@ Also, some useful Bash functions and aliases are added in `utilities.sh` that ma
 
 ## ToDo
 - [x] Add support for PHP 8.3
+- [ ] Add support for worker mode
+- [ ] Build assets with Bun
 - [ ] Create standalone and self-executable app
 - [x] Add support for Horizon
 - [x] Add support for RoadRunner
