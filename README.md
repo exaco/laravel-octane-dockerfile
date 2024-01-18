@@ -95,7 +95,7 @@ Also, some useful Bash functions and aliases are added in `utilities.sh` that ma
 - [ ] Create standalone and self-executable app
 - [x] Add support for Horizon
 - [x] Add support for RoadRunner
-- [ ] Add support for FrankenPHP
+- [x] Add support for FrankenPHP
 - [x] Add support for the full-stack apps (Front-end assets)
 - [ ] Add support `testing` environment and CI
 - [x] Add support for the Laravel scheduler
