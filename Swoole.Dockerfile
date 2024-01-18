@@ -128,7 +128,6 @@ RUN apt-get update; \
   --with-webp \
   --with-freetype && docker-php-ext-install gd \
   && pecl -q install -o -f redis && docker-php-ext-enable redis \
-  && pecl -q install -o -f imagick && docker-php-ext-enable imagick \
   && pecl -q install -o -f rdkafka && docker-php-ext-enable rdkafka \
   && pecl -q install -o -f memcached && docker-php-ext-enable memcached \
   && pecl -q install -o -f igbinary && docker-php-ext-enable igbinary \
