@@ -33,6 +33,9 @@ elif [ ${container_mode} = "horizon" ]; then
 elif [ ${container_mode} = "scheduler" ]; then
     initialStuff
     exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.scheduler.conf
+elif [ ${container_mode} = "worker" ]; then
+    initialStuff
+    exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.worker.conf
 else
     echo "Container mode mismatched."
     exit 1

@@ -178,8 +178,7 @@ RUN mkdir -p \
   bootstrap/cache
 
 COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/octane/Swoole/supervisord.swoole.conf /etc/supervisor/conf.d/
-COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/supervisord.scheduler.conf /etc/supervisor/conf.d/
-COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/supervisord.horizon.conf /etc/supervisor/conf.d/
+COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/supervisord.*.conf /etc/supervisor/conf.d/
 COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/php.ini /usr/local/etc/php/conf.d/99-octane.ini
 COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/start-container /usr/local/bin/start-container
 

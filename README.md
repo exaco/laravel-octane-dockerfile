@@ -50,11 +50,17 @@ docker run -e CONTAINER_MODE=horizon --rm <image-name>:<tag>
 # Scheduler mode
 docker run -e CONTAINER_MODE=scheduler --rm <image-name>:<tag>
 
-# http mode with Horizon
+# HTTP mode with Horizon
 docker run -e WITH_HORIZON=true -p <port>:80 --rm <image-name>:<tag>
 
-# http mode with Scheduler
+# HTTP mode with Scheduler
 docker run -e WITH_SCHEDULER=true -p <port>:80 --rm <image-name>:<tag>
+
+# Worker mode
+docker run -e CONTAINER_MODE=worker -e WORKER_COMMAND="php /var/www/html/artisan foo:bar" --rm <image-name>:<tag>
+
+# Running a single command
+docker run --rm <image-name>:<tag> php artisan about
 ```
 
 ## Configuration
@@ -90,7 +96,7 @@ Also, some useful Bash functions and aliases are added in `utilities.sh` that ma
 
 ## ToDo
 - [x] Add support for PHP 8.3
-- [ ] Add support for worker mode
+- [x] Add support for worker mode
 - [ ] Build assets with Bun
 - [ ] Create standalone and self-executable app
 - [x] Add support for Horizon

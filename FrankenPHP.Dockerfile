@@ -1,15 +1,13 @@
 # Accepted values: 8.3 - 8.2 - 8.1
 ARG PHP_VERSION=8.2
 
-ARG NODE_VERSION=20-alpine
-
 ARG COMPOSER_VERSION=latest
-
-FROM composer:${COMPOSER_VERSION} AS vendor
 
 ###########################################
 # Build frontend assets with NPM
 ###########################################
+
+ARG NODE_VERSION=20-alpine
 
 FROM node:${NODE_VERSION} as build
 
@@ -33,6 +31,8 @@ COPY . .
 RUN npm run build
 
 ###########################################
+
+FROM composer:${COMPOSER_VERSION} AS vendor
 
 FROM php:${PHP_VERSION}-cli-bookworm
 
@@ -175,8 +175,7 @@ RUN mkdir -p \
     bootstrap/cache
 
 COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/octane/FrankenPHP/supervisord.frankenphp.conf /etc/supervisor/conf.d/
-COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/supervisord.scheduler.conf /etc/supervisor/conf.d/
-COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/supervisord.horizon.conf /etc/supervisor/conf.d/
+COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/supervisord.*.conf /etc/supervisor/conf.d/
 COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/start-container /usr/local/bin/start-container
 COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/php.ini /usr/local/etc/php/conf.d/99-octane.ini
 
