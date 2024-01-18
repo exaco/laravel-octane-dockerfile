@@ -21,7 +21,7 @@ You can run the Docker container in different modes:
 
 | Mode                  | `CONTAINER_MODE` | HTTP server         |
 | --------------------- | ---------------- | ------------------- |
-| HTTP Server (default) | `http`           | Swoole / RoadRunner |
+| HTTP Server (default) | `http`           | FrankenPHP / Swoole / RoadRunner |
 | Horizon               | `horizon`        | -                   |
 | Scheduler             | `scheduler`      | -                   |
 
@@ -41,7 +41,7 @@ docker build -t <image-name>:<tag> -f <your-octane-driver>.Dockerfile .
 ### Running the Docker container
 
 ```bash
-# http mode
+# HTTP mode
 docker run -p <port>:80 --rm <image-name>:<tag>
 
 # Horizon mode
