@@ -3,35 +3,6 @@ ARG PHP_VERSION=8.3
 
 ARG COMPOSER_VERSION=latest
 
-###########################################
-# Build frontend assets with NPM
-###########################################
-
-ARG NODE_VERSION=20-alpine
-
-FROM node:${NODE_VERSION} as build
-
-ENV ROOT=/var/www/html
-
-WORKDIR ${ROOT}
-
-RUN npm config set update-notifier false && npm set progress=false
-
-COPY package*.json ./
-
-RUN if [ -f $ROOT/package-lock.json ]; \
-  then \
-    npm ci --no-optional --loglevel=error --no-audit; \
-  else \
-    npm install --no-optional --loglevel=error --no-audit; \
-  fi
-
-COPY . .
-
-RUN npm run build
-
-###########################################
-
 FROM composer:${COMPOSER_VERSION} AS vendor
 
 FROM php:${PHP_VERSION}-cli-bookworm
