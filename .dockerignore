@@ -21,6 +21,7 @@ yarn-error.log
 _ide_helper_models.php
 _ide_helper.php
 .php-cs-fixer.cache
+.husky
 /.vscode
 **/.DS_Store
 /public/page-cache
