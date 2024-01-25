@@ -7,7 +7,7 @@
 <a href="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/tests.yml"><img alt="GitHub Workflow Status" src="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/frankenphp-test.yml/badge.svg"></a>
 
 
-A pretty configurable, production-ready, and multi-stage Dockerfile for [Laravel Octane](https://github.com/laravel/octane)
+Production-ready Dockerfiles for [Laravel Octane](https://github.com/laravel/octane)
 powered web services and microservices.
 
 The Docker configuration provides the following setup:
