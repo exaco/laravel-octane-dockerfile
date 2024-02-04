@@ -192,7 +192,7 @@ RUN composer install \
     && composer clear-cache \
     && php artisan storage:link
 
-COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} --from=server /usr/local/bin/frankenphp /usr/local/bin/frankenphp
+COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} --from=server /usr/local/bin/frankenphp ./frankenphp
 
 RUN chmod +x /usr/local/bin/start-container frankenphp
 
