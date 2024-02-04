@@ -1,6 +1,8 @@
 # Accepted values: 8.3 - 8.2 - 8.1
 ARG PHP_VERSION=8.3
 
+ARG FRANKENPHP_VERSION=1.1-php${PHP_VERSION}
+
 ARG COMPOSER_VERSION=latest
 
 ###########################################
@@ -33,6 +35,8 @@ RUN npm run build
 ###########################################
 
 FROM composer:${COMPOSER_VERSION} AS vendor
+
+FROM dunglas/frankenphp:${FRANKENPHP_VERSION} AS server
 
 FROM php:${PHP_VERSION}-cli-bookworm
 
@@ -188,7 +192,7 @@ RUN composer install \
     && composer clear-cache \
     && php artisan storage:link
 
-ADD --chown=${NON_ROOT_USER}:${NON_ROOT_USER} https://github.com/dunglas/frankenphp/releases/download/v1.0.3/frankenphp-linux-x86_64 ./frankenphp
+COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} --from=server /usr/local/bin/frankenphp /usr/local/bin/frankenphp
 
 RUN chmod +x /usr/local/bin/start-container frankenphp
 
