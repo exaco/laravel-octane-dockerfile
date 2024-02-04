@@ -1,4 +1,4 @@
-# Accepted values: 8.3 - 8.2 - 8.1
+# Accepted values: 8.3 - 8.2
 ARG PHP_VERSION=8.3
 
 ARG FRANKENPHP_VERSION=1.1-php${PHP_VERSION}
