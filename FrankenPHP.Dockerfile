@@ -188,7 +188,7 @@ RUN composer install \
     && composer clear-cache \
     && php artisan storage:link
 
-ADD --chown=${NON_ROOT_USER}:${NON_ROOT_USER} https://github.com/dunglas/frankenphp/releases/download/v1.0.3/frankenphp-linux-x86_64 ./frankenphp
+ADD --chown=${NON_ROOT_USER}:${NON_ROOT_USER} https://github.com/dunglas/frankenphp/releases/download/v1.1.0/frankenphp-linux-x86_64 ./frankenphp
 
 RUN chmod +x /usr/local/bin/start-container frankenphp
 
