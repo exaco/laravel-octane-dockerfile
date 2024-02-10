@@ -38,7 +38,7 @@ FROM composer:${COMPOSER_VERSION} AS vendor
 
 FROM dunglas/frankenphp:${FRANKENPHP_VERSION} AS server
 
-FROM php:${PHP_VERSION}-cli-bookworm
+FROM php:${PHP_VERSION}-zts-bookworm
 
 LABEL maintainer="SMortexa <seyed.me720@gmail.com>"
 
