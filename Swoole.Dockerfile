@@ -9,7 +9,7 @@ ARG COMPOSER_VERSION=latest
 
 ARG NODE_VERSION=20-alpine
 
-FROM node:${NODE_VERSION} as build
+FROM node:${NODE_VERSION} AS build
 
 ENV ROOT=/var/www/html
 
@@ -34,7 +34,7 @@ RUN npm run build
 
 FROM composer:${COMPOSER_VERSION} AS vendor
 
-FROM php:${PHP_VERSION}-cli-bookworm
+FROM php:${PHP_VERSION}-cli-bookworm AS base
 
 LABEL maintainer="SMortexa <seyed.me720@gmail.com>"
 LABEL org.opencontainers.image.title="Laravel Octane Dockerfile"
@@ -139,7 +139,7 @@ COPY --chown=${USER}:${USER} deployment/octane/Swoole/supervisord.swoole.conf /e
 COPY --chown=${USER}:${USER} deployment/supervisord.*.conf /etc/supervisor/conf.d/
 COPY --chown=${USER}:${USER} deployment/php.ini ${PHP_INI_DIR}/conf.d/99-octane.ini
 COPY --chown=${USER}:${USER} deployment/start-container /usr/local/bin/start-container
-COPY --chown=${USER}:${USER} ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini
+COPY --chown=${USER}:${USER} --from=base ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini
 
 RUN composer install \
   --classmap-authoritative \

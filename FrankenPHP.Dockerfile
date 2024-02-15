@@ -11,7 +11,7 @@ ARG COMPOSER_VERSION=latest
 
 ARG NODE_VERSION=20-alpine
 
-FROM node:${NODE_VERSION} as build
+FROM node:${NODE_VERSION} AS build
 
 ENV ROOT=/var/www/html
 
@@ -38,7 +38,7 @@ FROM composer:${COMPOSER_VERSION} AS vendor
 
 FROM dunglas/frankenphp:${FRANKENPHP_VERSION} AS server
 
-FROM php:${PHP_VERSION}-zts-bookworm
+FROM php:${PHP_VERSION}-zts-bookworm AS base
 
 LABEL maintainer="SMortexa <seyed.me720@gmail.com>"
 LABEL org.opencontainers.image.title="Laravel Octane Dockerfile"
@@ -144,7 +144,7 @@ COPY --chown=${USER}:${USER} deployment/octane/FrankenPHP/supervisord.frankenphp
 COPY --chown=${USER}:${USER} deployment/supervisord.*.conf /etc/supervisor/conf.d/
 COPY --chown=${USER}:${USER} deployment/start-container /usr/local/bin/start-container
 COPY --chown=${USER}:${USER} deployment/php.ini ${PHP_INI_DIR}/conf.d/99-octane.ini
-COPY --chown=${USER}:${USER} ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini
+COPY --chown=${USER}:${USER} --from=base ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini
 
 RUN composer install \
     --classmap-authoritative \
