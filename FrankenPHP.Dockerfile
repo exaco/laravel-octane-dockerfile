@@ -119,6 +119,8 @@ RUN userdel --remove --force www-data \
 RUN chown -R ${USER}:${USER} ${ROOT} /var/{log,run} \
     && chmod -R a+rw /var/{log,run}
 
+RUN cp ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini
+
 USER ${USER}
 
 COPY --chown=${USER}:${USER} --from=vendor /usr/bin/composer /usr/bin/composer
@@ -144,8 +146,6 @@ COPY --chown=${USER}:${USER} deployment/octane/FrankenPHP/supervisord.frankenphp
 COPY --chown=${USER}:${USER} deployment/supervisord.*.conf /etc/supervisor/conf.d/
 COPY --chown=${USER}:${USER} deployment/start-container /usr/local/bin/start-container
 COPY --chown=${USER}:${USER} deployment/php.ini ${PHP_INI_DIR}/conf.d/99-octane.ini
-
-RUN cp ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini
 
 RUN composer install \
     --classmap-authoritative \
