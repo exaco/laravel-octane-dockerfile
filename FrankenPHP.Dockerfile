@@ -41,6 +41,10 @@ FROM dunglas/frankenphp:${FRANKENPHP_VERSION} AS server
 FROM php:${PHP_VERSION}-zts-bookworm
 
 LABEL maintainer="SMortexa <seyed.me720@gmail.com>"
+LABEL org.opencontainers.image.title="Laravel Octane Dockerfile"
+LABEL org.opencontainers.image.description="Production-ready Dockerfile for Laravel Octane"
+LABEL org.opencontainers.image.source=https://github.com/exaco/laravel-octane-dockerfile
+LABEL org.opencontainers.image.licenses=MIT
 
 ARG WWWUSER=1000
 ARG WWWGROUP=1000
@@ -51,8 +55,10 @@ ENV DEBIAN_FRONTEND=noninteractive \
     WITH_HORIZON=false \
     WITH_SCHEDULER=false \
     OCTANE_SERVER=frankenphp \
-    NON_ROOT_USER=octane \
-    ROOT=/var/www/html
+    USER=octane \
+    ROOT=/var/www/html \
+    COMPOSER_FUND=0 \
+    COMPOSER_MAX_PARALLEL_HTTP=24
 
 WORKDIR ${ROOT}
 
@@ -61,59 +67,21 @@ SHELL ["/bin/bash", "-eou", "pipefail", "-c"]
 RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime \
     && echo ${TZ} > /etc/timezone
 
+ADD --chmod=0755 https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
+
 RUN apt-get update; \
     apt-get upgrade -yqq; \
-    pecl -q channel-update pecl.php.net; \
     apt-get install -yqq --no-install-recommends --show-progress \
     apt-utils \
-    gnupg \
-    git \
     curl \
     wget \
     nano \
-    rsync \
     ncdu \
-    sqlite3 \
-    libcurl4-openssl-dev \
     ca-certificates \
     supervisor \
-    libmemcached-dev \
-    libz-dev \
-    libbrotli-dev \
-    libpq-dev \
-    libjpeg-dev \
-    libpng-dev \
-    librsvg2-bin \
-    libfreetype6-dev \
-    libssl-dev \
-    libwebp-dev \
-    libmcrypt-dev \
-    libldap2-dev \
-    libonig-dev \
-    libreadline-dev \
     libsodium-dev \
-    libsqlite3-dev \
-    libmagickwand-dev \
-    libzip-dev zip unzip \
-    libargon2-1 \
-    libidn2-0 \
-    libpcre2-8-0 \
-    librdkafka-dev \
-    libpcre3 \
-    libxml2 \
-    libxslt-dev \
-    libzstd1 \
-    libc-ares-dev \
-    procps \
-    postgresql-client \
-    postgis \
-    default-mysql-client \
-    libbz2-dev \
-    zlib1g-dev \
-    libicu-dev \
-    g++ \
     # Install PHP extensions
-    && docker-php-ext-install \
+    && install-php-extensions \
     bz2 \
     pcntl \
     mbstring \
@@ -123,24 +91,18 @@ RUN apt-get update; \
     pdo_pgsql \
     opcache \
     exif \
-    && docker-php-ext-configure pdo_mysql && docker-php-ext-install pdo_mysql \
-    && docker-php-ext-configure zip && docker-php-ext-install zip \
-    && docker-php-ext-configure intl && docker-php-ext-install intl \
-    && docker-php-ext-configure gd \
-    --prefix=/usr \
-    --with-jpeg \
-    --with-webp \
-    --with-freetype && docker-php-ext-install gd \
-    && pecl -q install -o -f redis && docker-php-ext-enable redis \
-    && pecl -q install -o -f rdkafka && docker-php-ext-enable rdkafka \
-    && pecl -q install -o -f memcached && docker-php-ext-enable memcached \
-    && pecl -q install -o -f igbinary && docker-php-ext-enable igbinary \
-    && docker-php-ext-configure ldap --with-libdir=lib/$(gcc -dumpmachine) && docker-php-ext-install ldap \
+    pdo_mysql \
+    zip \
+    intl \
+    gd \
+    redis \
+    rdkafka \
+    memcached \
+    igbinary \
+    ldap \
     && apt-get -y autoremove \
     && apt-get clean \
     && docker-php-source delete \
-    && pecl clear-cache \
-    && rm -R /tmp/pear \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
     && rm /var/log/lastlog /var/log/faillog
 
@@ -151,17 +113,16 @@ RUN wget -q "https://github.com/aptible/supercronic/releases/download/v0.2.29/su
     && echo "*/1 * * * * php ${ROOT}/artisan schedule:run --verbose --no-interaction" > /etc/supercronic/laravel
 
 RUN userdel --remove --force www-data \
-    && groupadd --force -g ${WWWGROUP} ${NON_ROOT_USER} \
-    && useradd -ms /bin/bash --no-log-init --no-user-group -g ${WWWGROUP} -u ${WWWUSER} ${NON_ROOT_USER}
+    && groupadd --force -g ${WWWGROUP} ${USER} \
+    && useradd -ms /bin/bash --no-log-init --no-user-group -g ${WWWGROUP} -u ${WWWUSER} ${USER}
 
-RUN chown -R ${NON_ROOT_USER}:${NON_ROOT_USER} ${ROOT} /var/{log,run}
+RUN chown -R ${USER}:${USER} ${ROOT} /var/{log,run} \
+    && chmod -R a+rw /var/{log,run}
 
-RUN chmod -R a+rw /var/{log,run}
+USER ${USER}
 
-USER ${NON_ROOT_USER}
-
-COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} --from=vendor /usr/bin/composer /usr/bin/composer
-COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} composer* ./
+COPY --chown=${USER}:${USER} --from=vendor /usr/bin/composer /usr/bin/composer
+COPY --chown=${USER}:${USER} composer.json composer.lock ./
 
 RUN composer install \
     --no-dev \
@@ -171,18 +132,19 @@ RUN composer install \
     --no-scripts \
     --audit
 
-COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} . .
-COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} --from=build ${ROOT}/public public
+COPY --chown=${USER}:${USER} . .
+COPY --chown=${USER}:${USER} --from=build ${ROOT}/public public
 
 RUN mkdir -p \
     storage/framework/{sessions,views,cache,testing} \
     storage/logs \
-    bootstrap/cache
+    bootstrap/cache && chmod -R a+rw storage
 
-COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/octane/FrankenPHP/supervisord.frankenphp.conf /etc/supervisor/conf.d/
-COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/supervisord.*.conf /etc/supervisor/conf.d/
-COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/start-container /usr/local/bin/start-container
-COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} deployment/php.ini /usr/local/etc/php/conf.d/99-octane.ini
+COPY --chown=${USER}:${USER} deployment/octane/FrankenPHP/supervisord.frankenphp.conf /etc/supervisor/conf.d/
+COPY --chown=${USER}:${USER} deployment/supervisord.*.conf /etc/supervisor/conf.d/
+COPY --chown=${USER}:${USER} deployment/start-container /usr/local/bin/start-container
+COPY --chown=${USER}:${USER} deployment/php.ini ${PHP_INI_DIR}/conf.d/99-octane.ini
+COPY --chown=${USER}:${USER} ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini
 
 RUN composer install \
     --classmap-authoritative \
@@ -192,7 +154,7 @@ RUN composer install \
     && composer clear-cache \
     && php artisan storage:link
 
-COPY --chown=${NON_ROOT_USER}:${NON_ROOT_USER} --from=server /usr/local/bin/frankenphp ./frankenphp
+COPY --chown=${USER}:${USER} --from=server /usr/local/bin/frankenphp ./frankenphp
 
 RUN chmod +x /usr/local/bin/start-container frankenphp
 
