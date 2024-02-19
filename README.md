@@ -57,6 +57,9 @@ docker run -e WITH_HORIZON=true -p <port>:80 --rm <image-name>:<tag>
 # HTTP mode with Scheduler
 docker run -e WITH_SCHEDULER=true -p <port>:80 --rm <image-name>:<tag>
 
+# HTTP mode with Scheduler and Horizon
+docker run -e WITH_SCHEDULER=true -e WITH_HORIZON=true -p <port>:80 --rm <image-name>:<tag>
+
 # Worker mode
 docker run -e CONTAINER_MODE=worker -e WORKER_COMMAND="php /var/www/html/artisan foo:bar" --rm <image-name>:<tag>
 
