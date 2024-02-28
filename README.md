@@ -67,6 +67,70 @@ docker run -e CONTAINER_MODE=worker -e WORKER_COMMAND="php /var/www/html/artisan
 docker run --rm <image-name>:<tag> php artisan about
 ```
 
+### Running Docker Composer
+
+```YAML
+version: '3.9'
+
+services:
+  # HTTP Server (Octane) only
+  app:
+    image: <image-name>:<tag>
+    environment:
+      - SERVER_NAME=http://mysite.com
+      - CONTAINER_MODE=http
+    env_file:
+      -  .env
+    ports:
+      - <port>:80
+
+  # HTTP Server (Octane) with Horizon and Scheduler
+  app-horizon-scheduler:
+    image: <image-name>:<tag>
+    environment:
+      - SERVER_NAME=http://mysite.com
+      - CONTAINER_MODE=http
+      - WITH_HORIZON=true
+      - WITH_SCHEDULER=true
+    env_file:
+      -  .env
+    ports:
+      - <port>:80
+
+  # Laravel Horizon only
+  horizon:
+    image: <image-name>:<tag>
+    environment:
+      - CONTAINER_MODE=horizon
+    env_file:
+      -  .env
+    # DISABLE Healthcheck to keep container alive!
+    healthcheck:
+      disable: true
+
+  # Laravel Scheduler only
+  scheduler:
+    image: <image-name>:<tag>
+    environment:
+      - CONTAINER_MODE=scheduler
+    env_file:
+      -  .env
+    # DISABLE Healthcheck to keep container alive!
+    healthcheck:
+      disable: true
+
+  # Laravel "worker" only
+  worker:
+    image: <image-name>:<tag>
+    environment:
+      - CONTAINER_MODE=worker
+    env_file:
+      -  .env
+    # DISABLE Healthcheck to keep container alive!
+    healthcheck:
+      disable: true
+```
+
 ## Configuration
 
 ### Recommended `Swoole` options in `octane.php`
