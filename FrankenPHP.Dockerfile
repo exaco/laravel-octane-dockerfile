@@ -147,6 +147,9 @@ COPY --chown=${USER}:${USER} deployment/supervisord.*.conf /etc/supervisor/conf.
 COPY --chown=${USER}:${USER} deployment/start-container /usr/local/bin/start-container
 COPY --chown=${USER}:${USER} deployment/php.ini ${PHP_INI_DIR}/conf.d/99-octane.ini
 
+# FrankenPHP embedded PHP configuration
+COPY --chown=${USER}:${USER} deployment/php.ini /lib/php.ini
+
 RUN composer install \
     --classmap-authoritative \
     --no-interaction \
