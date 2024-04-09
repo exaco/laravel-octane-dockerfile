@@ -1,7 +1,7 @@
 # Accepted values: 8.3 - 8.2
 ARG PHP_VERSION=8.3
 
-ARG FRANKENPHP_VERSION=1.1-php${PHP_VERSION}
+ARG FRANKENPHP_VERSION=latest
 
 ARG COMPOSER_VERSION=latest
 
@@ -36,9 +36,7 @@ RUN npm run build
 
 FROM composer:${COMPOSER_VERSION} AS vendor
 
-FROM dunglas/frankenphp:${FRANKENPHP_VERSION} AS server
-
-FROM php:${PHP_VERSION}-zts-bookworm AS base
+FROM dunglas/frankenphp:${FRANKENPHP_VERSION}-php${PHP_VERSION}
 
 LABEL maintainer="SMortexa <seyed.me720@gmail.com>"
 LABEL org.opencontainers.image.title="Laravel Octane Dockerfile"
@@ -49,6 +47,7 @@ LABEL org.opencontainers.image.licenses=MIT
 ARG WWWUSER=1000
 ARG WWWGROUP=1000
 ARG TZ=UTC
+ARG APP_DIR=/var/www/html
 
 ENV DEBIAN_FRONTEND=noninteractive \
     TERM=xterm-color \
@@ -56,9 +55,11 @@ ENV DEBIAN_FRONTEND=noninteractive \
     WITH_SCHEDULER=false \
     OCTANE_SERVER=frankenphp \
     USER=octane \
-    ROOT=/var/www/html \
+    ROOT=${APP_DIR} \
     COMPOSER_FUND=0 \
-    COMPOSER_MAX_PARALLEL_HTTP=24
+    COMPOSER_MAX_PARALLEL_HTTP=24 \
+    XDG_CONFIG_HOME=${APP_DIR}/.config \
+    XDG_DATA_HOME=${APP_DIR}/.data
 
 WORKDIR ${ROOT}
 
@@ -110,14 +111,14 @@ RUN wget -q "https://github.com/aptible/supercronic/releases/download/v0.2.29/su
     -O /usr/bin/supercronic \
     && chmod +x /usr/bin/supercronic \
     && mkdir -p /etc/supercronic \
-    && echo "*/1 * * * * php ${ROOT}/artisan schedule:run --verbose --no-interaction" > /etc/supercronic/laravel
+    && echo "*/1 * * * * php ${ROOT}/artisan schedule:run --no-interaction" > /etc/supercronic/laravel
 
 RUN userdel --remove --force www-data \
     && groupadd --force -g ${WWWGROUP} ${USER} \
     && useradd -ms /bin/bash --no-log-init --no-user-group -g ${WWWGROUP} -u ${WWWUSER} ${USER}
 
 RUN chown -R ${USER}:${USER} ${ROOT} /var/{log,run} \
-    && chmod -R a+rw /var/{log,run}
+    && chmod -R a+rw ${ROOT} /var/{log,run}
 
 RUN cp ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini
 
@@ -158,9 +159,7 @@ RUN composer install \
     && composer clear-cache \
     && php artisan storage:link
 
-COPY --chown=${USER}:${USER} --from=server /usr/local/bin/frankenphp ./frankenphp
-
-RUN chmod +x /usr/local/bin/start-container frankenphp
+RUN chmod +x /usr/local/bin/start-container
 
 RUN cat deployment/utilities.sh >> ~/.bashrc
 

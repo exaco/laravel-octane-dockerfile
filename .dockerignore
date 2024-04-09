@@ -9,6 +9,7 @@
 /storage/ssr
 /storage/clockwork
 /storage/logs
+/storage/pail
 .phpunit.result.cache
 Homestead.json
 Homestead.yaml
@@ -30,3 +31,5 @@ _ide_helper.php
 rr
 .rr.yaml
 frankenphp
+.config
+.data

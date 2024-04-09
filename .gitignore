@@ -1,3 +1,5 @@
 .vscode
 .idea
 **/.DS_Store
+.config
+.data
