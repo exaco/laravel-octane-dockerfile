@@ -106,14 +106,14 @@ RUN wget -q "https://github.com/aptible/supercronic/releases/download/v0.2.29/su
   -O /usr/bin/supercronic \
   && chmod +x /usr/bin/supercronic \
   && mkdir -p /etc/supercronic \
-  && echo "*/1 * * * * php ${ROOT}/artisan schedule:run --verbose --no-interaction" > /etc/supercronic/laravel
+  && echo "*/1 * * * * php ${ROOT}/artisan schedule:run --no-interaction" > /etc/supercronic/laravel
 
 RUN userdel --remove --force www-data \
   && groupadd --force -g ${WWWGROUP} ${USER} \
   && useradd -ms /bin/bash --no-log-init --no-user-group -g ${WWWGROUP} -u ${WWWUSER} ${USER}
 
 RUN chown -R ${USER}:${USER} ${ROOT} /var/{log,run} \
-  && chmod -R a+rw /var/{log,run}
+  && chmod -R a+rw ${ROOT} /var/{log,run}
 
 RUN cp ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini
 
