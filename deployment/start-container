@@ -3,6 +3,7 @@ set -e
 
 container_mode=${CONTAINER_MODE:-http}
 octane_server=${OCTANE_SERVER}
+run_migrations=${RUN_MIGRATIONS:-false}
 echo "Container mode: $container_mode"
 
 initialStuff() {
@@ -10,6 +11,11 @@ initialStuff() {
     php artisan event:cache; \
     php artisan config:cache; \
     php artisan route:cache;
+	
+    if [ ${run_migrations} = "true" ]; then
+        echo "Run migrations and seeding database ..."
+        php artisan migrate --seed --force;
+    fi
 }
 
 if [ "$1" != "" ]; then
