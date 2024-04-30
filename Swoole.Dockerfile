@@ -156,7 +156,7 @@ RUN chmod +x /usr/local/bin/start-container
 
 RUN cat deployment/utilities.sh >> ~/.bashrc
 
-EXPOSE 80
+EXPOSE 8000
 
 ENTRYPOINT ["start-container"]
 
