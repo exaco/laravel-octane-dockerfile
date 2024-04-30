@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 set -e
 
-container_mode=${CONTAINER_MODE:-http}
+container_mode=${CONTAINER_MODE:-"http"}
 octane_server=${OCTANE_SERVER}
-run_migrations=${RUN_MIGRATIONS:-false}
+running_migrations_and_seeders=${RUNNING_MIGRATIONS_AND_SEEDERS:-"false"}
+
 echo "Container mode: $container_mode"
 
 initialStuff() {
@@ -11,10 +12,10 @@ initialStuff() {
     php artisan event:cache; \
     php artisan config:cache; \
     php artisan route:cache;
-	
-    if [ ${run_migrations} = "true" ]; then
-        echo "Run migrations and seeding database ..."
-        php artisan migrate --seed --force;
+
+    if [ ${running_migrations_and_seeders} = "true" ]; then
+        echo "Running migrations and seeding database ..."
+        php artisan migrate --isolated --seed --force;
     fi
 }
 
