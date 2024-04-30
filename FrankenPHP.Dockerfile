@@ -163,7 +163,7 @@ RUN chmod +x /usr/local/bin/start-container
 
 RUN cat deployment/utilities.sh >> ~/.bashrc
 
-EXPOSE 80
+EXPOSE 8000
 EXPOSE 443
 EXPOSE 443/udp
 EXPOSE 2019
