@@ -34,7 +34,7 @@ RUN npm run build
 
 FROM composer:${COMPOSER_VERSION} AS vendor
 
-FROM php:${PHP_VERSION}-cli-bookworm AS base
+FROM php:${PHP_VERSION}-cli-bookworm
 
 LABEL maintainer="SMortexa <seyed.me720@gmail.com>"
 LABEL org.opencontainers.image.title="Laravel Octane Dockerfile"
