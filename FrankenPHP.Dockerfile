@@ -78,6 +78,7 @@ RUN apt-get update; \
     wget \
     nano \
     ncdu \
+    procps \
     ca-certificates \
     supervisor \
     libsodium-dev \
@@ -143,6 +144,7 @@ RUN mkdir -p \
     storage/logs \
     bootstrap/cache && chmod -R a+rw storage
 
+COPY --chown=${USER}:${USER} deployment/supervisord.conf /etc/supervisor/
 COPY --chown=${USER}:${USER} deployment/octane/FrankenPHP/supervisord.frankenphp.conf /etc/supervisor/conf.d/
 COPY --chown=${USER}:${USER} deployment/supervisord.*.conf /etc/supervisor/conf.d/
 COPY --chown=${USER}:${USER} deployment/start-container /usr/local/bin/start-container
