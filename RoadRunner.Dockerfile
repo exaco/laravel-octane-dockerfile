@@ -111,6 +111,9 @@ RUN addgroup -g ${WWWGROUP} ${USER} \
 RUN mkdir -p /var/log/supervisor /var/run/supervisor \
   && chown -R ${USER}:${USER} /var/log/supervisor /var/run/supervisor
 
+RUN chown -R ${USER}:${USER} ${ROOT} /var/log /var/run \
+  && chmod -R a+rw ${ROOT} /var/log /var/run
+
 RUN cp ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini
 
 USER ${USER}
