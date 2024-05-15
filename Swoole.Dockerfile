@@ -34,7 +34,7 @@ RUN npm run build
 
 FROM composer:${COMPOSER_VERSION} AS vendor
 
-FROM php:${PHP_VERSION}-cli-alpine
+FROM php:${PHP_VERSION}-cli-bookworm
 
 LABEL maintainer="SMortexa <seyed.me720@gmail.com>"
 LABEL org.opencontainers.image.title="Laravel Octane Dockerfile"
@@ -58,16 +58,17 @@ ENV DEBIAN_FRONTEND=noninteractive \
 
 WORKDIR ${ROOT}
 
-SHELL ["/bin/sh", "-eou", "pipefail", "-c"]
+SHELL ["/bin/bash", "-eou", "pipefail", "-c"]
 
 RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime \
   && echo ${TZ} > /etc/timezone
 
 ADD --chmod=0755 https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 
-RUN apk update; \
-  apk upgrade; \
-  apk add --no-cache \
+RUN apt-get update; \
+  apt-get upgrade -yqq; \
+  apt-get install -yqq --no-install-recommends --show-progress \
+  apt-utils \
   curl \
   wget \
   nano \
@@ -97,8 +98,11 @@ RUN apk update; \
   igbinary \
   ldap \
   swoole \
+  && apt-get -y autoremove \
+  && apt-get clean \
   && docker-php-source delete \
-  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+  && rm /var/log/lastlog /var/log/faillog
 
 RUN wget -q "https://github.com/aptible/supercronic/releases/download/v0.2.29/supercronic-linux-amd64" \
   -O /usr/bin/supercronic \
@@ -106,14 +110,12 @@ RUN wget -q "https://github.com/aptible/supercronic/releases/download/v0.2.29/su
   && mkdir -p /etc/supercronic \
   && echo "*/1 * * * * php ${ROOT}/artisan schedule:run --no-interaction" > /etc/supercronic/laravel
 
-RUN addgroup -g ${WWWGROUP} ${USER} \
-  && adduser -D -h ${ROOT} -G ${USER} -u ${WWWUSER} -s /bin/sh ${USER}
+RUN userdel --remove --force www-data \
+  && groupadd --force -g ${WWWGROUP} ${USER} \
+  && useradd -ms /bin/bash --no-log-init --no-user-group -g ${WWWGROUP} -u ${WWWUSER} ${USER}
 
-RUN mkdir -p /var/log/supervisor /var/run/supervisor \
-  && chown -R ${USER}:${USER} /var/log/supervisor /var/run/supervisor
-
-RUN chown -R ${USER}:${USER} ${ROOT} /var/log /var/run \
-  && chmod -R a+rw ${ROOT} /var/log /var/run
+RUN chown -R ${USER}:${USER} ${ROOT} /var/{log,run} \
+  && chmod -R a+rw ${ROOT} /var/{log,run}
 
 RUN cp ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini
 
@@ -134,10 +136,7 @@ COPY --chown=${USER}:${USER} . .
 COPY --chown=${USER}:${USER} --from=build ${ROOT}/public public
 
 RUN mkdir -p \
-  storage/framework/sessions \
-  storage/framework/views \
-  storage/framework/cache \
-  storage/framework/testing \
+  storage/framework/{sessions,views,cache,testing} \
   storage/logs \
   bootstrap/cache && chmod -R a+rw storage
 
