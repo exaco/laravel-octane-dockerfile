@@ -111,7 +111,7 @@ jobs:
         working-directory: /var/www
 
       - name: Install Laravel Octane
-        run: sudo composer require laravel/octane
+        run: sudo composer require laravel/octane spiral/roadrunner-cli spiral/roadrunner-http --with-all-dependencies
         working-directory: /var/www/app
 
       - name: Copy required content to dockerize the app
