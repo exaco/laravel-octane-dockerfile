@@ -147,7 +147,7 @@ RUN mkdir -p \
   bootstrap/cache && chmod -R a+rw storage
 
 COPY --chown=${USER}:${USER} deployment/supervisord.conf /etc/supervisor/
-COPY --chown=${USER}:${USER} deployment/octane/RoadRunner/supervisord.roadrunner.conf /etc/supervisor/conf.d
+COPY --chown=${USER}:${USER} deployment/octane/RoadRunner/supervisord.roadrunner.conf /etc/supervisor/conf.d/
 COPY --chown=${USER}:${USER} deployment/supervisord.*.conf /etc/supervisor/conf.d/
 COPY --chown=${USER}:${USER} deployment/php.ini ${PHP_INI_DIR}/conf.d/99-octane.ini
 COPY --chown=${USER}:${USER} deployment/octane/RoadRunner/.rr.prod.yaml ./.rr.yaml
