@@ -116,7 +116,8 @@ RUN arch="$(apk --print-arch)" \
 RUN addgroup -g ${WWWGROUP} ${USER} \
     && adduser -D -h ${ROOT} -G ${USER} -u ${WWWUSER} -s /bin/sh ${USER}
 
-RUN chown -R ${USER}:${USER} ${ROOT} /var/log /var/run \
+RUN mkdir -p /var/log/supervisor /var/run/supervisor \
+    && chown -R ${USER}:${USER} ${ROOT} /var/log /var/run \
     && chmod -R a+rw ${ROOT} /var/log /var/run
 
 RUN cp ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini
