@@ -20,11 +20,11 @@ RUN npm config set update-notifier false && npm set progress=false
 COPY package*.json ./
 
 RUN if [ -f $ROOT/package-lock.json ]; \
-  then \
+    then \
     npm ci --loglevel=error --no-audit; \
-  else \
+    else \
     npm install --loglevel=error --no-audit; \
-  fi
+    fi
 
 COPY . .
 
@@ -46,15 +46,14 @@ ARG WWWUSER=1000
 ARG WWWGROUP=1000
 ARG TZ=UTC
 
-ENV DEBIAN_FRONTEND=noninteractive \
-  TERM=xterm-color \
-  WITH_HORIZON=false \
-  WITH_SCHEDULER=false \
-  OCTANE_SERVER=roadrunner \
-  USER=octane \
-  ROOT=/var/www/html \
-  COMPOSER_FUND=0 \
-  COMPOSER_MAX_PARALLEL_HTTP=24
+ENV TERM=xterm-color \
+    WITH_HORIZON=false \
+    WITH_SCHEDULER=false \
+    OCTANE_SERVER=roadrunner \
+    USER=octane \
+    ROOT=/var/www/html \
+    COMPOSER_FUND=0 \
+    COMPOSER_MAX_PARALLEL_HTTP=24
 
 WORKDIR ${ROOT}
 
@@ -66,59 +65,59 @@ RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime \
 ADD --chmod=0755 https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
 
 RUN apk update; \
-  apk upgrade; \
-  apk add --no-cache \
-  curl \
-  wget \
-  nano \
-  ncdu \
-  procps \
-  ca-certificates \
-  supervisor \
-  libsodium-dev \
-  # Install PHP extensions
-  && install-php-extensions \
-  bz2 \
-  pcntl \
-  mbstring \
-  bcmath \
-  sockets \
-  pgsql \
-  pdo_pgsql \
-  opcache \
-  exif \
-  pdo_mysql \
-  zip \
-  intl \
-  gd \
-  redis \
-  rdkafka \
-  memcached \
-  igbinary \
-  ldap \
-  && docker-php-source delete \
-  && rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
+    apk upgrade; \
+    apk add --no-cache \
+    curl \
+    wget \
+    nano \
+    ncdu \
+    procps \
+    ca-certificates \
+    supervisor \
+    libsodium-dev \
+    # Install PHP extensions
+    && install-php-extensions \
+    bz2 \
+    pcntl \
+    mbstring \
+    bcmath \
+    sockets \
+    pgsql \
+    pdo_pgsql \
+    opcache \
+    exif \
+    pdo_mysql \
+    zip \
+    intl \
+    gd \
+    redis \
+    rdkafka \
+    memcached \
+    igbinary \
+    ldap \
+    && docker-php-source delete \
+    && rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
 
 RUN arch="$(apk --print-arch)" \
-  && case "$arch" in \
-  armhf) _cronic_fname='supercronic-linux-arm' ;; \
-  aarch64) _cronic_fname='supercronic-linux-arm64' ;; \
-  x86_64) _cronic_fname='supercronic-linux-amd64' ;; \
-  x86) _cronic_fname='supercronic-linux-386' ;; \
-  *) echo >&2 "error: unsupported architecture: $arch"; exit 1 ;; \
-  esac \
-  && wget -q "https://github.com/aptible/supercronic/releases/download/v0.2.29/${_cronic_fname}" \
-  -O /usr/bin/supercronic \
-  && chmod +x /usr/bin/supercronic \
-  && mkdir -p /etc/supercronic \
-  && echo "*/1 * * * * php ${ROOT}/artisan schedule:run --no-interaction" > /etc/supercronic/laravel
+    && case "$arch" in \
+    armhf) _cronic_fname='supercronic-linux-arm' ;; \
+    aarch64) _cronic_fname='supercronic-linux-arm64' ;; \
+    x86_64) _cronic_fname='supercronic-linux-amd64' ;; \
+    x86) _cronic_fname='supercronic-linux-386' ;; \
+    *) echo >&2 "error: unsupported architecture: $arch"; exit 1 ;; \
+    esac \
+    && wget -q "https://github.com/aptible/supercronic/releases/download/v0.2.29/${_cronic_fname}" \
+    -O /usr/bin/supercronic \
+    && chmod +x /usr/bin/supercronic \
+    && mkdir -p /etc/supercronic \
+    && echo "*/1 * * * * php ${ROOT}/artisan schedule:run --no-interaction" > /etc/supercronic/laravel
 
 RUN addgroup -g ${WWWGROUP} ${USER} \
-  && adduser -D -h ${ROOT} -G ${USER} -u ${WWWUSER} -s /bin/sh ${USER}
+    && adduser -D -h ${ROOT} -G ${USER} -u ${WWWUSER} -s /bin/sh ${USER}
 
 RUN mkdir -p /var/log/supervisor /var/run/supervisor \
-  && chown -R ${USER}:${USER} ${ROOT} /var/log /var/run \
-  && chmod -R a+rw ${ROOT} /var/log /var/run
+    && chown -R ${USER}:${USER} ${ROOT} /var/log /var/run \
+    && chmod -R a+rw ${ROOT} /var/log /var/run
 
 RUN cp ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini
 
@@ -128,23 +127,23 @@ COPY --chown=${USER}:${USER} --from=vendor /usr/bin/composer /usr/bin/composer
 COPY --chown=${USER}:${USER} composer.json composer.lock ./
 
 RUN composer install \
-  --no-dev \
-  --no-interaction \
-  --no-autoloader \
-  --no-ansi \
-  --no-scripts \
-  --audit
+    --no-dev \
+    --no-interaction \
+    --no-autoloader \
+    --no-ansi \
+    --no-scripts \
+    --audit
 
 COPY --chown=${USER}:${USER} . .
 COPY --chown=${USER}:${USER} --from=build ${ROOT}/public public
 
 RUN mkdir -p \
-  storage/framework/sessions \
-  storage/framework/views \
-  storage/framework/cache \
-  storage/framework/testing \
-  storage/logs \
-  bootstrap/cache && chmod -R a+rw storage
+    storage/framework/sessions \
+    storage/framework/views \
+    storage/framework/cache \
+    storage/framework/testing \
+    storage/logs \
+    bootstrap/cache && chmod -R a+rw storage
 
 COPY --chown=${USER}:${USER} deployment/supervisord.conf /etc/supervisor/
 COPY --chown=${USER}:${USER} deployment/octane/RoadRunner/supervisord.roadrunner.conf /etc/supervisor/conf.d/
@@ -154,16 +153,16 @@ COPY --chown=${USER}:${USER} deployment/octane/RoadRunner/.rr.prod.yaml ./.rr.ya
 COPY --chown=${USER}:${USER} deployment/start-container /usr/local/bin/start-container
 
 RUN composer install \
-  --classmap-authoritative \
-  --no-interaction \
-  --no-ansi \
-  --no-dev \
-  && composer clear-cache
+    --classmap-authoritative \
+    --no-interaction \
+    --no-ansi \
+    --no-dev \
+    && composer clear-cache
 
 RUN if composer show | grep spiral/roadrunner-cli >/dev/null; then \
-  ./vendor/bin/rr get-binary --quiet; else \
-  echo "`spiral/roadrunner-cli` package is not installed. Exiting..."; exit 1; \
-  fi
+    ./vendor/bin/rr get-binary --quiet; else \
+    echo "`spiral/roadrunner-cli` package is not installed. Exiting..."; exit 1; \
+    fi
 
 RUN chmod +x rr /usr/local/bin/start-container
 
