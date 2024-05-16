@@ -8,6 +8,7 @@ running_migrations_and_seeders=${RUNNING_MIGRATIONS_AND_SEEDERS:-"false"}
 echo "Container mode: $container_mode"
 
 initialStuff() {
+    php artisan storage:link; \
     php artisan optimize:clear; \
     php artisan event:cache; \
     php artisan config:cache; \

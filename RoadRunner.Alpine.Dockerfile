@@ -97,9 +97,17 @@ RUN apk update; \
   igbinary \
   ldap \
   && docker-php-source delete \
-  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+  && rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
 
-RUN wget -q "https://github.com/aptible/supercronic/releases/download/v0.2.29/supercronic-linux-amd64" \
+RUN arch="$(apk --print-arch)" \
+  && case "$arch" in \
+  armhf) _cronic_fname='supercronic-linux-arm' ;; \
+  aarch64) _cronic_fname='supercronic-linux-arm64' ;; \
+  x86_64) _cronic_fname='supercronic-linux-amd64' ;; \
+  x86) _cronic_fname='supercronic-linux-386' ;; \
+  *) echo >&2 "error: unsupported architecture: $arch"; exit 1 ;; \
+  esac \
+  && wget -q "https://github.com/aptible/supercronic/releases/download/v0.2.29/${_cronic_fname}" \
   -O /usr/bin/supercronic \
   && chmod +x /usr/bin/supercronic \
   && mkdir -p /etc/supercronic \
@@ -108,8 +116,8 @@ RUN wget -q "https://github.com/aptible/supercronic/releases/download/v0.2.29/su
 RUN addgroup -g ${WWWGROUP} ${USER} \
   && adduser -D -h ${ROOT} -G ${USER} -u ${WWWUSER} -s /bin/sh ${USER}
 
-RUN mkdir -p /var/log/supervisor /var/run/supervisor \
-  && chown -R ${USER}:${USER} /var/log/supervisor /var/run/supervisor
+RUN chown -R ${USER}:${USER} ${ROOT} /var/log /var/run \
+  && chmod -R a+rw ${ROOT} /var/log /var/run
 
 RUN chown -R ${USER}:${USER} ${ROOT} /var/log /var/run \
   && chmod -R a+rw ${ROOT} /var/log /var/run
@@ -152,11 +160,10 @@ RUN composer install \
   --no-interaction \
   --no-ansi \
   --no-dev \
-  && composer clear-cache \
-  && php artisan storage:link
+  && composer clear-cache
 
 RUN if composer show | grep spiral/roadrunner-cli >/dev/null; then \
-  ./vendor/bin/rr get-binary; else \
+  ./vendor/bin/rr get-binary --quiet; else \
   echo "`spiral/roadrunner-cli` package is not installed. Exiting..."; exit 1; \
   fi
 

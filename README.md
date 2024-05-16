@@ -12,7 +12,7 @@ powered web services and microservices.
 
 The Docker configuration provides the following setup:
 
-- PHP 8.2 and 8.3 official Debian-based images
+- PHP 8.2 and 8.3 official Debian-based and Alpine-based images
 - Preconfigured JIT compiler and OPcache
 
 ## Container modes
@@ -112,7 +112,7 @@ Also, some useful Bash functions and aliases are added in `utilities.sh` that ma
 - [ ] Add support for Laravel Dusk
 - [x] Support more PHP extensions
 - [x] Add tests
-- [ ] Add Alpine-based images
+- [x] Add Alpine-based images
 
 ## Contributing
 
