@@ -67,8 +67,6 @@ SHELL ["/bin/sh", "-eou", "pipefail", "-c"]
 RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime \
     && echo ${TZ} > /etc/timezone
 
-ADD --chmod=0755 https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
-
 RUN apk update; \
     apk upgrade; \
     apk add --no-cache \
@@ -80,7 +78,7 @@ RUN apk update; \
     ca-certificates \
     supervisor \
     libsodium-dev \
-    # Install PHP extensions
+    # Install PHP extensions (included with dunglas/frankenphp)
     && install-php-extensions \
     bz2 \
     pcntl \

@@ -68,8 +68,6 @@ SHELL ["/bin/bash", "-eou", "pipefail", "-c"]
 RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime \
     && echo ${TZ} > /etc/timezone
 
-ADD --chmod=0755 https://github.com/mlocati/docker-php-extension-installer/releases/latest/download/install-php-extensions /usr/local/bin/
-
 RUN apt-get update; \
     apt-get upgrade -yqq; \
     apt-get install -yqq --no-install-recommends --show-progress \
@@ -82,7 +80,7 @@ RUN apt-get update; \
     ca-certificates \
     supervisor \
     libsodium-dev \
-    # Install PHP extensions
+    # Install PHP extensions (included with dunglas/frankenphp)
     && install-php-extensions \
     bz2 \
     pcntl \
