@@ -73,6 +73,7 @@ RUN apk update; \
     curl \
     wget \
     nano \
+	git \
     ncdu \
     procps \
     ca-certificates \

@@ -72,6 +72,7 @@ RUN apt-get update; \
     curl \
     wget \
     nano \
+	git \
     ncdu \
     procps \
     ca-certificates \
