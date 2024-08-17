@@ -106,6 +106,7 @@ Also, some useful Bash functions and aliases are added in `utilities.sh` that ma
 - [x] Add support for Horizon
 - [x] Add support for RoadRunner
 - [x] Add support for FrankenPHP
+- [ ] Add support for Laravel Reverb
 - [x] Add support for the full-stack apps (Front-end assets)
 - [ ] Add support `testing` environment and CI
 - [x] Add support for the Laravel scheduler
