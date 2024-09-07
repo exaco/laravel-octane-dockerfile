@@ -14,7 +14,7 @@ initialStuff() {
     php artisan config:cache; \
     php artisan route:cache;
 
-    if [ ${running_migrations_and_seeders} = "true" ]; then
+    if [ "${running_migrations_and_seeders}" = "true" ]; then
         echo "Running migrations and seeding database ..."
         php artisan migrate --isolated --seed --force;
     fi
@@ -22,26 +22,26 @@ initialStuff() {
 
 if [ "$1" != "" ]; then
     exec "$@"
-elif [ ${container_mode} = "http" ]; then
+elif [ "${container_mode}" = "http" ]; then
     echo "Octane Server: $octane_server"
     initialStuff
-    if [ ${octane_server}  = "frankenphp" ]; then
+    if [ "${octane_server}"  = "frankenphp" ]; then
         exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.frankenphp.conf
-    elif [ ${octane_server}  = "swoole" ]; then
+    elif [ "${octane_server}"  = "swoole" ]; then
         exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.swoole.conf
-    elif [ ${octane_server}  = "roadrunner" ]; then
+    elif [ "${octane_server}"  = "roadrunner" ]; then
         exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.roadrunner.conf
     else
         echo "Invalid Octane server supplied."
         exit 1
     fi
-elif [ ${container_mode} = "horizon" ]; then
+elif [ "${container_mode}" = "horizon" ]; then
     initialStuff
     exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.horizon.conf
-elif [ ${container_mode} = "scheduler" ]; then
+elif [ "${container_mode}" = "scheduler" ]; then
     initialStuff
     exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.scheduler.conf
-elif [ ${container_mode} = "worker" ]; then
+elif [ "${container_mode}" = "worker" ]; then
     initialStuff
     exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.worker.conf
 else

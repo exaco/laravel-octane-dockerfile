@@ -72,7 +72,7 @@ RUN apt-get update; \
     curl \
     wget \
     nano \
-	git \
+    git \
     ncdu \
     procps \
     ca-certificates \
@@ -154,6 +154,7 @@ COPY --link --chown=${USER}:${USER} deployment/supervisord.*.conf /etc/superviso
 COPY --link --chown=${USER}:${USER} deployment/php.ini ${PHP_INI_DIR}/conf.d/99-octane.ini
 COPY --link --chown=${USER}:${USER} deployment/octane/RoadRunner/.rr.prod.yaml ./.rr.yaml
 COPY --link --chown=${USER}:${USER} deployment/start-container /usr/local/bin/start-container
+COPY --link --chown=${USER}:${USER} deployment/healthcheck /usr/local/bin/healthcheck
 
 RUN composer install \
     --classmap-authoritative \
@@ -167,7 +168,7 @@ RUN if composer show | grep spiral/roadrunner-cli >/dev/null; then \
     echo "`spiral/roadrunner-cli` package is not installed. Exiting..."; exit 1; \
     fi
 
-RUN chmod +x rr /usr/local/bin/start-container
+RUN chmod +x rr /usr/local/bin/start-container /usr/local/bin/healthcheck
 
 RUN cat deployment/utilities.sh >> ~/.bashrc
 
@@ -176,4 +177,4 @@ EXPOSE 6001
 
 ENTRYPOINT ["start-container"]
 
-HEALTHCHECK --start-period=5s --interval=2s --timeout=5s --retries=8 CMD php artisan octane:status || exit 1
+HEALTHCHECK --start-period=5s --interval=2s --timeout=5s --retries=8 CMD healthcheck || exit 1
