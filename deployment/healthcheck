@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+
+set -e
+
+container_mode=${CONTAINER_MODE:-"http"}
+
+if [ "${container_mode}" = "http" ]; then
+    php artisan octane:status
+elif [ "${container_mode}" = "horizon" ]; then
+    php artisan horizon:status
+elif [ "${container_mode}" = "scheduler" ]; then
+    supervisorctl status scheduler:scheduler_00
+elif [ "${container_mode}" = "worker" ]; then
+    supervisorctl status worker:worker_00
+else
+    echo "Container mode mismatched."
+    exit 1
+fi
