@@ -4,31 +4,24 @@ ARG PHP_VERSION=8.3
 ARG COMPOSER_VERSION=latest
 
 ###########################################
-# Build frontend assets with NPM
+# Build frontend assets with Bun
 ###########################################
 
-ARG NODE_VERSION=20-alpine
+ARG BUN_VERSION="latest"
 
-FROM node:${NODE_VERSION} AS build
+FROM oven/bun:${BUN_VERSION} AS build
 
 ENV ROOT=/var/www/html
 
 WORKDIR ${ROOT}
 
-RUN npm config set update-notifier false && npm set progress=false
+COPY --link package.json bun.lockb* ./
 
-COPY --link package*.json ./
-
-RUN if [ -f $ROOT/package-lock.json ]; \
-    then \
-    npm ci --loglevel=error --no-audit; \
-    else \
-    npm install --loglevel=error --no-audit; \
-    fi
+RUN bun install --frozen-lockfile
 
 COPY --link . .
 
-RUN npm run build
+RUN bun run build
 
 ###########################################
 

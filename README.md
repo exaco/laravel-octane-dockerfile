@@ -101,7 +101,7 @@ Also, some useful Bash functions and aliases are added in `utilities.sh` that ma
 ## ToDo
 - [x] Add support for PHP 8.3
 - [x] Add support for worker mode
-- [ ] Build assets with Bun
+- [x] Build assets with Bun
 - [ ] Create standalone and self-executable app
 - [x] Add support for Horizon
 - [x] Add support for RoadRunner
