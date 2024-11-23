@@ -65,7 +65,7 @@ RUN apk update; \
     apk add --no-cache \
     curl \
     wget \
-    nano \
+    vim \
     git \
     ncdu \
     procps \

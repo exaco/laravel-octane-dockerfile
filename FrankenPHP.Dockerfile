@@ -67,7 +67,7 @@ RUN apt-get update; \
     apt-utils \
     curl \
     wget \
-    nano \
+    vim \
     git \
     ncdu \
     procps \
