@@ -1,0 +1,83 @@
+# Is an "extension" because it begins with `x-`. This means that the stanza is ignored by Docker.
+# The `&base` is a YAML anchor that allows you to reference the entire stanza with `<<: *base`.
+x-base: &base
+  build:
+    context: .
+    dockerfile: RoadRunner.Alpine.Dockerfile
+  image: 'quay.io/mspintegrations/control:${TAG:-latest}'
+  restart: always
+  env_file:
+    - .env
+  depends_on:
+    - mysql
+    - redis
+
+services:
+  # The `<<: *base` is a YAML alias that effectively imports the `x-base` stanza above
+  php:
+    <<: *base
+    ports:
+      - "8000:8000" # HTTP
+      #- "443:443" # HTTPS for FrankenPHP images
+    environment:
+      RUNNING_MIGRATIONS: 'true'
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    profiles:
+      - !dev
+
+  php-dev:
+    <<: *base
+    ports:
+      - "8000:8000" # HTTP
+    environment:
+      OCTANE_OPTIONS: "--watch"
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+      - .:/var/www/html
+    profiles:
+      - dev
+
+  horizon:
+    <<: *base
+    environment:
+      - CONTAINER_MODE=horizon
+    profiles:
+      - !dev
+
+  scheduler:
+    <<: *base
+    environment:
+      - CONTAINER_MODE=scheduler
+    profiles:
+      - !dev
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    volumes:
+      - redis_data:/data
+    profiles:
+      - dev
+      - with_redis
+
+  mysql:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_DATABASE: '${DB_DATABASE}'
+    volumes:
+      - mysql_data:/var/lib/mysql
+    profiles:
+      - dev
+      - with_mysql
+
+# Volumes needed for Caddy certificates and configuration
+volumes:
+  caddy_data:
+  caddy_config:
+  redis_data:
+  mysql_data:
