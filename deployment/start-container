@@ -4,15 +4,19 @@ set -e
 container_mode=${CONTAINER_MODE:-"http"}
 octane_server=${OCTANE_SERVER}
 running_migrations_and_seeders=${RUNNING_MIGRATIONS_AND_SEEDERS:-"false"}
+artisan_cache=${ARTISAN_CACHE:-"true"}
 
 echo "Container mode: $container_mode"
 
 initialStuff() {
-    php artisan storage:link; \
-    php artisan optimize:clear; \
-    php artisan event:cache; \
-    php artisan config:cache; \
-    php artisan route:cache;
+
+    if [ "${artisan_cache}" = "true" ]; then
+      php artisan storage:link; \
+      php artisan optimize:clear; \
+      php artisan event:cache; \
+      php artisan config:cache; \
+      php artisan route:cache;
+    fi
 
     if [ "${running_migrations_and_seeders}" = "true" ]; then
         echo "Running migrations and seeding database ..."
