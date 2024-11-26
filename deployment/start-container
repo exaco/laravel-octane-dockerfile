@@ -4,6 +4,7 @@ set -e
 container_mode=${CONTAINER_MODE:-"http"}
 octane_server=${OCTANE_SERVER}
 running_migrations_and_seeders=${RUNNING_MIGRATIONS_AND_SEEDERS:-"false"}
+running_migrations=${RUNNING_MIGRATIONS:-"false"}
 
 echo "Container mode: $container_mode"
 
@@ -17,6 +18,9 @@ initialStuff() {
     if [ "${running_migrations_and_seeders}" = "true" ]; then
         echo "Running migrations and seeding database ..."
         php artisan migrate --isolated --seed --force;
+    elif [ "${running_migrations}" = "true" ]; then
+        echo "Running migrations ..."
+        php artisan migrate --isolated --force;
     fi
 }
 
