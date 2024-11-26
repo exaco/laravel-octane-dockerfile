@@ -117,8 +117,8 @@ RUN cp ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini
 
 USER ${USER}
 
-COPY --link --chown=${USER}:${USER} --from=vendor /usr/bin/composer /usr/bin/composer
-COPY --link --chown=${USER}:${USER} composer.json composer.lock ./
+COPY --link --chown=${WWWUSER}:${WWWUSER} --from=vendor /usr/bin/composer /usr/bin/composer
+COPY --link --chown=${WWWUSER}:${WWWUSER} composer.json composer.lock ./
 
 RUN composer install \
     --no-dev \
@@ -128,8 +128,8 @@ RUN composer install \
     --no-scripts \
     --audit
 
-COPY --link --chown=${USER}:${USER} . .
-COPY --link --chown=${USER}:${USER} --from=build ${ROOT}/public public
+COPY --link --chown=${WWWUSER}:${WWWUSER} . .
+COPY --link --chown=${WWWUSER}:${WWWUSER} --from=build ${ROOT}/public public
 
 RUN mkdir -p \
     storage/framework/sessions \
@@ -139,13 +139,13 @@ RUN mkdir -p \
     storage/logs \
     bootstrap/cache && chmod -R a+rw storage
 
-COPY --link --chown=${USER}:${USER} deployment/supervisord.conf /etc/supervisor/
-COPY --link --chown=${USER}:${USER} deployment/octane/RoadRunner/supervisord.roadrunner.conf /etc/supervisor/conf.d/
-COPY --link --chown=${USER}:${USER} deployment/supervisord.*.conf /etc/supervisor/conf.d/
-COPY --link --chown=${USER}:${USER} deployment/php.ini ${PHP_INI_DIR}/conf.d/99-octane.ini
-COPY --link --chown=${USER}:${USER} deployment/octane/RoadRunner/.rr.prod.yaml ./.rr.yaml
-COPY --link --chown=${USER}:${USER} deployment/start-container /usr/local/bin/start-container
-COPY --link --chown=${USER}:${USER} deployment/healthcheck /usr/local/bin/healthcheck
+COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/supervisord.conf /etc/supervisor/
+COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/octane/RoadRunner/supervisord.roadrunner.conf /etc/supervisor/conf.d/
+COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/supervisord.*.conf /etc/supervisor/conf.d/
+COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/php.ini ${PHP_INI_DIR}/conf.d/99-octane.ini
+COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/octane/RoadRunner/.rr.prod.yaml ./.rr.yaml
+COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/start-container /usr/local/bin/start-container
+COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/healthcheck /usr/local/bin/healthcheck
 
 RUN composer install \
     --classmap-authoritative \
