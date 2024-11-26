@@ -14,10 +14,10 @@ x-base: &base
 
 services:
   # The `<<: *base` is a YAML alias that effectively imports the `x-base` stanza above
-  php:
+  http:
     <<: *base
     ports:
-      - "8000:8000" # HTTP
+      - "${HTTP_PORT:-80}:8000" # HTTP
       #- "443:443" # HTTPS for FrankenPHP images
     environment:
       RUNNING_MIGRATIONS: 'true'
@@ -27,7 +27,7 @@ services:
     profiles:
       - !dev
 
-  php-dev:
+  http-dev:
     <<: *base
     ports:
       - "8000:8000" # HTTP
