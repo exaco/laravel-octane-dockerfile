@@ -39,6 +39,9 @@ services:
       - .:/var/www/html
     profiles:
       - dev
+    depends_on:
+      - mysql-dev
+      - redis-dev
 
   horizon:
     <<: *base
@@ -54,16 +57,23 @@ services:
     profiles:
       - !dev
 
-  redis:
+  redis: &redis
     image: redis:7-alpine
     restart: always
     volumes:
       - redis_data:/data
     profiles:
-      - dev
+      - !dev
       - with_redis
 
-  mysql:
+  redis-dev:
+    <<: *redis
+    ports:
+      - "63791:6379"
+    profiles:
+      - dev
+
+  mysql: &mysql
     image: mysql:8.0
     restart: always
     environment:
@@ -72,8 +82,15 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
     profiles:
-      - dev
+      - !dev
       - with_mysql
+
+  mysql-dev:
+    <<: *mysql
+    ports:
+      - "3309:3306"
+    profiles:
+      - dev
 
 # Volumes needed for Caddy certificates and configuration
 volumes:
