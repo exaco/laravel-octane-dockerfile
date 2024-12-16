@@ -99,7 +99,7 @@ Also, some useful Bash functions and aliases are added in `utilities.sh` that ma
 - Please be aware of `.dockerignore` content
 
 ## ToDo
-- [x] Add support for PHP 8.3
+- [ ] Add support for PHP 8.4
 - [x] Add support for worker mode
 - [x] Build assets with Bun
 - [ ] Create standalone and self-executable app
