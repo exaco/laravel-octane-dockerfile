@@ -5,8 +5,6 @@ ARG FRANKENPHP_VERSION=latest
 
 ARG COMPOSER_VERSION=latest
 
-ARG ENV_FILE
-
 ###########################################
 # Build frontend assets with Bun
 ###########################################
@@ -123,8 +121,9 @@ RUN cp ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini
 
 USER ${USER}
 
-# Custom .env support defaults to .env if not set
-COPY --link --chown=${USER}:${USER} ${ENV_FILE:-.env} .env 2>/dev/null || true
+# Custom .env support
+ARG ENV_FILE
+COPY --link --chown=${USER}:${USER} ${ENV_FILE:-.env} .env
 
 COPY --link --chown=${WWWUSER}:${WWWUSER} --from=vendor /usr/bin/composer /usr/bin/composer
 COPY --link --chown=${WWWUSER}:${WWWUSER} composer.json composer.lock ./
