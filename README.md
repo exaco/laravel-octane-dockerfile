@@ -39,6 +39,10 @@ git clone --depth 1 git@github.com:exaco/laravel-octane-dockerfile.git
 ```
 docker build -t <image-name>:<tag> -f <your-octane-driver>.Dockerfile .
 ```
+4. (OPTIONALLY) Build your image with custom ENV:
+```
+docker build -t <image-name>:<tag> --build-arg ENV_FILE=.env.<your-custom-env> -f <your-octane-driver>.Dockerfile .
+```
 ### Running Docker container
 
 ```bash
