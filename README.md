@@ -67,6 +67,25 @@ docker run -e CONTAINER_MODE=worker -e WORKER_COMMAND="php /var/www/html/artisan
 docker run --rm <image-name>:<tag> php artisan about
 ```
 
+### Running using docker compose
+
+> Important: You must copy the `docker-compose.yml` file to your project root directory.
+
+```bash
+# Full stack with redis
+docker compose --profile with_redis up -d
+
+# Without redis
+docker compose up -d
+
+# Only the HTTP server (without proxy)
+docker compose up -d app
+
+# Stop the containers
+docker compose --profile with_redis down
+docker compose down
+```
+
 ## Configuration
 
 ### Recommended `Swoole` options in `octane.php`
