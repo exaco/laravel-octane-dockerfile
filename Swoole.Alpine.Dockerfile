@@ -3,31 +3,15 @@ ARG PHP_VERSION=8.3
 
 ARG COMPOSER_VERSION=latest
 
-###########################################
-# Build frontend assets with Bun
-###########################################
-
 ARG BUN_VERSION="latest"
 
-FROM oven/bun:${BUN_VERSION} AS build
-
-ENV ROOT=/var/www/html
-
-WORKDIR ${ROOT}
-
-COPY --link package.json bun.lockb* ./
-
-RUN bun install --frozen-lockfile
-
-COPY --link . .
-
-RUN bun run build
-
+###########################################
+# Prepare the base PHP + composer image
 ###########################################
 
 FROM composer:${COMPOSER_VERSION} AS vendor
 
-FROM php:${PHP_VERSION}-cli-alpine
+FROM php:${PHP_VERSION}-cli-alpine as php
 
 LABEL maintainer="SMortexa <seyed.me720@gmail.com>"
 LABEL org.opencontainers.image.title="Laravel Octane Dockerfile"
@@ -69,8 +53,9 @@ RUN apk update; \
     ca-certificates \
     supervisor \
     libsodium-dev \
-    # Install PHP extensions
-    && install-php-extensions \
+    
+# Install PHP extensions
+RUN install-php-extensions \
     bz2 \
     pcntl \
     mbstring \
@@ -90,7 +75,8 @@ RUN apk update; \
     igbinary \
     ldap \
     swoole \
-    && docker-php-source delete \
+
+RUN docker-php-source delete \
     && rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
 
 RUN arch="$(apk --print-arch)" \
@@ -117,10 +103,54 @@ RUN mkdir -p /var/log/supervisor /var/run/supervisor \
 RUN cp ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini
 
 USER ${USER}
-
 COPY --link --chown=${WWWUSER}:${WWWUSER} --from=vendor /usr/bin/composer /usr/bin/composer
+
+
+COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/supervisord.conf /etc/supervisor/
+COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/octane/Swoole/supervisord.swoole.conf /etc/supervisor/conf.d/
+COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/supervisord.*.conf /etc/supervisor/conf.d/
+COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/php.ini ${PHP_INI_DIR}/conf.d/99-octane.ini
+COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/healthcheck /usr/local/bin/healthcheck
+COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/start-container /usr/local/bin/start-container
+
+RUN chmod +x /usr/local/bin/start-container /usr/local/bin/healthcheck
+###########################################
+
+
+###########################################
+# Build frontend assets with Bun
+###########################################
+
+
+FROM oven/bun:${BUN_VERSION} AS build
+
+ENV ROOT=/var/www/html
+
+WORKDIR ${ROOT}
+
+COPY --link package.json ./
+
+RUN bun install --frozen-lockfile
+
+COPY --link . .
+
+RUN bun run build
+
+###########################################
+
+
+
+###########################################
+# Install the laravel application
+###########################################
+
+FROM php
+
+USER ${USER}
+
 COPY --link --chown=${WWWUSER}:${WWWUSER} composer.json composer.lock ./
 
+# TODO: Check if this can be deleted or if is to check vulnerabilities or something
 RUN composer install \
     --no-dev \
     --no-interaction \
@@ -140,21 +170,12 @@ RUN mkdir -p \
     storage/logs \
     bootstrap/cache && chmod -R a+rw storage
 
-COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/supervisord.conf /etc/supervisor/
-COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/octane/Swoole/supervisord.swoole.conf /etc/supervisor/conf.d/
-COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/supervisord.*.conf /etc/supervisor/conf.d/
-COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/php.ini ${PHP_INI_DIR}/conf.d/99-octane.ini
-COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/start-container /usr/local/bin/start-container
-COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/healthcheck /usr/local/bin/healthcheck
-
 RUN composer install \
     --classmap-authoritative \
     --no-interaction \
     --no-ansi \
     --no-dev \
     && composer clear-cache
-
-RUN chmod +x /usr/local/bin/start-container /usr/local/bin/healthcheck
 
 RUN cat deployment/utilities.sh >> ~/.bashrc
 
