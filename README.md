@@ -19,12 +19,12 @@ The Docker configuration provides the following setup:
 
 You can run the Docker container in different modes:
 
-| Mode                  | `CONTAINER_MODE` | HTTP server         |
-| --------------------- | ---------------- | ------------------- |
-| HTTP Server (default) | `http`           | FrankenPHP / Swoole / RoadRunner |
-| Horizon               | `horizon`        | -                   |
-| Scheduler             | `scheduler`      | -                   |
-| Worker                | `worker`         | -                   |
+| Mode                  | `CONTAINER_MODE` value |
+| --------------------- | ---------------- |
+| HTTP Server (default) | `http` (FrankenPHP / Swoole / RoadRunner) |
+| Horizon               | `horizon`        |
+| Scheduler             | `scheduler`      |
+| Worker                | `worker`         |
 
 ## Usage
 
