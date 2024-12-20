@@ -1,0 +1,63 @@
+version: '3.7'
+
+services:
+
+  app:
+    build:
+      context: .
+      dockerfile: Swoole.Alpine.Dockerfile
+    image: php-swole-laravel-app
+    restart: always
+    env_file:
+      - .env
+    environment:
+      RUNNING_MIGRATIONS: true
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  horizon:
+    image: php-swole-laravel-app
+    restart: always
+    env_file:
+      - .env
+    environment:
+      CONTAINER_MODE: horizon
+    depends_on:
+      - app
+
+  scheduler:
+    image: php-swole-laravel-app
+    restart: always
+    env_file:
+      - .env
+    environment:
+      CONTAINER_MODE: scheduler
+    depends_on:
+      - app
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+    volumes:
+      - redis_data:/data
+    profiles:
+      - with_redis
+
+  db:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: laravelapp
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    # ports:
+    #   - "3306:3306"
+    volumes:
+      - ./data:/var/lib/mysql
+
+
+volumes:
+  redis_data:
