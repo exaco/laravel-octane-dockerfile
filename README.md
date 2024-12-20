@@ -13,7 +13,10 @@ powered web services and microservices.
 The Docker configuration provides the following setup:
 
 - PHP 8.2 and 8.3 official Debian-based and Alpine-based images
-- Preconfigured JIT compiler and OPcache
+- Preconfigured PHP runtime, JIT compiler, and OPcache
+- Preconfigured Caddy server
+- Preconfigured Swoole HTTP server
+- Preconfigured RoadRunner HTTP server
 
 ## Container modes
 
