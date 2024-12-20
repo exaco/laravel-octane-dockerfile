@@ -94,9 +94,9 @@ return [
 Also, some useful Bash functions and aliases are added in `utilities.sh` that maybe help.
 
 ## Notes
-- Some configurations are highly opinionated, so make sure they are appropriate for your needs.
+- Some configurations are highly opinionated, so ensure they align with your needs.
 - Laravel Octane logs request information only in the `local` environment.
-- Please be aware of `.dockerignore` content
+- Be mindful of the contents of the `.dockerignore` file.
 
 ## ToDo
 - [ ] Add support for PHP 8.4
