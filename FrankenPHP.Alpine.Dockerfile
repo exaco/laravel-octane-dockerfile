@@ -121,6 +121,10 @@ RUN cp ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini
 
 USER ${USER}
 
+# Custom .env support
+ARG ENV_FILE
+COPY --link --chown=${USER}:${USER} ${ENV_FILE:-.env} .env
+
 COPY --link --chown=${WWWUSER}:${WWWUSER} --from=vendor /usr/bin/composer /usr/bin/composer
 COPY --link --chown=${WWWUSER}:${WWWUSER} composer.json composer.lock ./
 
