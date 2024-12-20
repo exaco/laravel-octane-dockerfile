@@ -29,25 +29,16 @@ if [ "$1" != "" ]; then
 elif [ "${container_mode}" = "http" ]; then
     echo "Octane Server: $octane_server"
     initialStuff
-    if [ "${octane_server}"  = "frankenphp" ]; then
-        exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.frankenphp.conf
-    elif [ "${octane_server}"  = "swoole" ]; then
-        exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.swoole.conf
-    elif [ "${octane_server}"  = "roadrunner" ]; then
-        exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.roadrunner.conf
-    else
-        echo "Invalid Octane server supplied."
-        exit 1
-    fi
+    exec php artisan octane:start --server=${octane_server} --host=0.0.0.0 --port=8000
 elif [ "${container_mode}" = "horizon" ]; then
     initialStuff
-    exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.horizon.conf
+    php artisan horizon
 elif [ "${container_mode}" = "scheduler" ]; then
     initialStuff
-    exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.scheduler.conf
+    supercronic -overlapping /etc/supercronic/laravel
 elif [ "${container_mode}" = "worker" ]; then
     initialStuff
-    exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.worker.conf
+    ${WORKER_COMMAND}
 else
     echo "Container mode mismatched."
     exit 1
