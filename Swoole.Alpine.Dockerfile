@@ -47,7 +47,7 @@ RUN apk update; \
     ca-certificates \
     supervisor \
     libsodium-dev \
-     libbrotli-dev \
+    libbrotli-dev \
     # Install PHP extensions
     && install-php-extensions \
     bz2 \
