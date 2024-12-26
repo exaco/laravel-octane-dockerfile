@@ -47,7 +47,7 @@ RUN apk update; \
     ca-certificates \
     supervisor \
     libsodium-dev \
-    libbrotli-dev \
+    brotli \
     # Install PHP extensions (included with dunglas/frankenphp)
     && install-php-extensions \
     bz2 \
