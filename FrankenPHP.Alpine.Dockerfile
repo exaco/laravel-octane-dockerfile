@@ -37,7 +37,7 @@ RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime \
 
 RUN apk update; \
     apk upgrade; \
-    apk add --no-cache --virtual .build-deps \
+    apk add --no-cache \
     curl \
     wget \
     vim \
@@ -70,7 +70,6 @@ RUN apk update; \
     ldap \
     swoole \
     && docker-php-source delete \
-    && apk del .build-deps \
     && rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
 
 RUN arch="$(apk --print-arch)" \
