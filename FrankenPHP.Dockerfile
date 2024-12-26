@@ -137,7 +137,7 @@ ENV ROOT=/var/www/html
 
 WORKDIR ${ROOT}
 
-COPY --link package.json bun.lockb* ./
+COPY --link package.json bun.lock* ./
 
 RUN bun install --frozen-lockfile
 

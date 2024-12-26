@@ -1,28 +1,6 @@
 ARG PHP_VERSION=8.3
-
 ARG COMPOSER_VERSION=2.8
-
-###########################################
-# Build frontend assets with Bun
-###########################################
-
 ARG BUN_VERSION="latest"
-
-FROM oven/bun:${BUN_VERSION} AS build
-
-ENV ROOT=/var/www/html
-
-WORKDIR ${ROOT}
-
-COPY --link package.json bun.lockb* ./
-
-RUN bun install --frozen-lockfile
-
-COPY --link . .
-
-RUN bun run build
-
-###########################################
 
 FROM composer:${COMPOSER_VERSION} AS vendor
 
@@ -40,8 +18,6 @@ ARG TZ=UTC
 
 ENV DEBIAN_FRONTEND=noninteractive \
     TERM=xterm-color \
-    WITH_HORIZON=false \
-    WITH_SCHEDULER=false \
     OCTANE_SERVER=swoole \
     TZ=${TZ} \
     USER=octane \
@@ -125,6 +101,22 @@ RUN cp ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini
 USER ${USER}
 
 COPY --link --chown=${WWWUSER}:${WWWUSER} --from=vendor /usr/bin/composer /usr/bin/composer
+
+COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/supervisord.conf /etc/supervisor/
+COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/octane/Swoole/supervisord.swoole.conf /etc/supervisor/conf.d/
+COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/supervisord.*.conf /etc/supervisor/conf.d/
+COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/php.ini ${PHP_INI_DIR}/conf.d/99-octane.ini
+COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/start-container /usr/local/bin/start-container
+COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/healthcheck /usr/local/bin/healthcheck
+
+RUN chmod +x /usr/local/bin/start-container /usr/local/bin/healthcheck
+
+###########################################
+
+FROM base AS common
+
+USER ${USER}
+
 COPY --link --chown=${WWWUSER}:${WWWUSER} composer.json composer.lock ./
 
 RUN composer install \
@@ -135,6 +127,34 @@ RUN composer install \
     --no-scripts \
     --audit
 
+###########################################
+# Build frontend assets with Bun
+###########################################
+
+FROM oven/bun:${BUN_VERSION} AS build
+
+ENV ROOT=/var/www/html
+
+WORKDIR ${ROOT}
+
+COPY --link package.json bun.lock* ./
+
+RUN bun install --frozen-lockfile
+
+COPY --link . .
+COPY --link --from=common ${ROOT}/vendor vendor
+
+RUN bun run build
+
+###########################################
+
+FROM common AS runner
+
+USER ${USER}
+
+ENV WITH_HORIZON=false \
+    WITH_SCHEDULER=false
+
 COPY --link --chown=${WWWUSER}:${WWWUSER} . .
 COPY --link --chown=${WWWUSER}:${WWWUSER} --from=build ${ROOT}/public public
 
@@ -143,21 +163,12 @@ RUN mkdir -p \
     storage/logs \
     bootstrap/cache && chmod -R a+rw storage
 
-COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/supervisord.conf /etc/supervisor/
-COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/octane/Swoole/supervisord.swoole.conf /etc/supervisor/conf.d/
-COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/supervisord.*.conf /etc/supervisor/conf.d/
-COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/php.ini ${PHP_INI_DIR}/conf.d/99-octane.ini
-COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/start-container /usr/local/bin/start-container
-COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/healthcheck /usr/local/bin/healthcheck
-
 RUN composer install \
     --classmap-authoritative \
     --no-interaction \
     --no-ansi \
     --no-dev \
     && composer clear-cache
-
-RUN chmod +x /usr/local/bin/start-container /usr/local/bin/healthcheck
 
 EXPOSE 8000
 
