@@ -127,11 +127,6 @@ RUN composer install \
     --no-scripts \
     --audit
 
-RUN if composer show | grep spiral/roadrunner-cli >/dev/null; then \
-    ./vendor/bin/rr get-binary --quiet; else \
-    echo "`spiral/roadrunner-cli` package is not installed. Exiting..."; exit 1; \
-    fi
-
 ###########################################
 # Build frontend assets with Bun
 ###########################################
@@ -174,6 +169,11 @@ RUN composer install \
     --no-ansi \
     --no-dev \
     && composer clear-cache
+
+RUN if composer show | grep spiral/roadrunner-cli >/dev/null; then \
+    ./vendor/bin/rr get-binary --quiet; else \
+    echo "`spiral/roadrunner-cli` package is not installed. Exiting..."; exit 1; \
+    fi
 
 RUN chmod +x rr
 
