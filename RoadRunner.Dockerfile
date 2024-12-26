@@ -1,7 +1,6 @@
-# Accepted values: 8.3 - 8.2
 ARG PHP_VERSION=8.3
 
-ARG COMPOSER_VERSION=latest
+ARG COMPOSER_VERSION=2.8
 
 ###########################################
 # Build frontend assets with Bun
@@ -44,6 +43,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     WITH_HORIZON=false \
     WITH_SCHEDULER=false \
     OCTANE_SERVER=roadrunner \
+    TZ=${TZ} \
     USER=octane \
     ROOT=/var/www/html \
     COMPOSER_FUND=0 \
@@ -71,6 +71,7 @@ RUN apt-get update; \
     ca-certificates \
     supervisor \
     libsodium-dev \
+    libbrotli-dev \
     # Install PHP extensions
     && install-php-extensions \
     bz2 \
@@ -162,8 +163,6 @@ RUN if composer show | grep spiral/roadrunner-cli >/dev/null; then \
     fi
 
 RUN chmod +x rr /usr/local/bin/start-container /usr/local/bin/healthcheck
-
-RUN cat deployment/utilities.sh >> ~/.bashrc
 
 EXPOSE 8000
 EXPOSE 6001

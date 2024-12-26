@@ -1,9 +1,6 @@
-# Accepted values: 8.3 - 8.2
 ARG PHP_VERSION=8.3
-
-ARG FRANKENPHP_VERSION=latest
-
-ARG COMPOSER_VERSION=latest
+ARG FRANKENPHP_VERSION=1.3.6
+ARG COMPOSER_VERSION=2.8
 
 ###########################################
 # Build frontend assets with Bun
@@ -46,6 +43,7 @@ ENV TERM=xterm-color \
     WITH_HORIZON=false \
     WITH_SCHEDULER=false \
     OCTANE_SERVER=frankenphp \
+    TZ=${TZ} \
     USER=octane \
     ROOT=${APP_DIR} \
     COMPOSER_FUND=0 \
@@ -62,7 +60,7 @@ RUN ln -snf /usr/share/zoneinfo/${TZ} /etc/localtime \
 
 RUN apk update; \
     apk upgrade; \
-    apk add --no-cache \
+    apk add --no-cache --virtual .build-deps \
     curl \
     wget \
     vim \
@@ -72,6 +70,7 @@ RUN apk update; \
     ca-certificates \
     supervisor \
     libsodium-dev \
+    libbrotli-dev \
     # Install PHP extensions (included with dunglas/frankenphp)
     && install-php-extensions \
     bz2 \
@@ -94,6 +93,7 @@ RUN apk update; \
     ldap \
     swoole \
     && docker-php-source delete \
+    && apk del .build-deps \
     && rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
 
 RUN arch="$(apk --print-arch)" \
@@ -161,8 +161,6 @@ RUN composer install \
     && composer clear-cache
 
 RUN chmod +x /usr/local/bin/start-container /usr/local/bin/healthcheck
-
-RUN cat deployment/utilities.sh >> ~/.bashrc
 
 EXPOSE 8000
 EXPOSE 443
