@@ -49,7 +49,7 @@ RUN apt-get update; \
     ca-certificates \
     supervisor \
     libsodium-dev \
-    brotli \
+    libbrotli-dev \
     # Install PHP extensions (included with dunglas/frankenphp)
     && install-php-extensions \
     bz2 \
