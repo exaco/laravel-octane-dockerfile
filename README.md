@@ -93,11 +93,12 @@ return [
 ```
 
 ## Notes
-- Some configurations are highly opinionated, so ensure they align with your needs.
+- Some configurations are highly opinionated, so please make sure they align with your needs.
 - Laravel Octane logs request information only in the `local` environment.
 - Be mindful of the contents of the `.dockerignore` file.
 
 ## ToDo
+- [ ] Add Docker Compose
 - [ ] Add support for PHP 8.4
 - [x] Add support for worker mode
 - [x] Build assets with Bun
