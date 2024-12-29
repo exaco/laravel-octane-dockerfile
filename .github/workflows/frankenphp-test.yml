@@ -122,7 +122,7 @@ jobs:
         working-directory: /var/www/app
 
       - name: Run the Docker container
-        run: docker --rm -p 8000:8000 app:local
+        run: docker run --rm -p 8000:8000 app:local
         working-directory: /var/www/app
 
       - name: Wait for the container
