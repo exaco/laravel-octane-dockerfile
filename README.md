@@ -99,7 +99,7 @@ return [
 
 ## ToDo
 - [ ] Add Docker Compose
-- [ ] Add support for PHP 8.4
+- [x] Add support for PHP 8.4
 - [x] Add support for worker mode
 - [x] Build assets with Bun
 - [ ] Create standalone and self-executable app
