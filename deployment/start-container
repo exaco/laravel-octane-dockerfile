@@ -46,6 +46,10 @@ elif [ "${container_mode}" = "scheduler" ]; then
     initialStuff
     exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.scheduler.conf
 elif [ "${container_mode}" = "worker" ]; then
+    if [ -z "${WORKER_COMMAND}" ]; then
+        echo "WORKER_COMMAND is undefined."
+        exit 1
+    fi
     initialStuff
     exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.worker.conf
 else
