@@ -63,11 +63,11 @@ jobs:
         working-directory: /var/www/app
 
       - name: Run the Docker container
-        run: docker run --rm -p 8000:8000 app:local
+        run: docker run -d --rm  -p 8000:8000 app:local
         working-directory: /var/www/app
 
       - name: Wait for the container
-        run: sleep 10s
+        run: sleep 15s
 
       - name: Check application health
         run: curl -f -s -o /dev/null -w "%{http_code}" http://localhost:8000
@@ -122,11 +122,11 @@ jobs:
         working-directory: /var/www/app
 
       - name: Run the Docker container
-        run: docker run --rm -p 8000:8000 app:local
+        run: docker run -d --rm  -p 8000:8000 app:local
         working-directory: /var/www/app
 
       - name: Wait for the container
-        run: sleep 10s
+        run: sleep 15s
 
       - name: Check application health
         run: curl -f -s -o /dev/null -w "%{http_code}" http://localhost:8000
