@@ -28,6 +28,7 @@ You can run the Docker container in different modes:
 | Horizon               | `horizon`        |
 | Scheduler             | `scheduler`      |
 | Worker                | `worker`         |
+| Reverb                | `reverb`         |
 
 ## Usage
 
@@ -54,6 +55,9 @@ docker run -e CONTAINER_MODE=horizon --rm <image-name>:<tag>
 # Scheduler mode
 docker run -e CONTAINER_MODE=scheduler --rm <image-name>:<tag>
 
+# Reverb mode (Reverb Requires horizon for queues)
+docker run -e CONTAINER_MODE=reverb -e WITH_HORIZON --rm <image-name>:<tag>
+
 # HTTP mode with Horizon
 docker run -e WITH_HORIZON=true -p <port>:8000 --rm <image-name>:<tag>
 
@@ -62,6 +66,9 @@ docker run -e WITH_SCHEDULER=true -p <port>:8000 --rm <image-name>:<tag>
 
 # HTTP mode with Scheduler and Horizon
 docker run -e WITH_SCHEDULER=true -e WITH_HORIZON=true -p <port>:8000 --rm <image-name>:<tag>
+
+# HTTP mode with Scheduler, Horizon and Reverb
+docker run -e WITH_SCHEDULER=true -e WITH_HORIZON=true -e WITH_REVERB=true -p <port>:8000 --rm <image-name>:<tag>
 
 # Worker mode
 docker run -e CONTAINER_MODE=worker -e WORKER_COMMAND="php /var/www/html/artisan foo:bar" --rm <image-name>:<tag>
@@ -106,7 +113,7 @@ return [
 - [x] Add support for Horizon
 - [x] Add support for RoadRunner
 - [x] Add support for FrankenPHP
-- [ ] Add support for Laravel Reverb
+- [x] Add support for Laravel Reverb
 - [x] Add support for the full-stack apps (Front-end assets)
 - [ ] Add support `testing` environment and CI
 - [x] Add support for the Laravel scheduler
