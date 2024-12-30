@@ -150,7 +150,8 @@ FROM common AS runner
 USER ${USER}
 
 ENV WITH_HORIZON=false \
-    WITH_SCHEDULER=false
+    WITH_SCHEDULER=false \
+    WITH_REVERB=false
 
 COPY --link --chown=${WWWUSER}:${WWWUSER} . .
 COPY --link --chown=${WWWUSER}:${WWWUSER} --from=build ${ROOT}/public public
