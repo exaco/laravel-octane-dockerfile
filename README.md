@@ -56,7 +56,7 @@ docker run -e CONTAINER_MODE=horizon --rm <image-name>:<tag>
 docker run -e CONTAINER_MODE=scheduler --rm <image-name>:<tag>
 
 # Reverb mode (Reverb Requires horizon for queues)
-docker run -e CONTAINER_MODE=reverb -e WITH_HORIZON --rm <image-name>:<tag>
+docker run -e CONTAINER_MODE=reverb -e WITH_HORIZON=true --rm <image-name>:<tag>
 
 # HTTP mode with Horizon
 docker run -e WITH_HORIZON=true -p <port>:8000 --rm <image-name>:<tag>
