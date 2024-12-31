@@ -67,7 +67,7 @@ jobs:
         working-directory: /var/www/app
 
       - name: Wait for the container
-        run: sleep 15s
+        run: sleep 30s
 
       - name: Print the container logs
         run: docker logs app
@@ -129,7 +129,7 @@ jobs:
         working-directory: /var/www/app
 
       - name: Wait for the container
-        run: sleep 15s
+        run: sleep 30s
 
       - name: Print the container logs
         run: docker logs app
