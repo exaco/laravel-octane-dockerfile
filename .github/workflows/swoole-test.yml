@@ -15,7 +15,7 @@ on:
 jobs:
   debian-build:
     name: Build and Run Debian-based Docker image
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: true
       matrix:
@@ -63,18 +63,21 @@ jobs:
         working-directory: /var/www/app
 
       - name: Run the Docker container
-        run: docker run -d --rm -p 8000:8000 app:local
+        run: docker run -d --name app --rm -p 8000:8000 app:local
         working-directory: /var/www/app
 
       - name: Wait for the container
         run: sleep 15s
+
+      - name: Print the container logs
+        run: docker logs app
 
       - name: Check application health
         run: curl -f -s -o /dev/null -w "%{http_code}" http://localhost:8000
 
   alpine-build:
     name: Build and Run Alpine-based Docker image
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: true
       matrix:
@@ -122,11 +125,14 @@ jobs:
         working-directory: /var/www/app
 
       - name: Run the Docker container
-        run: docker run -d --rm -p 8000:8000 app:local
+        run: docker run -d --name app --rm -p 8000:8000 app:local
         working-directory: /var/www/app
 
       - name: Wait for the container
         run: sleep 15s
+
+      - name: Print the container logs
+        run: docker logs app
 
       - name: Check application health
         run: curl -f -s -o /dev/null -w "%{http_code}" http://localhost:8000
