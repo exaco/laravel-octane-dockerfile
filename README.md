@@ -12,7 +12,7 @@ powered web services and microservices.
 
 The Docker configuration provides the following setup:
 
-- PHP 8.2 and 8.3 official Debian-based and Alpine-based images
+- PHP 8.3 and 8.4 official Debian-based and Alpine-based images
 - Preconfigured PHP runtime, JIT compiler, and OPcache
 - Preconfigured Caddy server
 - Preconfigured Swoole HTTP server
@@ -99,7 +99,7 @@ return [
 
 ## ToDo
 - [ ] Add Docker Compose
-- [ ] Add support for PHP 8.4
+- [x] Add support for PHP 8.4
 - [x] Add support for worker mode
 - [x] Build assets with Bun
 - [ ] Create standalone and self-executable app
