@@ -9,9 +9,19 @@ if [ "${container_mode}" = "http" ]; then
 elif [ "${container_mode}" = "horizon" ]; then
     php "${ROOT}/artisan" horizon:status
 elif [ "${container_mode}" = "scheduler" ]; then
-    supervisorctl status scheduler:scheduler_00
+    if [ "$(supervisorctl status scheduler:scheduler_0 | awk '{print tolower($2)}')" = "running" ]; then
+        exit 0
+    else
+        echo "Healthcheck failed."
+        exit 1
+    fi
 elif [ "${container_mode}" = "worker" ]; then
-    supervisorctl status worker:worker_00
+    if [ "$(supervisorctl status worker:worker_00 | awk '{print tolower($2)}')" = "running" ]; then
+        exit 0
+    else
+        echo "Healthcheck failed."
+        exit 1
+    fi
 else
     echo "Container mode mismatched."
     exit 1
