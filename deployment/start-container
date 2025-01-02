@@ -10,9 +10,7 @@ echo "Container mode: $container_mode"
 initialStuff() {
     php artisan storage:link; \
     php artisan optimize:clear; \
-    php artisan event:cache; \
-    php artisan config:cache; \
-    php artisan route:cache;
+    php artisan optimize;
 
     if [ "${running_migrations_and_seeders}" = "true" ]; then
         echo "Running migrations and seeding database ..."
