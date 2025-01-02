@@ -1,7 +1,7 @@
 ARG PHP_VERSION=8.4
 ARG COMPOSER_VERSION=2.8
 ARG BUN_VERSION="latest"
-
+ARG APP_ENV
 
 FROM composer:${COMPOSER_VERSION} AS vendor
 
@@ -16,6 +16,7 @@ LABEL org.opencontainers.image.licenses=MIT
 ARG WWWUSER=1000
 ARG WWWGROUP=1000
 ARG TZ=UTC
+ARG APP_ENV
 
 ENV TERM=xterm-color \
     WITH_HORIZON=false \
@@ -23,6 +24,7 @@ ENV TERM=xterm-color \
     OCTANE_SERVER=roadrunner \
     TZ=${TZ} \
     USER=octane \
+    APP_ENV=${APP_ENV} \
     ROOT=/var/www/html \
     COMPOSER_FUND=0 \
     COMPOSER_MAX_PARALLEL_HTTP=24
@@ -62,6 +64,7 @@ RUN apk update; \
     exif \
     pdo_mysql \
     zip \
+    uv \
     intl \
     gd \
     redis \
@@ -131,7 +134,11 @@ RUN composer install \
 
 FROM oven/bun:${BUN_VERSION} AS build
 
-ENV ROOT=/var/www/html
+ARG APP_ENV
+
+ENV ROOT=/var/www/html \
+    APP_ENV=${APP_ENV} \
+    NODE_ENV=${APP_ENV}
 
 WORKDIR ${ROOT}
 
@@ -151,7 +158,8 @@ FROM common AS runner
 USER ${USER}
 
 ENV WITH_HORIZON=false \
-    WITH_SCHEDULER=false
+    WITH_SCHEDULER=false \
+    WITH_REVERB=false
 
 COPY --link --chown=${WWWUSER}:${WWWUSER} . .
 COPY --link --chown=${WWWUSER}:${WWWUSER} --from=build ${ROOT}/public public
@@ -180,6 +188,7 @@ RUN chmod +x rr
 
 EXPOSE 8000
 EXPOSE 6001
+EXPOSE 8080
 
 ENTRYPOINT ["start-container"]
 

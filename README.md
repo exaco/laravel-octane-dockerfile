@@ -28,6 +28,7 @@ You can run the Docker container in different modes:
 | Horizon               | `horizon`        |
 | Scheduler             | `scheduler`      |
 | Worker                | `worker`         |
+| Reverb                | `reverb`         |
 
 ## Usage
 
@@ -36,9 +37,13 @@ You can run the Docker container in different modes:
 ```
 git clone --depth 1 git@github.com:exaco/laravel-octane-dockerfile.git
 ```
-2. Copy cloned directory content including `deployment` directory, `<your-octane-driver>.Dockerfile`, and `.dockerignore` into your Octane powered Laravel project
-3. Change the directory to your Laravel project
-4. Build your image:
+2. Copy the contents of the cloned directory, including the following items, into your Laravel project powered by Octane:
+   - `deployment` directory
+   - `<your-octane-driver>.Dockerfile`
+   - `.dockerignore` 
+    
+1. Change the directory to your Laravel project
+2. Build your image:
 ```
 docker build -t <image-name>:<tag> -f <your-octane-driver>.Dockerfile .
 ```
@@ -54,6 +59,9 @@ docker run -e CONTAINER_MODE=horizon --rm <image-name>:<tag>
 # Scheduler mode
 docker run -e CONTAINER_MODE=scheduler --rm <image-name>:<tag>
 
+# Reverb mode
+docker run -e CONTAINER_MODE=reverb --rm <image-name>:<tag>
+
 # HTTP mode with Horizon
 docker run -e WITH_HORIZON=true -p <port>:8000 --rm <image-name>:<tag>
 
@@ -61,10 +69,25 @@ docker run -e WITH_HORIZON=true -p <port>:8000 --rm <image-name>:<tag>
 docker run -e WITH_SCHEDULER=true -p <port>:8000 --rm <image-name>:<tag>
 
 # HTTP mode with Scheduler and Horizon
-docker run -e WITH_SCHEDULER=true -e WITH_HORIZON=true -p <port>:8000 --rm <image-name>:<tag>
+docker run \
+    -e WITH_SCHEDULER=true \
+    -e WITH_HORIZON=true \
+    -p <port>:8000 \
+    --rm <image-name>:<tag>
+
+# HTTP mode with Scheduler, Horizon and Reverb
+docker run \
+    -e WITH_SCHEDULER=true \
+    -e WITH_HORIZON=true \
+    -e WITH_REVERB=true \
+    -p <port>:8000 \
+    --rm <image-name>:<tag>
 
 # Worker mode
-docker run -e CONTAINER_MODE=worker -e WORKER_COMMAND="php /var/www/html/artisan foo:bar" --rm <image-name>:<tag>
+docker run \
+    -e CONTAINER_MODE=worker \
+    -e WORKER_COMMAND="php /var/www/html/artisan foo:bar" \
+    --rm <image-name>:<tag>
 
 # Running a single command
 docker run --rm <image-name>:<tag> php artisan about
@@ -107,7 +130,7 @@ return [
 - [x] Add support for Horizon
 - [x] Add support for RoadRunner
 - [x] Add support for FrankenPHP
-- [ ] Add support for Laravel Reverb
+- [x] Add support for Laravel Reverb
 - [x] Add support for the full-stack apps (Front-end assets)
 - [ ] Add support `testing` environment and CI
 - [x] Add support for the Laravel scheduler

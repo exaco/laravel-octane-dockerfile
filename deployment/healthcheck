@@ -15,6 +15,13 @@ elif [ "${container_mode}" = "scheduler" ]; then
         echo "Healthcheck failed."
         exit 1
     fi
+elif [ "${container_mode}" = "reverb" ]; then
+    if [ "$(supervisorctl status reverb:reverb_0 | awk '{print tolower($2)}')" = "running" ]; then
+        exit 0
+    else
+        echo "Healthcheck failed."
+        exit 1
+    fi
 elif [ "${container_mode}" = "worker" ]; then
     if [ "$(supervisorctl status worker:worker_00 | awk '{print tolower($2)}')" = "running" ]; then
         exit 0
