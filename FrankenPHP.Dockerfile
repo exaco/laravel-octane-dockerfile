@@ -142,7 +142,7 @@ ARG APP_ENV
 
 ENV ROOT=/var/www/html \
     APP_ENV=${APP_ENV} \
-    NODE_ENV=${APP_ENV}
+    NODE_ENV=${APP_ENV:-production}
 
 WORKDIR ${ROOT}
 
