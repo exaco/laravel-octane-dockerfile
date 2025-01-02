@@ -37,9 +37,13 @@ You can run the Docker container in different modes:
 ```
 git clone --depth 1 git@github.com:exaco/laravel-octane-dockerfile.git
 ```
-2. Copy cloned directory content including `deployment` directory, `<your-octane-driver>.Dockerfile`, and `.dockerignore` into your Octane powered Laravel project
-3. Change the directory to your Laravel project
-4. Build your image:
+2. Copy the contents of the cloned directory, including the following items, into your Laravel project powered by Octane:
+   - `deployment` directory
+   - `<your-octane-driver>.Dockerfile`
+   - `.dockerignore` 
+    
+1. Change the directory to your Laravel project
+2. Build your image:
 ```
 docker build -t <image-name>:<tag> -f <your-octane-driver>.Dockerfile .
 ```

@@ -2,6 +2,7 @@ ARG PHP_VERSION=8.4
 ARG FRANKENPHP_VERSION=1.3.6
 ARG COMPOSER_VERSION=2.8
 ARG BUN_VERSION="latest"
+ARG APP_ENV
 
 FROM composer:${COMPOSER_VERSION} AS vendor
 
@@ -17,12 +18,14 @@ ARG WWWUSER=1000
 ARG WWWGROUP=1000
 ARG TZ=UTC
 ARG APP_DIR=/var/www/html
+ARG APP_ENV
 
 ENV TERM=xterm-color \
     OCTANE_SERVER=frankenphp \
     TZ=${TZ} \
     USER=octane \
     ROOT=${APP_DIR} \
+    APP_ENV=${APP_ENV} \
     COMPOSER_FUND=0 \
     COMPOSER_MAX_PARALLEL_HTTP=24 \
     XDG_CONFIG_HOME=${APP_DIR}/.config \
@@ -131,7 +134,11 @@ RUN composer install \
 
 FROM oven/bun:${BUN_VERSION} AS build
 
-ENV ROOT=/var/www/html
+ARG APP_ENV
+
+ENV ROOT=/var/www/html \
+    APP_ENV=${APP_ENV} \
+    NODE_ENV=${APP_ENV}
 
 WORKDIR ${ROOT}
 
@@ -176,6 +183,7 @@ EXPOSE 8000
 EXPOSE 443
 EXPOSE 443/udp
 EXPOSE 2019
+EXPOSE 8080
 
 ENTRYPOINT ["start-container"]
 
