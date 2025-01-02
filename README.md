@@ -55,8 +55,8 @@ docker run -e CONTAINER_MODE=horizon --rm <image-name>:<tag>
 # Scheduler mode
 docker run -e CONTAINER_MODE=scheduler --rm <image-name>:<tag>
 
-# Reverb mode (Reverb Requires horizon for queues)
-docker run -e CONTAINER_MODE=reverb -e WITH_HORIZON=true --rm <image-name>:<tag>
+# Reverb mode
+docker run -e CONTAINER_MODE=reverb --rm <image-name>:<tag>
 
 # HTTP mode with Horizon
 docker run -e WITH_HORIZON=true -p <port>:8000 --rm <image-name>:<tag>
@@ -65,13 +65,25 @@ docker run -e WITH_HORIZON=true -p <port>:8000 --rm <image-name>:<tag>
 docker run -e WITH_SCHEDULER=true -p <port>:8000 --rm <image-name>:<tag>
 
 # HTTP mode with Scheduler and Horizon
-docker run -e WITH_SCHEDULER=true -e WITH_HORIZON=true -p <port>:8000 --rm <image-name>:<tag>
+docker run \
+    -e WITH_SCHEDULER=true \
+    -e WITH_HORIZON=true \
+    -p <port>:8000 \
+    --rm <image-name>:<tag>
 
 # HTTP mode with Scheduler, Horizon and Reverb
-docker run -e WITH_SCHEDULER=true -e WITH_HORIZON=true -e WITH_REVERB=true -p <port>:8000 --rm <image-name>:<tag>
+docker run \
+    -e WITH_SCHEDULER=true \
+    -e WITH_HORIZON=true \
+    -e WITH_REVERB=true \
+    -p <port>:8000 \
+    --rm <image-name>:<tag>
 
 # Worker mode
-docker run -e CONTAINER_MODE=worker -e WORKER_COMMAND="php /var/www/html/artisan foo:bar" --rm <image-name>:<tag>
+docker run \
+    -e CONTAINER_MODE=worker \
+    -e WORKER_COMMAND="php /var/www/html/artisan foo:bar" \
+    --rm <image-name>:<tag>
 
 # Running a single command
 docker run --rm <image-name>:<tag> php artisan about

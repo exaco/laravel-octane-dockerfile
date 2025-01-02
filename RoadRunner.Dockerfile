@@ -61,6 +61,7 @@ RUN apt-get update; \
     exif \
     pdo_mysql \
     zip \
+    uv \
     intl \
     gd \
     redis \

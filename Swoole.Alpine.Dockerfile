@@ -61,6 +61,7 @@ RUN apk update; \
     exif \
     pdo_mysql \
     zip \
+    uv \
     intl \
     gd \
     redis \
