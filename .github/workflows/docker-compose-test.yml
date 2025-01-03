@@ -47,7 +47,7 @@ jobs:
         working-directory: /var/www
 
       - name: Install Laravel Octane
-        run: sudo composer require laravel/octane
+        run: sudo composer require laravel/octane laravel/horizon && php artisan install:broadcasting --no-interaction
         working-directory: /var/www/app
 
       - name: Copy required content
@@ -57,17 +57,11 @@ jobs:
         run: make down:with-volumes && make build && make up
         working-directory: /var/www/app
 
-      - name: Sleep for 60 seconds
-        uses: jakejarvis/wait-action@master
-        with:
-          time: '60s'
+      - name: Wait for the container
+        run: sleep 60s
 
       - name: Print the container logs
-        run: make logs:app
+        run: docker ps -a && make logs
 
       - name: Check application health
-        uses: nick-fields/retry@v2
-        with:
-          timeout_minutes: 10
-          max_attempts: 30
-          command: curl -f -s -o /dev/null -w "%{http_code}" --insecure https://localhost/up
+        run: curl -f -s -o /dev/null -w "%{http_code}" --insecure https://localhost/up
