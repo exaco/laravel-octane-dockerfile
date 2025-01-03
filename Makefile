@@ -20,8 +20,8 @@ up: ## Up containers
 logs: ## Tail all containers logs
 	docker compose ${DC_RUN_ARGS} logs -f
 
-logs\:app: ## Tail app container logs
-	docker compose ${DC_RUN_ARGS} logs -f app
+logs\:app: ## app container logs
+	docker compose ${DC_RUN_ARGS} logs app
 
 down: ## Stop containers
 	docker compose ${DC_RUN_ARGS} down

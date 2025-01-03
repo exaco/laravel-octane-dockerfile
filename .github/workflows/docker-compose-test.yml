@@ -66,4 +66,8 @@ jobs:
         run: make logs:app
 
       - name: Check application health
-        run: curl -f -s -o /dev/null -w "%{http_code}" --insecure https://localhost/up
+        uses: nick-fields/retry@v2
+        with:
+          timeout_minutes: 10
+          max_attempts: 5
+          command: curl -f -s -o /dev/null -w "%{http_code}" --insecure https://localhost/up
