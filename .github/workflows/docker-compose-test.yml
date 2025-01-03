@@ -57,8 +57,13 @@ jobs:
         run: make up
         working-directory: /var/www/app
 
-      - name: Wait for the container
-        run: sleep 30s
+      - name: Sleep for 30 seconds
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '30s'
+
+      - name: Print the container logs
+        run: make logs:app
 
       - name: Check application health
         run: curl -f -s -o /dev/null -w "%{http_code}" --insecure https://localhost/up
