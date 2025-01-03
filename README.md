@@ -1,4 +1,4 @@
-# Laravel Octane Dockerfile
+# Laravel Docker Setup
 <a href="/LICENSE"><img alt="License" src="https://img.shields.io/github/license/exaco/laravel-octane-dockerfile"></a>
 <a href="https://github.com/exaco/laravel-octane-dockerfile/releases"><img alt="GitHub release (latest by date)" src="https://img.shields.io/github/v/release/exaco/laravel-octane-dockerfile"></a>
 <a href="https://github.com/exaco/laravel-octane-dockerfile/pulls"><img alt="GitHub closed pull requests" src="https://img.shields.io/github/issues-pr-closed/exaco/laravel-octane-dockerfile"></a>
@@ -7,33 +7,48 @@
 <a href="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/tests.yml"><img alt="GitHub Workflow Status" src="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/frankenphp-test.yml/badge.svg"></a>
 
 
-Production-ready Dockerfiles for [Laravel Octane](https://github.com/laravel/octane)
-powered web services and microservices.
+This repository isn't just another Docker setup; it's a finely tuned engine for deploying blazing-fast **Laravel Octane** applications. We've combined the raw power of Octane with the streamlined efficiency of Docker and Docker Compose to create a **production-ready** environment that's ready to launch.
 
-The Docker configuration provides the following setup:
+## Key Features
+* **Octane-Optimized**: Built specifically to harness the performance gains of Laravel Octane, whether you prefer **FrankenPHP**, **Swoole** or **RoadRunner**.
+* **Production-Ready Docker Compose:** A comprehensive Docker Compose file orchestrates a full stack, including:
+  * **Traefik:** Intelligent reverse proxy for routing, load balancing, and secure access.
+  * **PostgreSQL:** Robust and reliable database backend.
+  * **Redis:** Lightning-fast caching for improved response times.
+  * **Minio:** Scalable object storage for your application's assets.
+  * **Typesense:** Powerful search engine to enhance user experience.
+  * **pgAdmin & pghero:** Tools for database management and performance monitoring.
+  * **Backup Service:** Automated backups to protect your valuable data.
+  * **System Monitoring:** Glances and Netdata provide real-time insights into your infrastructure.
+* **Security Hardened:** Includes best practices for security, such as user authentication for exposed services and restricted container privileges.
+* **Flexible Deployment:** Easily deploy to various environments, from local development to production servers.
+* **PHP Powerhouse:** Uses official PHP images (Debian or Alpine based) with pre-configured PHP runtime, JIT compiler, and OPcache for maximum performance.
 
-- PHP 8.3 and 8.4 official Debian-based and Alpine-based images
-- Preconfigured PHP runtime, JIT compiler, and OPcache
-- Preconfigured Caddy server
-- Preconfigured Swoole HTTP server
-- Preconfigured RoadRunner HTTP server
 
-## Container modes
+## Laravel Container modes
 
-You can run the Docker container in different modes:
+Easily launch your container in different modes to handle specific tasks:
 
-| Mode                  | `CONTAINER_MODE` value |
-| --------------------- | ---------------- |
-| HTTP Server (default) | `http` (FrankenPHP / Swoole / RoadRunner) |
-| Horizon               | `horizon`        |
-| Scheduler             | `scheduler`      |
-| Worker                | `worker`         |
-| Reverb                | `reverb`         |
+
+| Mode                  | `CONTAINER_MODE` value | Description
+| --------------------- | ---------------- | ---------------- |
+| HTTP Server (default) | `http` (FrankenPHP / Swoole / RR) | Runs your Laravel Octane application.        |
+| Horizon               | `horizon`        | Manages your queued jobs efficiently.        |
+| Scheduler             | `scheduler`      | Executes scheduled tasks at defined intervals.        |
+| Worker                | `worker`         | A dedicated worker for background processing.        |
+| Reverb                | `reverb`         | Facilitates real-time communication with Laravel Echo.        |
+
+## Prerequisites
+
+- Docker installed on your system
+- Docker Compose installed on your system
+- Setup Laravel Octane, Laravel Horizon and Laravel Reverb
 
 ## Usage
 
 ### Building Docker image
-1. Clone this repository:
+
+1. Clone the repository:
 ```
 git clone --depth 1 git@github.com:exaco/laravel-octane-dockerfile.git
 ```
@@ -47,6 +62,7 @@ git clone --depth 1 git@github.com:exaco/laravel-octane-dockerfile.git
 ```
 docker build -t <image-name>:<tag> -f <your-octane-driver>.Dockerfile .
 ```
+
 ### Running Docker container
 
 ```bash
@@ -92,10 +108,23 @@ docker run \
 # Running a single command
 docker run --rm <image-name>:<tag> php artisan about
 ```
+### Docker Compose
 
-## Configuration
+To deploy your application stack with Docker Compose:
+1. Copy the following items to your code base
+    - `docker-compose.production.yml`
+    - `.env.production`
+    - `Makefile`
+2. Edit `.env.production` and populate it with the appropriate values for your production environment variables (e.g., database credentials, API keys).
+3. Run the command `make up` to start the containers.
+
+> The included `Makefile` offers a range of additional commands for managing your deployment, including options for rebuilding, stopping, and restarting services.
+
+## Dive Deeper: Configuration and Customization
 
 ### Recommended `Swoole` options in `octane.php`
+
+> You can use the `APP_ENV` build argument to specify a different environment file.
 
 ```php
 // config/octane.php
@@ -116,13 +145,13 @@ return [
 ];
 ```
 
-## Notes
-- Some configurations are highly opinionated, so please make sure they align with your needs.
-- Laravel Octane logs request information only in the `local` environment.
-- Be mindful of the contents of the `.dockerignore` file.
+## Essential Notes
+* Some configurations are highly opinionated, so please make sure they align with your needs.
+* Laravel Octane logs request information only in the `local` environment.
+* Be mindful of the contents of the `.dockerignore` file.
 
 ## ToDo
-- [ ] Add Docker Compose
+- [x] Add Docker Compose
 - [x] Add support for PHP 8.4
 - [x] Add support for worker mode
 - [x] Build assets with Bun

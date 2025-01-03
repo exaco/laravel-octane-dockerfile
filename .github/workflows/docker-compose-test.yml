@@ -1,0 +1,64 @@
+name: Docker Compose test
+
+on:
+  push:
+    branches:
+      - main
+    tags-ignore:
+      - '**'
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  build:
+    name: Build and Run Docker Compose
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup PHP with Composer and extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          extensions: dom, curl, libxml, mbstring, zip
+          tools: composer:v2
+          coverage: none
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache PHP dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: "${{ runner.os }}-composer"
+          restore-keys: "${{ runner.os }}-composer-"
+
+      - name: Create app directory
+        run: mkdir -p /var/www
+
+      - name: Install a fresh Laravel app
+        run: sudo composer create-project laravel/laravel app
+        working-directory: /var/www
+
+      - name: Install Laravel Octane
+        run: sudo composer require laravel/octane
+        working-directory: /var/www/app
+
+      - name: Copy required content
+        run: sudo cp -R FrankenPHP.Dockerfile docker-compose.production.yml Makefile .env.production .dockerignore deployment/ /var/www/app/
+
+      - name: Run the Docker Compose
+        run: make up
+        working-directory: /var/www/app
+
+      - name: Wait for the container
+        run: sleep 30s
+
+      - name: Check application health
+        run: curl -f -s -o /dev/null -w "%{http_code}" --insecure https://localhost/up
