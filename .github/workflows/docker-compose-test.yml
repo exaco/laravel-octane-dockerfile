@@ -54,7 +54,7 @@ jobs:
         run: sudo cp -R FrankenPHP.Dockerfile docker-compose.production.yml Makefile .env.production .dockerignore deployment/ /var/www/app/
 
       - name: Run the Docker Compose
-        run: make up
+        run: make down:with-volumes && make build && make up
         working-directory: /var/www/app
 
       - name: Sleep for 60 seconds
