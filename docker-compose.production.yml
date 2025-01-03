@@ -70,7 +70,6 @@ services:
       - "--entryPoints.netdata.address=:19999"
     ports:
       - "127.0.0.1:8190:8190" # traefik
-      - "127.0.0.1:8932:8932" # metrics
       - "80:80" # http
       - "443:443" # https
       - "8080:8080" # reverb
