@@ -117,7 +117,11 @@ To deploy your application stack with Docker Compose:
     - `.env.production`
     - `Makefile`
 2. Edit `.env.production` and populate it with the appropriate values for your production environment variables (e.g., database credentials, API keys).
-3. Run the command `make up` to start the containers.
+3. Run the following command in your project root directory to prevent permission issues:
+```bash
+sudo mkdir -p storage/framework/{sessions,views,cache,testing} storage/logs && sudo chmod -R a+rw storage
+```
+4. Run the command `make up` to start the containers.
 
 > [!NOTE]  
 > The included `Makefile` offers a range of additional commands for managing your deployment, including options for rebuilding, stopping, and restarting services.
