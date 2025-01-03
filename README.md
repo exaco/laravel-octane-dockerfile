@@ -171,6 +171,7 @@ return [
 - [x] Add support for PHP 8.4
 - [x] Add support for worker mode
 - [x] Build assets with Bun
+- [ ] Install more Caddy modules
 - [ ] Create standalone and self-executable app
 - [x] Add support for Horizon
 - [x] Add support for RoadRunner
