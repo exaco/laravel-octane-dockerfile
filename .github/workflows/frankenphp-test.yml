@@ -1,0 +1,138 @@
+name: FrankenPHP test
+
+on:
+  push:
+    branches:
+      - main
+    tags-ignore:
+      - '**'
+    paths-ignore:
+      - '**.md'
+  pull_request:
+    paths-ignore:
+      - '**.md'
+
+jobs:
+  debian-build:
+    name: Build and Run Debian-based Docker image
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: true
+      matrix:
+        php: [ 8.3, 8.4 ]
+    timeout-minutes: 15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup PHP with Composer and extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "${{ matrix.php }}"
+          extensions: dom, curl, libxml, mbstring, zip
+          tools: composer:v2
+          coverage: none
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache PHP dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: "${{ runner.os }}-composer-${{ matrix.setup }}"
+          restore-keys: "${{ runner.os }}-composer-"
+
+      - name: Create app directory
+        run: mkdir -p /var/www
+
+      - name: Install a fresh Laravel app
+        run: sudo composer create-project laravel/laravel app
+        working-directory: /var/www
+
+      - name: Install Laravel Octane
+        run: sudo composer require laravel/octane
+        working-directory: /var/www/app
+
+      - name: Copy required content to dockerize the app
+        run: sudo cp -R FrankenPHP.Dockerfile .dockerignore deployment/ /var/www/app/
+
+      - name: Build image
+        run: docker build -t app:local --build-arg PHP_VERSION=${{ matrix.php }} -f FrankenPHP.Dockerfile .
+        working-directory: /var/www/app
+
+      - name: Run the Docker container
+        run: docker run -d --name app --rm -p 8000:8000 app:local
+        working-directory: /var/www/app
+
+      - name: Wait for the container
+        run: sleep 30s
+
+      - name: Print the container logs
+        run: docker logs app
+
+      - name: Check application health
+        run: curl -f -s -o /dev/null -w "%{http_code}" http://localhost:8000/up
+
+  alpine-build:
+    name: Build and Run Alpine-based Docker image
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: true
+      matrix:
+        php: [ 8.3, 8.4 ]
+    timeout-minutes: 15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup PHP with Composer and extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "${{ matrix.php }}"
+          extensions: dom, curl, libxml, mbstring, zip
+          tools: composer:v2
+          coverage: none
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache PHP dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: "${{ runner.os }}-composer-${{ matrix.setup }}"
+          restore-keys: "${{ runner.os }}-composer-"
+
+      - name: Create app directory
+        run: mkdir -p /var/www
+
+      - name: Install a fresh Laravel app
+        run: sudo composer create-project laravel/laravel app
+        working-directory: /var/www
+
+      - name: Install Laravel Octane
+        run: sudo composer require laravel/octane
+        working-directory: /var/www/app
+
+      - name: Copy required content to dockerize the app
+        run: sudo cp -R FrankenPHP.Alpine.Dockerfile .dockerignore deployment/ /var/www/app/
+
+      - name: Build image
+        run: docker build -t app:local --build-arg PHP_VERSION=${{ matrix.php }} -f FrankenPHP.Alpine.Dockerfile .
+        working-directory: /var/www/app
+
+      - name: Run the Docker container
+        run: docker run -d --name app --rm -p 8000:8000 app:local
+        working-directory: /var/www/app
+
+      - name: Wait for the container
+        run: sleep 30s
+
+      - name: Print the container logs
+        run: docker logs app
+
+      - name: Check application health
+        run: curl -f -s -o /dev/null -w "%{http_code}" http://localhost:8000/up
