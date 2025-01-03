@@ -1,0 +1,438 @@
+x-logging: &default-logging
+  driver: 'json-file'
+  options:
+    max-size: "50m"
+    max-file: 6
+
+x-base: &base
+  profiles: [app]
+  depends_on:
+    pgsql:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+    minio:
+      condition: service_healthy
+  build:
+    context: .
+    dockerfile: FrankenPHP.Dockerfile
+    args:
+      APP_ENV: 'production' # to load .env.production
+      WWWUSER: ${HOST_UID:-1000}
+      WWWGROUP: ${HOST_GID:-1000}
+  image: laravel/app
+  user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
+  ulimits:
+    nofile:
+      soft: 20000
+      hard: 40000
+  security_opt:
+    - no-new-privileges:true
+  networks:
+    - stack
+  volumes:
+    - './storage/app/public:/var/www/html/storage/app/public'
+    - './storage/logs:/var/www/html/storage/logs'
+  logging: *default-logging
+  restart: always
+
+services:
+  traefik:
+    profiles: [app]
+    image: traefik:3.2
+    restart: always
+    ulimits:
+      nofile:
+        soft: 20000
+        hard: 40000
+    security_opt:
+      - no-new-privileges:true
+    command:
+      - "--log.level=WARN"
+      - "--ping=true"
+      - "--api=true"
+      - "--accesslog=true"
+      - "--api.dashboard=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedByDefault=false"
+      - "--entryPoints.traefik.address=:8190"
+      - "--entryPoints.app.address=:80"
+      - "--entryPoints.app.http.redirections.entryPoint.to=app-secure"
+      - "--entryPoints.app.http.redirections.entryPoint.scheme=https"
+      - "--entryPoints.app-secure.address=:443"
+      - "--entryPoints.app-secure.http3=true"
+      - "--entryPoints.reverb.address=:8080"
+      - "--entryPoints.reverb.http3=true"
+      - "--entryPoints.pgadmin.address=:6053"
+      - "--entryPoints.pghero.address=:6660"
+      - "--entryPoints.minio-console.address=:8900"
+      - "--entryPoints.glances.address=:61208"
+      - "--entryPoints.netdata.address=:19999"
+    ports:
+      - "127.0.0.1:8190:8190" # traefik
+      - "127.0.0.1:8932:8932" # metrics
+      - "80:80" # http
+      - "443:443" # https
+      - "8080:8080" # reverb
+      - "127.0.0.1:6053:6053" # pgadmin
+      - "127.0.0.1:6660:6660" # pghero
+      - "127.0.0.1:61208:61208" # glances
+      - "127.0.0.1:8900:8900" # MinIO console
+      - "127.0.0.1:19999:19999" # NetData
+    networks:
+      - stack
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    logging: *default-logging
+    labels:
+      traefik.enable: true
+      traefik.http.routers.traefik.rule: Host(`localhost`) || Host(`${APP_DOMAIN}`)
+      traefik.http.routers.traefik.service: api@internal
+      traefik.http.routers.traefik.entryPoints: traefik
+      traefik.http.routers.traefik.middlewares: "traefik-auth,traefik-retry"
+
+      traefik.http.middlewares.traefik-retry.retry.attempts: 4
+      traefik.http.middlewares.traefik-retry.retry.initialinterval: 100ms
+      traefik.http.middlewares.traefik-auth.basicauth.removeheader: true
+      traefik.http.middlewares.traefik-auth.basicauth.users: "user:$$2y$$05$$8zbpsdxg9wDiiKdqxiB0zeAlxZtG68P1SDBOvCN4IooLFewLx70Gm" # user:123456
+  app:
+    <<: *base
+    healthcheck:
+      test: [ "CMD", "curl", "--fail", "localhost:8000/up" ]
+      interval: 3s
+      retries: 12
+      timeout: 5s
+    labels:
+      traefik.enable: true
+
+      traefik.http.routers.app.rule: Host(`${APP_DOMAIN}`) || Host(`localhost`)
+      traefik.http.routers.app.entryPoints: app
+      traefik.http.routers.app.service: app-service
+      traefik.http.routers.app.middlewares: "redirect-scheme,app-retry,app-compress,security-headers"
+
+      traefik.http.routers.app-secure.rule: Host(`${APP_DOMAIN}`) || Host(`localhost`)
+      traefik.http.routers.app-secure.entryPoints: app-secure
+      traefik.http.routers.app-secure.service: app-service
+      traefik.http.routers.app-secure.tls: true
+      traefik.http.routers.app-secure.middlewares: "redirect-scheme,app-retry,app-compress,security-headers"
+
+      traefik.http.services.app-service.loadbalancer.server.port: 8000 # Because container exposes multiple ports
+      traefik.http.services.app-service.loadbalancer.healthCheck.path: "/up"
+      traefik.http.services.app-service.loadbalancer.healthCheck.hostname: "localhost"
+      traefik.http.services.app-service.loadbalancer.healthCheck.port: 8000
+      traefik.http.services.app-service.loadbalancer.healthCheck.interval: 3s
+      traefik.http.services.app-service.loadbalancer.healthCheck.timeout: 5s
+
+      traefik.http.middlewares.limit.buffering.maxRequestBodyBytes: 460000000 # 460mb
+      traefik.http.middlewares.redirect-scheme.redirectscheme.scheme: https
+      traefik.http.middlewares.redirect-scheme.redirectscheme.permanent: true
+      traefik.http.middlewares.app-retry.retry.attempts: 4
+      traefik.http.middlewares.app-retry.retry.initialinterval: 100ms
+      traefik.http.middlewares.app-compress.compress: true
+      traefik.http.middlewares.security-headers.headers.accesscontrolmaxage: 100
+      traefik.http.middlewares.security-headers.headers.addvaryheader: true # Vary: Origin
+      traefik.http.middlewares.security-headers.headers.hostsproxyheaders: X-Forwarded-Host
+      traefik.http.middlewares.security-headers.headers.stsseconds: 63072000 # Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+      traefik.http.middlewares.security-headers.headers.stsincludesubdomains: true
+      traefik.http.middlewares.security-headers.headers.stspreload: true
+      traefik.http.middlewares.security-headers.headers.forcestsheader: true
+      traefik.http.middlewares.security-headers.headers.customFrameOptionsValue: SAMEORIGIN # X-Frame-Options: same-origin
+      traefik.http.middlewares.security-headers.headers.contenttypenosniff: true # X-Content-Type-Options: nosniff
+      traefik.http.middlewares.security-headers.headers.browserxssfilter: true # X-XSS-Protection: 1; mode=block
+      traefik.http.middlewares.security-headers.headers.referrerpolicy: no-referrer-when-downgrade # Referrer-Policy: no-referrer-when-downgrade
+      traefik.http.middlewares.security-headers.headers.permissionspolicy: camera=(), geolocation=(), microphone=(), payment=(), usb=(), interest-cohort=(), gyroscope=()
+  horizon:
+    <<: *base
+    environment:
+      CONTAINER_MODE: horizon
+    labels:
+      traefik.enable: false
+  scheduler:
+    <<: *base
+    environment:
+      CONTAINER_MODE: scheduler
+    labels:
+      traefik.enable: false
+  reverb:
+    <<: *base
+    environment:
+      CONTAINER_MODE: reverb
+    labels:
+      traefik.enable: true
+      traefik.http.routers.reverb.rule: Host(`${APP_DOMAIN}`) || Host(`localhost`)
+      traefik.http.routers.reverb.entryPoints: reverb
+      traefik.http.routers.reverb.tls: true
+      traefik.http.routers.reverb.middlewares: "reverb-retry"
+      traefik.http.middlewares.reverb-retry.retry.attempts: 4
+      traefik.http.middlewares.reverb-retry.retry.initialinterval: 100ms
+      traefik.http.routers.reverb.service: reverb-service
+      traefik.http.services.reverb-service.loadbalancer.server.port: 8080
+  redis:
+    profiles: [app]
+    image: 'redis:alpine'
+    ulimits:
+      nofile:
+        soft: 20000
+        hard: 40000
+    command: [ "redis-server", "--requirepass", "${REDIS_PASSWORD}", "--maxmemory", "2gb" ]
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - 'stack-redis:/data'
+    networks:
+      - stack
+    logging: *default-logging
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      retries: 3
+      timeout: 5s
+    restart: always
+    labels:
+      traefik.enable: false
+  pgsql:
+    profiles: [app]
+    image: 'postgres:17-bookworm'
+    ulimits:
+      nofile:
+        soft: 20000
+        hard: 40000
+        # command: ["-c", "config_file=/etc/postgresql/postgresql.conf"]
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      PGPASSWORD: '${DB_PASSWORD}'
+      POSTGRES_DB: '${DB_DATABASE}'
+      POSTGRES_USER: '${DB_USERNAME}'
+      POSTGRES_PASSWORD: '${DB_PASSWORD}'
+    volumes:
+      # - './postgresql.conf:/etc/postgresql/postgresql.conf'
+      - 'stack-pgsql:/var/lib/postgresql/data'
+      - '../backup:/backup'
+    networks:
+      - stack
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-q", "-d", "${DB_DATABASE}", "-U", "${DB_USERNAME}"]
+      interval: 15s
+      retries: 12
+      timeout: 20s
+    restart: always
+    logging: *default-logging
+    labels:
+      traefik.enable: false
+      docker-volume-backup.stop-during-backup: true
+      docker-volume-backup.archive-pre: /bin/sh -c 'pg_dump -U ${DB_USERNAME} -F t ${DB_DATABASE} > /backup/${DB_DATABASE}-database.tar'
+  pgadmin:
+    profiles: [administration]
+    image: 'dpage/pgadmin4:latest'
+    security_opt:
+      - no-new-privileges:true
+    depends_on:
+      pgsql:
+        condition: service_healthy
+    environment:
+      PGADMIN_DEFAULT_EMAIL: '${PGADMIN_DEFAULT_EMAIL}'
+      PGADMIN_DEFAULT_PASSWORD: '${PGADMIN_DEFAULT_PASSWORD}'
+      PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION: 'True'
+    volumes:
+      - 'stack-pgadmin:/var/lib/pgadmin'
+    networks:
+      - stack
+    restart: always
+    logging: *default-logging
+    labels:
+      traefik.enable: true
+      traefik.http.routers.pgadmin.rule: Host(`localhost`)
+      traefik.http.routers.pgadmin.entryPoints: pgadmin
+      traefik.http.routers.pgadmin.middlewares: "pgadmin-auth,pgadmin-retry"
+      traefik.http.middlewares.pgadmin-retry.retry.attempts: 4
+      traefik.http.middlewares.pgadmin-retry.retry.initialinterval: 100ms
+      traefik.http.middlewares.pgadmin-auth.basicauth.removeheader: true
+      traefik.http.middlewares.pgadmin-auth.basicauth.users: "user:$$2y$$05$$8zbpsdxg9wDiiKdqxiB0zeAlxZtG68P1SDBOvCN4IooLFewLx70Gm" # user:123456
+  pghero:
+    profiles: [administration]
+    image: ankane/pghero
+    security_opt:
+      - no-new-privileges:true
+    depends_on:
+      pgsql:
+        condition: service_healthy
+    environment:
+      PORT: 6660
+      DATABASE_URL: postgres://${DB_USERNAME}:${DB_PASSWORD}@pgsql:5432/${DB_DATABASE}
+    networks:
+      - stack
+    restart: always
+    logging: *default-logging
+    labels:
+      traefik.enable: true
+      traefik.http.routers.pghero.rule: Host(`localhost`)
+      traefik.http.routers.pghero.entryPoints: pghero
+      traefik.http.routers.pghero.middlewares: "pghero-auth,pghero-retry"
+      traefik.http.middlewares.pghero-retry.retry.attempts: 4
+      traefik.http.middlewares.pghero-retry.retry.initialinterval: 100ms
+      traefik.http.middlewares.pghero-auth.basicauth.removeheader: true
+      traefik.http.middlewares.pghero-auth.basicauth.users: "user:$$2y$$05$$8zbpsdxg9wDiiKdqxiB0zeAlxZtG68P1SDBOvCN4IooLFewLx70Gm" # user:123456
+      traefik.http.routers.pghero.service: pghero-service
+      traefik.http.services.pghero-service.loadbalancer.server.port: 6660
+  typesense:
+    profiles: [app]
+    image: 'typesense/typesense:0.25.2'
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      TYPESENSE_DATA_DIR: '${TYPESENSE_DATA_DIR:-/typesense-data}'
+      TYPESENSE_API_KEY: '${TYPESENSE_API_KEY}'
+      TYPESENSE_ENABLE_CORS: '${TYPESENSE_ENABLE_CORS:-true}'
+    volumes:
+      - 'stack-typesense:/typesense-data'
+    networks:
+      - stack
+    healthcheck:
+      test: [ "CMD", "wget", "--no-verbose", "--spider", "http://localhost:8108/health" ]
+      interval: 3s
+      retries: 12
+      timeout: 5s
+    restart: always
+    logging: *default-logging
+    labels:
+      traefik.enable: false
+  backup:
+    profiles: [administration]
+    image: offen/docker-volume-backup:v2
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      BACKUP_FILENAME: backup-%Y-%m-%dT%H-%M-%S.tar.gz
+      BACKUP_PRUNING_PREFIX: backup-
+      BACKUP_CRON_EXPRESSION: "0 2 * * *" # run every day at 2am
+      BACKUP_RETENTION_DAYS: '7'
+    restart: always
+    depends_on:
+      pgsql:
+        condition: service_healthy
+    logging: *default-logging
+    volumes:
+      - stack-pgsql:/backup/pgsql:ro
+      - ../backup/volumes:/archive
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    labels:
+      traefik.enable: false
+  minio:
+    profiles: [app]
+    image: 'minio/minio:latest'
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      MINIO_ROOT_USER: '${MINIO_ROOT_USER}'
+      MINIO_ROOT_PASSWORD: '${MINIO_ROOT_PASSWORD}'
+    volumes:
+      - 'stack-minio:/data/minio'
+    networks:
+      - stack
+    command: 'minio server /data/minio --console-address ":8900"'
+    restart: always
+    logging: *default-logging
+    labels:
+      traefik.enable: true
+
+      traefik.http.routers.minio-console.rule: Host(`localhost`)
+      traefik.http.routers.minio-console.entryPoints: minio-console
+      traefik.http.routers.minio-console.service: minio-console-service
+      traefik.http.routers.minio-console.middlewares: "minio-auth,minio-retry"
+      traefik.http.services.minio-console-service.loadbalancer.server.port: 8900
+
+      traefik.http.routers.minio.rule: Host(`${APP_DOMAIN}`) || Host(`localhost`)
+      traefik.http.routers.minio.entryPoints: app,app-secure
+      traefik.http.routers.minio.service: minio-service
+      traefik.http.routers.minio.middlewares: "minio-retry,minio-compress"
+      traefik.http.services.minio-service.loadbalancer.server.port: 9000
+
+      traefik.http.middlewares.minio-compress.compress: true
+      traefik.http.middlewares.minio-retry.retry.attempts: 4
+      traefik.http.middlewares.minio-retry.retry.initialinterval: 100ms
+      traefik.http.middlewares.minio-auth.basicauth.removeheader: true
+      traefik.http.middlewares.minio-auth.basicauth.users: "user:$$2y$$05$$8zbpsdxg9wDiiKdqxiB0zeAlxZtG68P1SDBOvCN4IooLFewLx70Gm" # user:123456
+    healthcheck:
+      test: [ "CMD", "mc", "ready", "local" ]
+      retries: 3
+      timeout: 5s
+  glances:
+    profiles: [administration]
+    image: nicolargo/glances:latest-full
+    pid: host
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /etc/os-release:/etc/os-release:ro
+    environment:
+      - "GLANCES_OPT=-w"
+      - TZ="${APP_TIMEZONE}"
+    networks:
+      - stack
+    logging: *default-logging
+    restart: always
+    labels:
+      traefik.enable: true
+      traefik.http.routers.glances.rule: Host(`localhost`)
+      traefik.http.routers.glances.entryPoints: glances
+      traefik.http.routers.glances.middlewares: "glances-auth,glances-retry"
+      traefik.http.middlewares.glances-retry.retry.attempts: 4
+      traefik.http.middlewares.glances-retry.retry.initialinterval: 100ms
+      traefik.http.middlewares.glances-auth.basicauth.removeheader: true
+      traefik.http.middlewares.glances-auth.basicauth.users: "user:$$2y$$05$$8zbpsdxg9wDiiKdqxiB0zeAlxZtG68P1SDBOvCN4IooLFewLx70Gm" # user:123456
+  netdata:
+    profiles: [administration]
+    image: netdata/netdata
+    restart: unless-stopped
+    cap_add:
+      - SYS_PTRACE
+      - SYS_ADMIN
+    security_opt:
+      - apparmor:unconfined
+    logging: *default-logging
+    networks:
+      - stack
+    volumes:
+      - stack-netdataconfig:/etc/netdata
+      - stack-netdatalib:/var/lib/netdata
+      - stack-netdatacache:/var/cache/netdata
+      - /:/host/root:ro,rslave
+      - /etc/passwd:/host/etc/passwd:ro
+      - /etc/group:/host/etc/group:ro
+      - /etc/localtime:/etc/localtime:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /etc/os-release:/host/etc/os-release:ro
+      - /var/log:/host/var/log:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      traefik.enable: true
+      traefik.http.routers.netdata.rule: Host(`localhost`)
+      traefik.http.routers.netdata.entryPoints: netdata
+      traefik.http.routers.netdata.middlewares: "netdata-auth"
+      traefik.http.middlewares.netdata-auth.basicauth.removeheader: true
+      traefik.http.middlewares.netdata-auth.basicauth.users: "user:$$2y$$05$$8zbpsdxg9wDiiKdqxiB0zeAlxZtG68P1SDBOvCN4IooLFewLx70Gm" # user:123456
+networks:
+  stack:
+    driver: bridge
+volumes:
+  stack-pgsql:
+    driver: local
+  stack-redis:
+    driver: local
+  stack-pgadmin:
+    driver: local
+  stack-minio:
+    driver: local
+  stack-typesense:
+    driver: local
+  stack-netdataconfig:
+    driver: local
+  stack-netdatalib:
+    driver: local
+  stack-netdatacache:
+    driver: local
+
