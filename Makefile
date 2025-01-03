@@ -6,7 +6,7 @@ DC_RUN_ARGS = --env-file ./application/.env.production --profile app --profile a
 HOST_UID=$(shell id -u)
 HOST_GID=$(shell id -g)
 
-.PHONY : help up down shell\:app git\:export git\:import stop-all ps update build restart down-up images\:list images\:clean logs\:app logs containers\:health
+.PHONY : help up down shell\:app stop-all ps update build restart down-up images\:list images\:clean logs\:app logs containers\:health
 .DEFAULT_GOAL : help
 
 # This will output the help for each task. thanks to https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
@@ -31,14 +31,6 @@ down\:with-volumes: ## Stop containers and remove volumes
 
 shell\:app: ## Start shell into app container
 	docker compose ${DC_RUN_ARGS} exec app sh
-
-git\:export: ## Export from Git
-	git archive -o latest.zip HEAD
-	@printf "\n   \e[30;42m %s \033[0m\n\n" 'Exported at ⇒ ./latest.zip';
-
-git\:import: ## Unzip latest.zip
-	unzip ./latest.zip
-	@printf "\n   \e[30;42m %s \033[0m\n\n" 'Done';
 
 stop-all: ## Stop all containers
 	docker stop $(shell docker ps -a -q)
