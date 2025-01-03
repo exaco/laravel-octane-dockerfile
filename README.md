@@ -32,7 +32,7 @@ Easily launch your container in different modes to handle specific tasks:
 
 | Mode                  | `CONTAINER_MODE` value | Description
 | --------------------- | ---------------- | ---------------- |
-| HTTP Server (default) | `http` (FrankenPHP / Swoole / RR) | Runs your Laravel Octane application.        |
+| HTTP Server (default) | `http` | Runs your Laravel Octane application.        |
 | Horizon               | `horizon`        | Manages your queued jobs efficiently.        |
 | Scheduler             | `scheduler`      | Executes scheduled tasks at defined intervals.        |
 | Worker                | `worker`         | A dedicated worker for background processing.        |
