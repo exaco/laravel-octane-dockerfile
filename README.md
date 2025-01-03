@@ -22,7 +22,6 @@ A finely tuned engine for deploying blazing-fast **Laravel Octane** applications
   * **Backup Service:** Automated backups to protect your valuable data.
   * **System Monitoring:** Glances and Netdata provide real-time insights into your infrastructure.
 * **Security Hardened:** Includes best practices for security, such as user authentication for exposed services and restricted container privileges.
-* **Flexible Deployment:** Easily deploy to various environments, from local development to production servers.
 * **PHP Powerhouse:** Uses official PHP images (Debian or Alpine based) with pre-configured PHP runtime, JIT compiler, and OPcache for maximum performance.
 
 
@@ -120,13 +119,17 @@ To deploy your application stack with Docker Compose:
 2. Edit `.env.production` and populate it with the appropriate values for your production environment variables (e.g., database credentials, API keys).
 3. Run the command `make up` to start the containers.
 
+> [!NOTE]  
 > The included `Makefile` offers a range of additional commands for managing your deployment, including options for rebuilding, stopping, and restarting services.
 
-## Dive Deeper: Configuration and Customization
+> [!CAUTION]
+> Do not forget to edit `.env.production`!
+
+## Configuration and Customization
+
+* You can use the `APP_ENV` build argument to specify a different environment file.
 
 ### Recommended `Swoole` options in `octane.php`
-
-> You can use the `APP_ENV` build argument to specify a different environment file.
 
 ```php
 // config/octane.php

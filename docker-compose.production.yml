@@ -98,7 +98,7 @@ services:
   app:
     <<: *base
     healthcheck:
-      test: [ "CMD", "curl", "--fail", "localhost:80/up" ]
+      test: [ "CMD", "curl", "--fail", "localhost:8000/up" ]
       interval: 3s
       retries: 12
       timeout: 5s
@@ -116,10 +116,10 @@ services:
       traefik.http.routers.app-secure.tls: true
       traefik.http.routers.app-secure.middlewares: "redirect-scheme,app-retry,app-compress,security-headers"
 
-      traefik.http.services.app-service.loadbalancer.server.port: 80 # Because container exposes multiple ports
+      traefik.http.services.app-service.loadbalancer.server.port: 8000 # Because container exposes multiple ports
       traefik.http.services.app-service.loadbalancer.healthCheck.path: "/up"
       traefik.http.services.app-service.loadbalancer.healthCheck.hostname: "localhost"
-      traefik.http.services.app-service.loadbalancer.healthCheck.port: 80
+      traefik.http.services.app-service.loadbalancer.healthCheck.port: 8000
       traefik.http.services.app-service.loadbalancer.healthCheck.interval: 3s
       traefik.http.services.app-service.loadbalancer.healthCheck.timeout: 5s
 
@@ -200,14 +200,14 @@ services:
     security_opt:
       - no-new-privileges:true
     environment:
-      PGPASSWORD: '${DB_PASSWORD:-123456}'
+      PGPASSWORD: '${DB_PASSWORD}'
       POSTGRES_DB: '${DB_DATABASE}'
       POSTGRES_USER: '${DB_USERNAME}'
-      POSTGRES_PASSWORD: '${DB_PASSWORD:-123456}'
+      POSTGRES_PASSWORD: '${DB_PASSWORD}'
     volumes:
       # - './postgresql.conf:/etc/postgresql/postgresql.conf'
       - 'stack-pgsql:/var/lib/postgresql/data'
-      - './backup:/backup'
+      - '../backup:/backup'
     networks:
       - stack
     healthcheck:

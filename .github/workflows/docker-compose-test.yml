@@ -60,15 +60,14 @@ jobs:
       - name: Sleep for 30 seconds
         uses: jakejarvis/wait-action@master
         with:
-          time: '60s'
+          time: '30s'
 
       - name: Print the container logs
-        run: docker compose --env-file ./.env.production --profile app --profile administration -f docker-compose.production.yml logs app
+        run: make logs:app
 
       - name: Check application health
         uses: nick-fields/retry@v2
         with:
           timeout_minutes: 10
-          retry_wait_seconds: 15
-          max_attempts: 30
+          max_attempts: 10
           command: curl -f -s -o /dev/null -w "%{http_code}" --insecure https://localhost/up
