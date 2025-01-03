@@ -57,10 +57,10 @@ jobs:
         run: make up
         working-directory: /var/www/app
 
-      - name: Sleep for 30 seconds
+      - name: Sleep for 60 seconds
         uses: jakejarvis/wait-action@master
         with:
-          time: '30s'
+          time: '60s'
 
       - name: Print the container logs
         run: make logs:app
@@ -69,5 +69,5 @@ jobs:
         uses: nick-fields/retry@v2
         with:
           timeout_minutes: 10
-          max_attempts: 10
+          max_attempts: 20
           command: curl -f -s -o /dev/null -w "%{http_code}" --insecure https://localhost/up
