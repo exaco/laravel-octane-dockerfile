@@ -69,5 +69,5 @@ jobs:
         uses: nick-fields/retry@v2
         with:
           timeout_minutes: 10
-          max_attempts: 5
+          max_attempts: 10
           command: curl -f -s -o /dev/null -w "%{http_code}" --insecure https://localhost/up
