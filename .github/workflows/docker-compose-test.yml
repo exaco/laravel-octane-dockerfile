@@ -54,14 +54,14 @@ jobs:
         run: sudo cp -R FrankenPHP.Dockerfile docker-compose.production.yml Makefile .env.production .dockerignore deployment/ /var/www/app/
 
       - name: Run the Docker Compose
-        run: make down:with-volumes && make build && make up
+        run: sudo make down:with-volumes && sudo make build && sudo make up
         working-directory: /var/www/app
 
       - name: Wait for the container
         run: sleep 60s
 
       - name: Print the container logs
-        run: docker ps -a && make logs
+        run: sudo docker ps -a && sudo make logs
 
       - name: Check application health
         run: curl -f -s -o /dev/null -w "%{http_code}" --insecure https://localhost/up
