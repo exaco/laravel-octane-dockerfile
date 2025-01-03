@@ -112,7 +112,7 @@ docker run --rm <image-name>:<tag> php artisan about
 ### Docker Compose
 
 To deploy your application stack with Docker Compose:
-1. Copy the following items to your code base
+1. Copy the following items to your code base:
     - `docker-compose.production.yml`
     - `.env.production`
     - `Makefile`
