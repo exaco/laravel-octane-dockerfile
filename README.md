@@ -7,9 +7,10 @@
 <a href="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/tests.yml"><img alt="GitHub Workflow Status" src="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/frankenphp-test.yml/badge.svg"></a>
 
 
-This repository isn't just another Docker setup; it's a finely tuned engine for deploying blazing-fast **Laravel Octane** applications. We've combined the raw power of Octane with the streamlined efficiency of Docker and Docker Compose to create a **production-ready** environment that's ready to launch.
+A finely tuned engine for deploying blazing-fast **Laravel Octane** applications. It combines the raw power of Octane with the streamlined efficiency of Docker and Docker Compose to create a **production-ready** environment that's ready to launch.
 
 ## Key Features
+
 * **Octane-Optimized**: Built specifically to harness the performance gains of Laravel Octane, whether you prefer **FrankenPHP**, **Swoole** or **RoadRunner**.
 * **Production-Ready Docker Compose:** A comprehensive Docker Compose file orchestrates a full stack, including:
   * **Traefik:** Intelligent reverse proxy for routing, load balancing, and secure access.
@@ -108,6 +109,7 @@ docker run \
 # Running a single command
 docker run --rm <image-name>:<tag> php artisan about
 ```
+
 ### Docker Compose
 
 To deploy your application stack with Docker Compose:
@@ -146,6 +148,7 @@ return [
 ```
 
 ## Essential Notes
+
 * Some configurations are highly opinionated, so please make sure they align with your needs.
 * Laravel Octane logs request information only in the `local` environment.
 * Be mindful of the contents of the `.dockerignore` file.
@@ -174,6 +177,7 @@ Thank you for considering contributing! If you find an issue, or have a better w
 issue, or a PR.
 
 ## Credits
+
 - [SMortexa](https://github.com/smortexa)
 - [All contributors](https://github.com/exaco/laravel-octane-dockerfile/graphs/contributors)
 
