@@ -47,7 +47,7 @@ jobs:
         working-directory: /var/www
 
       - name: Install Laravel Octane
-        run: sudo composer require laravel/octane laravel/horizon && sudo php artisan install:broadcasting --no-interaction
+        run: sudo composer require laravel/octane laravel/horizon && script -e -c "php artisan install:broadcasting --no-interaction --force" 
         working-directory: /var/www/app
 
       - name: Copy required content
