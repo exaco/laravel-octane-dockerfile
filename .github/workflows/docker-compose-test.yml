@@ -61,7 +61,7 @@ jobs:
         run: sleep 60s
 
       - name: Print the container logs
-        run: sudo docker ps -a && sudo make logs
+        run: sudo docker ps -a && docker logs app-app-1
 
       - name: Check application health
         run: curl -f -s -o /dev/null -w "%{http_code}" --insecure https://localhost/up
