@@ -53,6 +53,12 @@ jobs:
       - name: Copy required content
         run: sudo cp -R FrankenPHP.Dockerfile docker-compose.production.yml Makefile .env.production .dockerignore deployment/ /var/www/app/
 
+      - name: Prepare the environment
+        run: RUN mkdir -p \
+              storage/framework/{sessions,views,cache,testing} \
+              storage/logs \
+              bootstrap/cache && chmod -R a+rw storage bootstrap/cache
+
       - name: Run the Docker Compose
         run: sudo make down:with-volumes && sudo make build && sudo make up
         working-directory: /var/www/app
