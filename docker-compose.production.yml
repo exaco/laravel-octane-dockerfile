@@ -65,6 +65,7 @@ services:
       - "--entryPoints.reverb.http3=true"
       - "--entryPoints.pgadmin.address=:6053"
       - "--entryPoints.pghero.address=:6660"
+      - "--entryPoints.minio.address=:9000"
       - "--entryPoints.minio-console.address=:8900"
       - "--entryPoints.glances.address=:61208"
       - "--entryPoints.netdata.address=:19999"
@@ -76,6 +77,7 @@ services:
       - "127.0.0.1:6053:6053" # pgadmin
       - "127.0.0.1:6660:6660" # pghero
       - "127.0.0.1:61208:61208" # glances
+      - "9000:9000" # MinIO
       - "127.0.0.1:8900:8900" # MinIO console
       - "127.0.0.1:19999:19999" # NetData
     networks:
