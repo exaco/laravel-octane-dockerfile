@@ -33,7 +33,7 @@ shell\:app: ## Start shell into app container
 	docker compose ${DC_RUN_ARGS} exec app sh
 
 shell: ## Run a command in the app container
-	docker compose ${DC_RUN_ARGS} exec app $(COMMAND)
+	docker compose ${DC_RUN_ARGS} exec app sh -c "$(COMMAND)"
 
 stop-all: ## Stop all containers
 	docker stop $(shell docker ps -a -q)
