@@ -70,14 +70,14 @@ services:
       - "--entryPoints.glances.address=:61208"
       - "--entryPoints.netdata.address=:19999"
     ports:
-      - "127.0.0.1:8190:8190" # traefik
-      - "80:80" # http
-      - "443:443" # https
-      - "443:443/udp"
-      - "8080:8080" # reverb
-      - "127.0.0.1:6053:6053" # pgadmin
-      - "127.0.0.1:6660:6660" # pghero
-      - "127.0.0.1:61208:61208" # glances
+      - "127.0.0.1:8190:8190" # Traefik
+      - "80:80" # HTTP
+      - "443:443" # HTTPS
+      - "443:443/udp" # HTTP/3
+      - "8080:8080" # Reverb
+      - "127.0.0.1:6053:6053" # pgAdmin
+      - "127.0.0.1:6660:6660" # PgHero
+      - "127.0.0.1:61208:61208" # Glances
       - "9000:9000" # MinIO
       - "127.0.0.1:8900:8900" # MinIO console
       - "127.0.0.1:19999:19999" # NetData
