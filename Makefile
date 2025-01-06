@@ -32,6 +32,9 @@ down\:with-volumes: ## Stop containers and remove volumes
 shell\:app: ## Start shell into app container
 	docker compose ${DC_RUN_ARGS} exec app sh
 
+shell: ## Run a command in the app container
+	docker compose ${DC_RUN_ARGS} exec app $(COMMAND)
+
 stop-all: ## Stop all containers
 	docker stop $(shell docker ps -a -q)
 
