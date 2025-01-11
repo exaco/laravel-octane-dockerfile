@@ -96,7 +96,8 @@ RUN arch="$(uname -m)" \
 
 RUN userdel --remove --force www-data \
     && groupadd --force -g ${WWWGROUP} ${USER} \
-    && useradd -ms /bin/bash --no-log-init --no-user-group -g ${WWWGROUP} -u ${WWWUSER} ${USER}
+    && useradd -ms /bin/bash --no-log-init --no-user-group -g ${WWWGROUP} -u ${WWWUSER} ${USER} \
+    && setcap -r /usr/local/bin/frankenphp
 
 RUN chown -R ${USER}:${USER} ${ROOT} /var/{log,run} \
     && chmod -R a+rw ${ROOT} /var/{log,run}
