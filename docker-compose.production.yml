@@ -18,6 +18,7 @@ x-base: &base
     dockerfile: FrankenPHP.Dockerfile
     args:
       APP_ENV: 'production' # to load .env.production
+      APP_DOMAIN: '${APP_DOMAIN}'
       WWWUSER: ${HOST_UID:-1000}
       WWWGROUP: ${HOST_GID:-1000}
   image: laravel/app
