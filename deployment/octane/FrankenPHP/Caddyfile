@@ -7,9 +7,7 @@
 		worker "{$APP_PUBLIC_PATH}/frankenphp-worker.php" {$CADDY_SERVER_WORKER_COUNT}
 	}
 
-	servers {
-		metrics
-	}
+	metrics
 }
 
 {$CADDY_SERVER_SERVER_NAME} {
