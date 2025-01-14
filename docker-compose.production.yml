@@ -347,7 +347,7 @@ services:
       traefik.http.services.minio-console-service.loadbalancer.server.port: 8900
 
       traefik.http.routers.minio.rule: Host(`${APP_DOMAIN}`) || Host(`localhost`)
-      traefik.http.routers.minio.entryPoints: app,app-secure
+      traefik.http.routers.minio.entryPoints: minio
       traefik.http.routers.minio.service: minio-service
       traefik.http.routers.minio.middlewares: "minio-retry,minio-compress"
       traefik.http.services.minio-service.loadbalancer.server.port: 9000
