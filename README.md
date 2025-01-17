@@ -172,7 +172,7 @@ return [
 - [x] Add support for worker mode
 - [x] Build assets with Bun
 - [x] Install more Caddy modules
-- [ ] Create standalone and self-executable app
+- [x] Create standalone and self-executable app
 - [x] Add support for Horizon
 - [x] Add support for RoadRunner
 - [x] Add support for FrankenPHP
