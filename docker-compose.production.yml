@@ -18,7 +18,7 @@ x-base: &base
     dockerfile: FrankenPHP.Dockerfile
     args:
       APP_ENV: 'production' # to load .env.production
-      APP_DOMAIN: '${APP_DOMAIN}'
+      APP_HOST: '${APP_HOST}'
       WWWUSER: ${HOST_UID:-1000}
       WWWGROUP: ${HOST_GID:-1000}
   image: laravel/app
@@ -89,7 +89,7 @@ services:
     logging: *default-logging
     labels:
       traefik.enable: true
-      traefik.http.routers.traefik.rule: Host(`localhost`) || Host(`${APP_DOMAIN}`)
+      traefik.http.routers.traefik.rule: Host(`localhost`) || Host(`${APP_HOST}`)
       traefik.http.routers.traefik.service: api@internal
       traefik.http.routers.traefik.entryPoints: traefik
       traefik.http.routers.traefik.middlewares: "traefik-auth,traefik-retry"
@@ -108,12 +108,12 @@ services:
     labels:
       traefik.enable: true
 
-      traefik.http.routers.app.rule: Host(`${APP_DOMAIN}`) || Host(`localhost`)
+      traefik.http.routers.app.rule: Host(`${APP_HOST}`) || Host(`localhost`)
       traefik.http.routers.app.entryPoints: app
       traefik.http.routers.app.service: app-service
       traefik.http.routers.app.middlewares: "redirect-scheme,app-retry,app-compress,security-headers"
 
-      traefik.http.routers.app-secure.rule: Host(`${APP_DOMAIN}`) || Host(`localhost`)
+      traefik.http.routers.app-secure.rule: Host(`${APP_HOST}`) || Host(`localhost`)
       traefik.http.routers.app-secure.entryPoints: app-secure
       traefik.http.routers.app-secure.service: app-service
       traefik.http.routers.app-secure.tls: true
@@ -162,7 +162,7 @@ services:
       CONTAINER_MODE: reverb
     labels:
       traefik.enable: true
-      traefik.http.routers.reverb.rule: Host(`${APP_DOMAIN}`) || Host(`localhost`)
+      traefik.http.routers.reverb.rule: Host(`${APP_HOST}`) || Host(`localhost`)
       traefik.http.routers.reverb.entryPoints: reverb
       traefik.http.routers.reverb.tls: true
       traefik.http.routers.reverb.middlewares: "reverb-retry"
@@ -346,7 +346,7 @@ services:
       traefik.http.routers.minio-console.middlewares: "minio-auth,minio-retry"
       traefik.http.services.minio-console-service.loadbalancer.server.port: 8900
 
-      traefik.http.routers.minio.rule: Host(`${APP_DOMAIN}`) || Host(`localhost`)
+      traefik.http.routers.minio.rule: Host(`${APP_HOST}`) || Host(`localhost`)
       traefik.http.routers.minio.entryPoints: minio
       traefik.http.routers.minio.service: minio-service
       traefik.http.routers.minio.middlewares: "minio-retry,minio-compress"

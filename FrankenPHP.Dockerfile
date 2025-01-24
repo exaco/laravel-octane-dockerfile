@@ -36,7 +36,7 @@ ARG WWWGROUP=1000
 ARG TZ=UTC
 ARG APP_DIR=/var/www/html
 ARG APP_ENV
-ARG APP_DOMAIN
+ARG APP_HOST
 
 ENV DEBIAN_FRONTEND=noninteractive \
     TERM=xterm-color \
@@ -49,7 +49,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     COMPOSER_MAX_PARALLEL_HTTP=24 \
     XDG_CONFIG_HOME=${APP_DIR}/.config \
     XDG_DATA_HOME=${APP_DIR}/.data \
-    SERVER_NAME=${APP_DOMAIN}
+    SERVER_NAME=${APP_HOST}
 
 WORKDIR ${ROOT}
 
@@ -128,7 +128,7 @@ USER ${USER}
 
 COPY --link --chown=${WWWUSER}:${WWWUSER} --from=vendor /usr/bin/composer /usr/bin/composer
 
-COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/supervisord.conf /etc/supervisor/
+COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/supervisord.conf /etc/
 COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/octane/FrankenPHP/supervisord.frankenphp.conf /etc/supervisor/conf.d/
 COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/supervisord.*.conf /etc/supervisor/conf.d/
 COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/start-container /usr/local/bin/start-container
