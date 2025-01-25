@@ -73,7 +73,6 @@ RUN apt-get update; \
     igbinary \
     ldap \
     swoole \
-    igbinary \
     && apt-get -y autoremove \
     && apt-get clean \
     && docker-php-source delete \
