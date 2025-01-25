@@ -72,7 +72,6 @@ RUN apt-get update; \
     memcached \
     igbinary \
     ldap \
-    igbinary \
     && apt-get -y autoremove \
     && apt-get clean \
     && docker-php-source delete \
