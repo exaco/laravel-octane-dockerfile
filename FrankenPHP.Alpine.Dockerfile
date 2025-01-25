@@ -91,7 +91,6 @@ RUN apk update; \
     memcached \
     igbinary \
     ldap \
-    igbinary \
     && docker-php-source delete \
     && rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
 
