@@ -73,7 +73,6 @@ RUN apk update; \
     igbinary \
     ldap \
     swoole \
-    igbinary \
     && docker-php-source delete \
     && rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
 
