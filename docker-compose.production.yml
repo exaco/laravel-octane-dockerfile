@@ -34,6 +34,8 @@ x-base: &base
   volumes:
     - './storage/app/public:/var/www/html/storage/app/public'
     - './storage/logs:/var/www/html/storage/logs'
+  env_file:
+    - .env.production
   logging: *default-logging
   restart: always
 
