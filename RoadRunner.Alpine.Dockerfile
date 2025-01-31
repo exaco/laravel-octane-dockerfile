@@ -44,6 +44,7 @@ RUN apk update; \
     curl \
     wget \
     vim \
+    tzdata \
     git \
     ncdu \
     procps \
