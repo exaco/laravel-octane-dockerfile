@@ -5,9 +5,9 @@ container_mode=${CONTAINER_MODE:-"http"}
 octane_server=${OCTANE_SERVER}
 running_migrations_and_seeders=${RUNNING_MIGRATIONS_AND_SEEDERS:-"false"}
 
-echo "Container mode: $container_mode"
-
 initialStuff() {
+    echo "Container mode: $container_mode"
+    
     php artisan storage:link; \
     php artisan optimize:clear; \
     php artisan optimize;
@@ -21,8 +21,8 @@ initialStuff() {
 if [ "$1" != "" ]; then
     exec "$@"
 elif [ "${container_mode}" = "http" ]; then
-    echo "Octane Server: $octane_server"
     initialStuff
+    echo "Octane Server: $octane_server"
     if [ "${octane_server}"  = "frankenphp" ]; then
         exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.frankenphp.conf
     elif [ "${octane_server}"  = "swoole" ]; then
