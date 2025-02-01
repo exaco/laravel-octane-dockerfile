@@ -86,6 +86,7 @@ RUN apt-get update; \
     pdo_mysql \
     zip \
     uv \
+    vips \
     intl \
     gd \
     redis \

@@ -85,6 +85,7 @@ RUN apk update; \
     pdo_mysql \
     zip \
     uv \
+    vips \
     intl \
     gd \
     redis \
