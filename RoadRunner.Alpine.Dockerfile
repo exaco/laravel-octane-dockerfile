@@ -48,6 +48,7 @@ RUN apk update; \
     git \
     ncdu \
     procps \
+    unzip \
     ca-certificates \
     supervisor \
     libsodium-dev \
@@ -120,7 +121,7 @@ FROM base AS common
 
 USER ${USER}
 
-COPY --link --chown=${WWWUSER}:${WWWUSER} composer.json composer.lock ./
+COPY --link --chown=${WWWUSER}:${WWWUSER} . .
 
 RUN composer install \
     --no-dev \
