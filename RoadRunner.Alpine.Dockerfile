@@ -48,6 +48,7 @@ RUN apk update; \
     git \
     ncdu \
     procps \
+    unzip \
     ca-certificates \
     supervisor \
     libsodium-dev \
