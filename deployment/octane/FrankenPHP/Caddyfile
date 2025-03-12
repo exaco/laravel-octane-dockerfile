@@ -9,6 +9,7 @@
 
 	servers {
 		metrics
+		protocols h1
 	}
 }
 
