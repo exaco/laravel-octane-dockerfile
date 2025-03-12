@@ -7,7 +7,9 @@
 		worker "{$APP_PUBLIC_PATH}/frankenphp-worker.php" {$CADDY_SERVER_WORKER_COUNT}
 	}
 
-	metrics
+	servers {
+		metrics
+	}
 }
 
 {$CADDY_SERVER_SERVER_NAME} {
@@ -26,7 +28,7 @@
 
 	route {
 		root * "{$APP_PUBLIC_PATH}"
-		encode zstd br gzip
+		encode zstd br gzip 
 
 		{$CADDY_SERVER_EXTRA_DIRECTIVES}
 
@@ -53,7 +55,6 @@
 
 		php_server {
 			index frankenphp-worker.php
-			try_files {path} frankenphp-worker.php
 			resolve_root_symlink
 		}
 	}
