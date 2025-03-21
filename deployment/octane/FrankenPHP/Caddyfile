@@ -7,7 +7,13 @@
 		worker "{$APP_PUBLIC_PATH}/frankenphp-worker.php" {$CADDY_SERVER_WORKER_COUNT}
 	}
 
-	metrics
+	metrics {
+		per_host
+	}
+
+	servers {
+		protocols h1
+	}
 }
 
 {$CADDY_SERVER_SERVER_NAME} {
@@ -26,7 +32,7 @@
 
 	route {
 		root * "{$APP_PUBLIC_PATH}"
-		encode zstd br gzip
+		encode zstd br gzip 
 
 		{$CADDY_SERVER_EXTRA_DIRECTIVES}
 
