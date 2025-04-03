@@ -16,6 +16,8 @@
 	}
 }
 
+{$CADDY_EXTRA_CONFIG}
+
 {$CADDY_SERVER_SERVER_NAME} {
 	log {
 		level WARN
