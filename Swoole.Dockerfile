@@ -99,8 +99,8 @@ RUN userdel --remove --force www-data \
     && groupadd --force -g ${WWWGROUP} ${USER} \
     && useradd -ms /bin/bash --no-log-init --no-user-group -g ${WWWGROUP} -u ${WWWUSER} ${USER}
 
-RUN chown -R ${USER}:${USER} /var/{log,run} \
-    && chmod -R a+rw /var/{log,run}
+RUN chown -R ${USER}:${USER} ${ROOT} /var/{log,run} \
+    && chmod -R a+rw ${ROOT} /var/{log,run}
 
 RUN cp ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini
 
@@ -120,10 +120,6 @@ RUN chmod +x /usr/local/bin/start-container /usr/local/bin/healthcheck
 ###########################################
 
 FROM base AS common
-
-ENV ROOT=/var/www/html
-
-WORKDIR ${ROOT}
 
 COPY --link . .
 
