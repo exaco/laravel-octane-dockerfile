@@ -96,8 +96,8 @@ RUN addgroup -g ${WWWGROUP} ${USER} \
     && adduser -D -h ${ROOT} -G ${USER} -u ${WWWUSER} -s /bin/sh ${USER}
 
 RUN mkdir -p /var/log/supervisor /var/run/supervisor \
-    && chown -R ${USER}:${USER} ${ROOT} /var/log /var/run \
-    && chmod -R a+rw ${ROOT} /var/log /var/run
+    && chown -R ${USER}:${USER} /var/log /var/run \
+    && chmod -R a+rw /var/log /var/run
 
 RUN cp ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini
 
@@ -173,7 +173,9 @@ RUN mkdir -p \
     storage/framework/cache \
     storage/framework/testing \
     storage/logs \
-    bootstrap/cache && chmod -R a+rw storage
+    bootstrap/cache \
+    && chown -R ${USER}:${USER} ${ROOT} \
+    && chmod -R a+rw ${ROOT}
 
 RUN composer install \
     --classmap-authoritative \
