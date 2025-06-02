@@ -121,6 +121,10 @@ RUN chmod +x /usr/local/bin/start-container /usr/local/bin/healthcheck
 
 FROM base AS common
 
+ENV ROOT=/var/www/html
+
+WORKDIR ${ROOT}
+
 COPY --link . .
 
 RUN composer install \
