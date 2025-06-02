@@ -121,6 +121,8 @@ RUN chmod +x /usr/local/bin/start-container /usr/local/bin/healthcheck
 
 FROM base AS common
 
+COPY --link . .
+
 RUN composer install \
     --no-dev \
     --no-interaction \
