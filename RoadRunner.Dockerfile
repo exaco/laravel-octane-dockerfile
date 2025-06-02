@@ -98,8 +98,8 @@ RUN userdel --remove --force www-data \
     && groupadd --force -g ${WWWGROUP} ${USER} \
     && useradd -ms /bin/bash --no-log-init --no-user-group -g ${WWWGROUP} -u ${WWWUSER} ${USER}
 
-RUN chown -R ${USER}:${USER} /var/{log,run} \
-    && chmod -R a+rw /var/{log,run}
+RUN chown -R ${USER}:${USER} ${ROOT} /var/{log,run} \
+    && chmod -R a+rw ${ROOT} /var/{log,run}
 
 RUN cp ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini
 
@@ -172,9 +172,7 @@ COPY --link --chown=${WWWUSER}:${WWWUSER} --from=build ${ROOT}/public public
 RUN mkdir -p \
     storage/framework/{sessions,views,cache,testing} \
     storage/logs \
-    bootstrap/cache \
-    && chown -R ${USER}:${USER} ${ROOT} \
-    && chmod -R a+rw ${ROOT}
+    bootstrap/cache && chmod -R a+rw storage
 
 RUN composer install \
     --classmap-authoritative \
