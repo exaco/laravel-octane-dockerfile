@@ -47,7 +47,11 @@ jobs:
         working-directory: /var/www
 
       - name: Install Laravel Octane
-        run: sudo script -e -c "composer require --no-interaction laravel/octane laravel/horizon" && sudo script -e -c "php artisan install:broadcasting --no-interaction --force" 
+        run: sudo script -e -c "composer require --no-interaction laravel/octane laravel/horizon" 
+        working-directory: /var/www/app
+
+      - name: Install Laravel Reverb
+        run: sudo script -e -c "php artisan install:broadcasting --no-interaction --force" 
         working-directory: /var/www/app
 
       - name: Copy required content
