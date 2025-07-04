@@ -4,7 +4,10 @@
 	admin {$CADDY_SERVER_ADMIN_HOST}:{$CADDY_SERVER_ADMIN_PORT}
 
 	frankenphp {
-		worker "{$APP_PUBLIC_PATH}/frankenphp-worker.php" {$CADDY_SERVER_WORKER_COUNT}
+		worker {
+			file "{$APP_PUBLIC_PATH}/frankenphp-worker.php" 
+			{$CADDY_SERVER_WORKER_DIRECTIVE}
+		}
 	}
 
 	metrics {
@@ -20,7 +23,7 @@
 
 {$CADDY_SERVER_SERVER_NAME} {
 	log {
-		level WARN
+		level {$CADDY_SERVER_LOG_LEVEL}
 
 		format filter {
 			wrap {$CADDY_SERVER_LOGGER}
@@ -52,11 +55,13 @@
 			path *.json *.xml *.rss
 		}
 
-		header @static Cache-Control "public, immutable, stale-while-revalidate, max-age=31536000"
+		@rejected `path('*.bak', '*.conf', '*.dist', '*.fla', '*.ini', '*.inc', '*.inci', '*.log', '*.orig', '*.psd', '*.sh', '*.sql', '*.swo', '*.swp', '*.swop', '*/.*') && !path('*/.well-known/')`
 
+		header -X-Powered-By
+		header -Server
+		header @static Cache-Control "public, immutable, stale-while-revalidate, max-age=31536000"
 		header @staticshort Cache-Control "no-cache, max-age=3600"
 
-		@rejected `path('*.bak', '*.conf', '*.dist', '*.fla', '*.ini', '*.inc', '*.inci', '*.log', '*.orig', '*.psd', '*.sh', '*.sql', '*.swo', '*.swp', '*.swop', '*/.*') && !path('*/.well-known/')`
 		error @rejected 401
 
 		php_server {
