@@ -56,7 +56,7 @@
 
 		header @staticshort Cache-Control "no-cache, max-age=3600"
 
-		@rejected `path('*.bak', '*.conf', '*.dist', '*.fla', '*.ini', '*.inc', '*.inci', '*.log', '*.orig', '*.psd', '*.sh', '*.sql', '*.swo', '*.swp', '*.swop', '*/.*') && !path('*/.well-known/')`
+		@rejected `path('*.bak', '*.conf', '*.dist', '*.fla', '*.ini', '*.inc', '*.inci', '*.log', '*.orig', '*.psd', '*.sh', '*.sql', '*.swo', '*.swp', '*.swop', '*/.*') && !path('*/.well-known/*')`
 		error @rejected 401
 
 		php_server {
