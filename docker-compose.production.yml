@@ -16,12 +16,14 @@ x-base: &base
   build:
     context: .
     dockerfile: FrankenPHP.Dockerfile
+    cache_from:
+      - 'laravel/app'
     args:
       APP_ENV: 'production' # to load .env.production
       APP_HOST: '${APP_HOST}'
       WWWUSER: ${HOST_UID:-1000}
       WWWGROUP: ${HOST_GID:-1000}
-  image: laravel/app
+  image: 'laravel/app'
   user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
   ulimits:
     nofile:
