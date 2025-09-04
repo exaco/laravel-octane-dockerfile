@@ -1,5 +1,5 @@
-ARG PHP_VERSION=8.4
-ARG FRANKENPHP_VERSION=1.8
+ARG PHP_VERSION=8.4.12
+ARG FRANKENPHP_VERSION=1.9.1
 ARG COMPOSER_VERSION=2.8
 ARG BUN_VERSION="latest"
 ARG APP_ENV
@@ -99,7 +99,7 @@ RUN apt-get update; \
     && apt-get clean \
     && docker-php-source delete \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-    && rm /var/log/lastlog /var/log/faillog
+    && rm -rf /var/log/lastlog /var/log/faillog
 
 RUN arch="$(uname -m)" \
     && case "$arch" in \
