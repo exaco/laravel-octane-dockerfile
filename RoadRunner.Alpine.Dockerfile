@@ -175,10 +175,8 @@ RUN mkdir -p \
     storage/logs \
     bootstrap/cache && chmod -R a+rw storage
 
-RUN composer install \
+RUN composer dump-autoload \
     --classmap-authoritative \
-    --no-interaction \
-    --no-ansi \
     --no-dev \
     && composer clear-cache
 
