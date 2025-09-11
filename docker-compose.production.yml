@@ -309,7 +309,7 @@ services:
       traefik.http.services.pghero-service.loadbalancer.server.port: 6660
   typesense:
     profiles: [app]
-    image: 'typesense/typesense:0.25.2'
+    image: 'typesense/typesense:29.0'
     security_opt:
       - no-new-privileges:true
     environment:
@@ -321,7 +321,7 @@ services:
     networks:
       - stack
     healthcheck:
-      test: [ "CMD", "wget", "--no-verbose", "--spider", "http://localhost:8108/health" ]
+      test: [CMD, bash, -c, "exec 3<>/dev/tcp/localhost/8108 && printf 'GET /health HTTP/1.1\\r\\nConnection: close\\r\\n\\r\\n' >&3 && head -n1 <&3 | grep '200' && exec 3>&-"]
       interval: 3s
       retries: 12
       timeout: 5s
