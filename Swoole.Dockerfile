@@ -78,8 +78,7 @@ RUN apt-get update; \
     && apt-get -y autoremove \
     && apt-get clean \
     && docker-php-source delete \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-    && rm -rf /var/log/lastlog /var/log/faillog
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /var/log/lastlog /var/log/faillog
 
 RUN arch="$(uname -m)" \
     && case "$arch" in \
@@ -174,10 +173,8 @@ RUN mkdir -p \
     storage/logs \
     bootstrap/cache && chmod -R a+rw storage
 
-RUN composer install \
+RUN composer dump-autoload \
     --classmap-authoritative \
-    --no-interaction \
-    --no-ansi \
     --no-dev \
     && composer clear-cache
 
