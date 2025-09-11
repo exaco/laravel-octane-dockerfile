@@ -13,22 +13,18 @@
 </div>
 <br>
 
-A finely tuned engine for deploying blazing-fast **Laravel Octane** applications. It combines the raw power of Octane with the streamlined efficiency of Docker and Docker Compose to create a **production-ready** environment that's ready to launch.
+A production-ready Docker setup for running high-performance Laravel applications with Laravel Octane. This repository provides Dockerfiles and a comprehensive Docker Compose configuration for various Octane drivers, including Swoole, RoadRunner, and FrankenPHP.
+
+The setup is optimized for performance and includes multi-stage builds to create lean final images.
 
 ## Key Features
 
-* **Octane-Optimized**: Built specifically to harness the performance gains of Laravel Octane, whether you prefer **FrankenPHP**, **Swoole** or **RoadRunner**.
-* **Production-Ready Docker Compose:** A comprehensive Docker Compose file orchestrates a full stack, including:
-  * **Traefik:** Intelligent reverse proxy for routing, load balancing, and secure access.
-  * **PostgreSQL:** Robust and reliable database backend.
-  * **Redis:** Lightning-fast caching for improved response times.
-  * **Minio:** Scalable object storage for your application's assets.
-  * **Typesense:** Powerful search engine to enhance user experience.
-  * **pgAdmin & pghero:** Tools for database management and performance monitoring.
-  * **Backup Service:** Automated backups to protect your valuable data.
-  * **System Monitoring:** Glances and Netdata provide real-time insights into your infrastructure.
-* **Security Hardened:** Includes best practices for security, such as user authentication for exposed services and restricted container privileges.
-* **PHP Powerhouse:** Uses official PHP images (Debian or Alpine based) with pre-configured PHP runtime, JIT compiler, and OPcache for maximum performance.
+- **Multiple Drivers:** Dockerfiles available for Swoole, RoadRunner, and FrankenPHP.
+- **Production-Ready:** Optimized for a production environment with best practices.
+- **Multi-Stage Builds:** Creates smaller, more secure Docker images by separating build dependencies from the final runtime image.
+- **Container Modes:** Easily run your container in different modes for handling web requests (`http`), queues (`horizon`), scheduled tasks (`scheduler`), custom worker (`worker`), or WebSocket server (`reverb`).
+- **Extensible:** Simple to customize for your specific application needs.
+- **Comprehensive Docker Compose:** Includes a production-ready `docker-compose.production.yml` to orchestrate the full application stack.
 
 
 ## Laravel Container modes
@@ -43,6 +39,24 @@ Easily launch your container in different modes to handle specific tasks:
 | Scheduler             | `scheduler`      | Executes scheduled tasks at defined intervals.        |
 | Worker                | `worker`         | A dedicated worker for background processing.        |
 | Reverb                | `reverb`         | Facilitates real-time communication with Laravel Echo.        |
+
+## Production-Ready Docker Compose
+
+For a complete production environment, this repository includes a `docker-compose.production.yml` file to orchestrate a full stack of services. This setup is security-hardened and provides a comprehensive solution for deploying and managing your application.
+
+The orchestrated containers include:
+
+- **Application:** Your Laravel Octane application running in http mode to serve web requests.
+- **Horizon:** A dedicated container for running Laravel Horizon to manage your Redis queues.
+- **Scheduler:** A container responsible for executing Laravel's scheduled tasks. 
+- **Database:** A PostgreSQL container for your application's database.
+- **pgAdmin & pghero:** Web-based tools for managing your PostgreSQL database and monitoring its performance.
+- **Backup Service:** A container that performs automated backups of your database to ensure data safety.
+- **System Monitoring:** Includes Glances and Netdata containers to provide real-time insights and monitoring for your entire infrastructure.
+- **Prometheus:** A powerful time-series database used for collecting metrics from your application and the host system.
+- **Grafana:** A leading open-source platform for monitoring and observability, used to visualize the metrics collected by Prometheus in beautiful dashboards.
+
+This comprehensive stack provides a robust and observable environment for your production application.
 
 ## Prerequisites
 
