@@ -60,7 +60,6 @@
 		error @rejected 401
 
 		php_server {
-			index frankenphp-worker.php
 			try_files {path} frankenphp-worker.php
 			resolve_root_symlink
 		}
