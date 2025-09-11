@@ -1,0 +1,12 @@
+global:
+  scrape_interval: 5s
+  evaluation_interval: 5s
+
+scrape_configs:
+  - job_name: 'frankenphp'
+    static_configs:
+      - targets: ['app:2019']
+
+  - job_name: 'traefik'
+    static_configs:
+      - targets: [ 'traefik:8190' ]

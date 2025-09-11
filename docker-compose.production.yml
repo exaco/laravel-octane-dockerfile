@@ -58,7 +58,7 @@ services:
       - "--api=true"
       - "--accesslog=true"
       - "--accesslog.format=json"
-      - "--api.dashboard=true"
+      - "--metrics.prometheus=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedByDefault=false"
       - "--providers.docker.network=stack"
@@ -76,6 +76,8 @@ services:
       - "--entryPoints.minio-console.address=:8900"
       - "--entryPoints.glances.address=:61208"
       - "--entryPoints.netdata.address=:19999"
+      - "--entryPoints.prometheus.address=:9090"
+      - "--entryPoints.grafana.address=:3000"
     ports:
       - "127.0.0.1:8190:8190" # Traefik
       - "80:80" # HTTP
@@ -88,6 +90,8 @@ services:
       - "9000:9000" # MinIO
       - "127.0.0.1:8900:8900" # MinIO console
       - "127.0.0.1:19999:19999" # NetData
+      - "127.0.0.1:9090:9090" # Prometheus
+      - "127.0.0.1:3000:3000" # Grafana
     networks:
       - stack
     volumes:
@@ -404,6 +408,7 @@ services:
     logging: *default-logging
     restart: always
     labels:
+      org.label-schema.group: "monitoring"
       traefik.enable: true
       traefik.http.routers.glances.rule: Host(`localhost`)
       traefik.http.routers.glances.entryPoints: glances
@@ -438,18 +443,68 @@ services:
       - /var/log:/host/var/log:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
     labels:
+      org.label-schema.group: "monitoring"
       traefik.enable: true
       traefik.http.routers.netdata.rule: Host(`localhost`)
       traefik.http.routers.netdata.entryPoints: netdata
       traefik.http.routers.netdata.middlewares: "netdata-auth"
       traefik.http.middlewares.netdata-auth.basicauth.removeheader: true
       traefik.http.middlewares.netdata-auth.basicauth.users: "user:$$2y$$05$$8zbpsdxg9wDiiKdqxiB0zeAlxZtG68P1SDBOvCN4IooLFewLx70Gm" # user:123456
+  prometheus:
+    profiles: [administration]
+    image: prom/prometheus:v3.4.2
+    restart: unless-stopped
+    logging: *default-logging
+    volumes:
+      - ./deployment/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - stack-prometheus:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=200h'
+      - '--storage.tsdb.retention.size=10GB'
+      - '--web.enable-lifecycle'
+    networks:
+      - stack
+    labels:
+      org.label-schema.group: "monitoring"
+      traefik.enable: true
+      traefik.http.routers.prometheus.rule: Host(`localhost`)
+      traefik.http.routers.prometheus.entryPoints: prometheus
+      traefik.http.routers.prometheus.middlewares: "prometheus-auth"
+      traefik.http.middlewares.prometheus-auth.basicauth.removeheader: true
+      traefik.http.middlewares.prometheus-auth.basicauth.users: "user:$$2y$$05$$8zbpsdxg9wDiiKdqxiB0zeAlxZtG68P1SDBOvCN4IooLFewLx70Gm"
+  grafana:
+    profiles: [administration]
+    image: grafana/grafana:12.0.2
+    restart: unless-stopped
+    logging: *default-logging
+    volumes:
+      - ./deployment/grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - ./deployment/grafana/provisioning/datasources:/etc/grafana/provisioning/datasources
+      - stack-grafana:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=${ADMIN_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ENABLE_GZIP=true
+    networks:
+      - stack
+    labels:
+      org.label-schema.group: "monitoring"
+      traefik.enable: true
+      traefik.http.routers.grafana.rule: Host(`localhost`)
+      traefik.http.routers.grafana.entryPoints: grafana
+      traefik.http.routers.grafana.middlewares: "grafana-auth"
+      traefik.http.middlewares.grafana-auth.basicauth.removeheader: true
+      traefik.http.middlewares.grafana-auth.basicauth.users: "user:$$2y$$05$$8zbpsdxg9wDiiKdqxiB0zeAlxZtG68P1SDBOvCN4IooLFewLx70Gm"
 networks:
   stack:
     driver: bridge
     driver_opts:
       com.docker.network.driver.mtu: 1450
-
 volumes:
   stack-pgsql:
     driver: local
@@ -466,5 +521,9 @@ volumes:
   stack-netdatalib:
     driver: local
   stack-netdatacache:
+    driver: local
+  stack-prometheus:
+    driver: local
+  stack-grafana:
     driver: local
 
