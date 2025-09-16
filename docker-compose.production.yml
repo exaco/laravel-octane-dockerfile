@@ -270,7 +270,7 @@ services:
       - 'stack-pgadmin:/var/lib/pgadmin'
     networks:
       - stack
-    restart: always
+    restart: unless-stopped
     logging: *default-logging
     labels:
       traefik.enable: true
@@ -294,7 +294,7 @@ services:
       DATABASE_URL: postgres://${DB_USERNAME}:${DB_PASSWORD}@pgsql:5432/${DB_DATABASE}
     networks:
       - stack
-    restart: always
+    restart: unless-stopped
     logging: *default-logging
     labels:
       traefik.enable: true
@@ -325,7 +325,7 @@ services:
       interval: 3s
       retries: 12
       timeout: 5s
-    restart: always
+    restart: unless-stopped
     logging: *default-logging
     labels:
       traefik.enable: false
@@ -339,7 +339,7 @@ services:
       BACKUP_PRUNING_PREFIX: backup-
       BACKUP_CRON_EXPRESSION: "0 2 * * *" # run every day at 2am
       BACKUP_RETENTION_DAYS: '7'
-    restart: always
+    restart: unless-stopped
     depends_on:
       pgsql:
         condition: service_healthy
@@ -365,7 +365,7 @@ services:
     networks:
       - stack
     command: 'minio server /data/minio --console-address ":8900"'
-    restart: always
+    restart: unless-stopped
     logging: *default-logging
     labels:
       traefik.enable: true
@@ -406,7 +406,7 @@ services:
     networks:
       - stack
     logging: *default-logging
-    restart: always
+    restart: unless-stopped
     labels:
       org.label-schema.group: "monitoring"
       traefik.enable: true
