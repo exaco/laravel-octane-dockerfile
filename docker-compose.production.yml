@@ -4,12 +4,11 @@ x-logging: &default-logging
     max-size: "50m"
     max-file: "10"
     compress: "true"
-
 x-base: &base
   profiles: [app]
   depends_on:
-    pgsql:
-      condition: service_healthy
+    pgbouncer:
+      condition: service_started
     redis:
       condition: service_healthy
     minio:
@@ -39,7 +38,6 @@ x-base: &base
     - './storage/logs:/var/www/html/storage/logs'
   logging: *default-logging
   restart: unless-stopped
-
 services:
   traefik:
     profiles: [app]
@@ -74,7 +72,6 @@ services:
       - "--entryPoints.pghero.address=:6660"
       - "--entryPoints.minio.address=:9000"
       - "--entryPoints.minio-console.address=:8900"
-      - "--entryPoints.glances.address=:61208"
       - "--entryPoints.netdata.address=:19999"
       - "--entryPoints.prometheus.address=:9090"
       - "--entryPoints.grafana.address=:3000"
@@ -86,7 +83,6 @@ services:
       - "8080:8080" # Reverb
       - "127.0.0.1:6053:6053" # pgAdmin
       - "127.0.0.1:6660:6660" # PgHero
-      - "127.0.0.1:61208:61208" # Glances
       - "9000:9000" # MinIO
       - "127.0.0.1:8900:8900" # MinIO console
       - "127.0.0.1:19999:19999" # NetData
@@ -103,12 +99,10 @@ services:
       traefik.http.routers.traefik.service: api@internal
       traefik.http.routers.traefik.entryPoints: traefik
       traefik.http.routers.traefik.middlewares: "traefik-auth,traefik-retry"
-
       traefik.http.middlewares.traefik-retry.retry.attempts: 4
       traefik.http.middlewares.traefik-retry.retry.initialinterval: 100ms
       traefik.http.middlewares.traefik-auth.basicauth.removeheader: true
       traefik.http.middlewares.traefik-auth.basicauth.users: "${TRAEFIK_AUTH_USERS:-user:$$2y$$05$$8zbpsdxg9wDiiKdqxiB0zeAlxZtG68P1SDBOvCN4IooLFewLx70Gm}"
-
   app:
     <<: *base
     healthcheck:
@@ -118,25 +112,21 @@ services:
       timeout: 10s
     labels:
       traefik.enable: true
-
       traefik.http.routers.app.rule: Host(`${APP_HOST}`) || Host(`localhost`)
       traefik.http.routers.app.entryPoints: app
       traefik.http.routers.app.service: app-service
       traefik.http.routers.app.middlewares: "redirect-scheme,app-retry,app-compress,security-headers"
-
       traefik.http.routers.app-secure.rule: Host(`${APP_HOST}`) || Host(`localhost`)
       traefik.http.routers.app-secure.entryPoints: app-secure
       traefik.http.routers.app-secure.service: app-service
       traefik.http.routers.app-secure.tls: true
       traefik.http.routers.app-secure.middlewares: "redirect-scheme,app-retry,app-compress,security-headers"
-
       traefik.http.services.app-service.loadbalancer.server.port: 8000 # Because container exposes multiple ports
       traefik.http.services.app-service.loadbalancer.healthCheck.path: "/up"
       traefik.http.services.app-service.loadbalancer.healthCheck.hostname: "localhost"
       traefik.http.services.app-service.loadbalancer.healthCheck.port: 8000
       traefik.http.services.app-service.loadbalancer.healthCheck.interval: 3s
       traefik.http.services.app-service.loadbalancer.healthCheck.timeout: 5s
-
       traefik.http.middlewares.limit.buffering.maxRequestBodyBytes: 460000000 # 460mb
       traefik.http.middlewares.redirect-scheme.redirectscheme.scheme: https
       traefik.http.middlewares.redirect-scheme.redirectscheme.permanent: true
@@ -162,14 +152,12 @@ services:
       CONTAINER_MODE: horizon
     labels:
       traefik.enable: false
-
   scheduler:
     <<: *base
     environment:
       CONTAINER_MODE: scheduler
     labels:
       traefik.enable: false
-
   reverb:
     <<: *base
     environment:
@@ -184,7 +172,6 @@ services:
       traefik.http.middlewares.reverb-retry.retry.initialinterval: 100ms
       traefik.http.routers.reverb.service: reverb-service
       traefik.http.services.reverb-service.loadbalancer.server.port: 8080
-
   redis:
     profiles: [app]
     image: 'redis:7-alpine'
@@ -220,10 +207,9 @@ services:
           memory: 2.5G
     labels:
       traefik.enable: false
-
   pgsql:
     profiles: [app]
-    image: 'postgres:17-alpine'
+    image: 'postgres:${POSTGRES_VERSION:-17}-alpine'
     ulimits:
       nofile:
         soft: 65536
@@ -254,6 +240,28 @@ services:
       traefik.enable: false
       docker-volume-backup.stop-during-backup: true
       docker-volume-backup.archive-pre: /bin/sh -c 'pg_dump -U ${DB_USERNAME} -F t ${DB_DATABASE} > /backup/${DB_DATABASE}-database.tar'
+  pgbouncer:
+    image: bitnami/pgbouncer:1
+    restart: unless-stopped
+    logging: *default-logging
+    depends_on:
+      pgsql:
+        condition: service_healthy
+    environment:
+      POSTGRESQL_HOST: pgsql
+      POSTGRESQL_PORT: 5432
+      PGBOUNCER_DATABASE: '${DB_DATABASE}'
+      POSTGRESQL_USERNAME: '${DB_USERNAME}'
+      POSTGRESQL_PASSWORD: '${DB_PASSWORD}'
+      PGBOUNCER_POOL_MODE: session
+      PGBOUNCER_AUTH_TYPE: md5
+      PGBOUNCER_MAX_CLIENT_CONN: 500
+      PGBOUNCER_DEFAULT_POOL_SIZE: 25
+      PGBOUNCER_USERLIST: '"${DB_USERNAME}" "${DB_PASSWORD}"'
+    networks:
+      - stack
+    labels:
+      traefik.enable: false
   pgadmin:
     profiles: [administration]
     image: 'dpage/pgadmin4:latest'
@@ -369,19 +377,16 @@ services:
     logging: *default-logging
     labels:
       traefik.enable: true
-
       traefik.http.routers.minio-console.rule: Host(`localhost`)
       traefik.http.routers.minio-console.entryPoints: minio-console
       traefik.http.routers.minio-console.service: minio-console-service
       traefik.http.routers.minio-console.middlewares: "minio-auth,minio-retry"
       traefik.http.services.minio-console-service.loadbalancer.server.port: 8900
-
       traefik.http.routers.minio.rule: Host(`${APP_HOST}`) || Host(`localhost`)
       traefik.http.routers.minio.entryPoints: minio
       traefik.http.routers.minio.service: minio-service
       traefik.http.routers.minio.middlewares: "minio-retry,minio-compress"
       traefik.http.services.minio-service.loadbalancer.server.port: 9000
-
       traefik.http.middlewares.minio-compress.compress: true
       traefik.http.middlewares.minio-retry.retry.attempts: 4
       traefik.http.middlewares.minio-retry.retry.initialinterval: 100ms
@@ -391,32 +396,6 @@ services:
       test: [ "CMD", "mc", "ready", "local" ]
       retries: 3
       timeout: 5s
-  glances:
-    profiles: [administration]
-    image: nicolargo/glances:latest-full
-    pid: host
-    security_opt:
-      - no-new-privileges:true
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /etc/os-release:/etc/os-release:ro
-    environment:
-      - "GLANCES_OPT=-w"
-      - TZ="${APP_TIMEZONE}"
-    networks:
-      - stack
-    logging: *default-logging
-    restart: unless-stopped
-    labels:
-      org.label-schema.group: "monitoring"
-      traefik.enable: true
-      traefik.http.routers.glances.rule: Host(`localhost`)
-      traefik.http.routers.glances.entryPoints: glances
-      traefik.http.routers.glances.middlewares: "glances-auth,glances-retry"
-      traefik.http.middlewares.glances-retry.retry.attempts: 4
-      traefik.http.middlewares.glances-retry.retry.initialinterval: 100ms
-      traefik.http.middlewares.glances-auth.basicauth.removeheader: true
-      traefik.http.middlewares.glances-auth.basicauth.users: "user:$$2y$$05$$8zbpsdxg9wDiiKdqxiB0zeAlxZtG68P1SDBOvCN4IooLFewLx70Gm" # user:123456
   netdata:
     profiles: [administration]
     image: netdata/netdata
@@ -526,4 +505,3 @@ volumes:
     driver: local
   stack-grafana:
     driver: local
-

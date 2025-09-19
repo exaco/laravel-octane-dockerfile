@@ -50,12 +50,13 @@ The orchestrated containers include:
 - **Horizon:** A dedicated container for running Laravel Horizon to manage your Redis queues.
 - **Scheduler:** A container responsible for executing Laravel's scheduled tasks. 
 - **Database:** A PostgreSQL container for your application's database.
+- **PgBouncer:** Lightweight connection pooler for PostgreSQL.
 - **Redis:** An in-memory data store used for caching and as a message broker for Laravel Horizon.
 - **Minio:** An S3-compatible object storage service, perfect for handling file uploads and storage.
 - **Typesense:** A fast, typo-tolerant, and open-source search engine for building powerful search functionality into your application.
 - **pgAdmin & pghero:** Web-based tools for managing your PostgreSQL database and monitoring its performance.
 - **Backup Service:** A container that performs automated backups of your database to ensure data safety.
-- **System Monitoring:** Includes Glances and Netdata containers to provide real-time insights and monitoring for your entire infrastructure.
+- **System Monitoring:** Includes Netdata containers to provide real-time insights and monitoring for your entire infrastructure.
 - **Prometheus:** A powerful time-series database used for collecting metrics from your application and the host system.
 - **Grafana:** A leading open-source platform for monitoring and observability, used to visualize the metrics collected by Prometheus in beautiful dashboards.
 
