@@ -7,8 +7,8 @@ x-logging: &default-logging
 x-base: &base
   profiles: [app]
   depends_on:
-    pgsql:
-      condition: service_healthy
+    pgbouncer:
+      condition: service_started
     redis:
       condition: service_healthy
     minio:
@@ -209,7 +209,7 @@ services:
       traefik.enable: false
   pgsql:
     profiles: [app]
-    image: 'postgres:17-alpine'
+    image: 'postgres:${POSTGRES_VERSION:-17}-alpine'
     ulimits:
       nofile:
         soft: 65536
@@ -240,6 +240,28 @@ services:
       traefik.enable: false
       docker-volume-backup.stop-during-backup: true
       docker-volume-backup.archive-pre: /bin/sh -c 'pg_dump -U ${DB_USERNAME} -F t ${DB_DATABASE} > /backup/${DB_DATABASE}-database.tar'
+  pgbouncer:
+    image: bitnami/pgbouncer:1
+    restart: unless-stopped
+    logging: *default-logging
+    depends_on:
+      pgsql:
+        condition: service_healthy
+    environment:
+      POSTGRESQL_HOST: pgsql
+      POSTGRESQL_PORT: 5432
+      PGBOUNCER_DATABASE: '${DB_DATABASE}'
+      POSTGRESQL_USERNAME: '${DB_USERNAME}'
+      POSTGRESQL_PASSWORD: '${DB_PASSWORD}'
+      PGBOUNCER_POOL_MODE: transaction
+      PGBOUNCER_AUTH_TYPE: md5
+      PGBOUNCER_MAX_CLIENT_CONN: 500
+      PGBOUNCER_DEFAULT_POOL_SIZE: 25
+      PGBOUNCER_USERLIST: '"${DB_USERNAME}" "${DB_PASSWORD}"'
+    networks:
+      - stack
+    labels:
+      traefik.enable: false
   pgadmin:
     profiles: [administration]
     image: 'dpage/pgadmin4:latest'

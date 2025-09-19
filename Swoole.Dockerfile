@@ -52,6 +52,7 @@ RUN apt-get update; \
     supervisor \
     libsodium-dev \
     libbrotli-dev \
+    postgresql-client-${POSTGRES_VERSION:-17} \
     # Install PHP extensions
     && install-php-extensions \
     bz2 \

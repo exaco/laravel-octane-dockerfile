@@ -50,6 +50,7 @@ The orchestrated containers include:
 - **Horizon:** A dedicated container for running Laravel Horizon to manage your Redis queues.
 - **Scheduler:** A container responsible for executing Laravel's scheduled tasks. 
 - **Database:** A PostgreSQL container for your application's database.
+- **PgBouncer:** Lightweight connection pooler for PostgreSQL.
 - **Redis:** An in-memory data store used for caching and as a message broker for Laravel Horizon.
 - **Minio:** An S3-compatible object storage service, perfect for handling file uploads and storage.
 - **Typesense:** A fast, typo-tolerant, and open-source search engine for building powerful search functionality into your application.
