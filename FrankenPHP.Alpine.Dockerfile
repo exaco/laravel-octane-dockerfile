@@ -72,7 +72,6 @@ RUN apk update; \
     supervisor \
     libsodium-dev \
     brotli \
-    postgresql${POSTGRES_VERSION:-17}-client \
     # Install PHP extensions (included with dunglas/frankenphp)
     && install-php-extensions \
     bz2 \

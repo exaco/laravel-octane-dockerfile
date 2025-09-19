@@ -53,7 +53,6 @@ RUN apk update; \
     supervisor \
     libsodium-dev \
     brotli \
-    postgresql${POSTGRES_VERSION:-17}-client \
     # Install PHP extensions
     && install-php-extensions \
     bz2 \
