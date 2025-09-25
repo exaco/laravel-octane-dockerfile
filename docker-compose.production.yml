@@ -43,6 +43,7 @@ services:
     profiles: [app]
     image: traefik:v3.5
     restart: unless-stopped
+    stop_grace_period: 35s
     ulimits:
       nofile:
         soft: 65536
