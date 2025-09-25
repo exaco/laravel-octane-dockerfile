@@ -3,6 +3,10 @@
 
 	admin {$CADDY_SERVER_ADMIN_HOST}:{$CADDY_SERVER_ADMIN_PORT}
 
+	auto_https off
+
+	skip_install_trust
+
 	frankenphp {
 		worker "{$APP_PUBLIC_PATH}/frankenphp-worker.php" {$CADDY_SERVER_WORKER_COUNT}
 	}

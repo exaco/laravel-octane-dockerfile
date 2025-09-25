@@ -41,7 +41,7 @@ x-base: &base
 services:
   traefik:
     profiles: [app]
-    image: traefik:v3.2
+    image: traefik:v3.5
     restart: unless-stopped
     ulimits:
       nofile:
@@ -50,12 +50,12 @@ services:
     security_opt:
       - no-new-privileges:true
     command:
-      - "--log.level=INFO"
-      - "--log.format=json"
-      - "--ping=true"
+      - "--log.level=ERROR"
+      - "--log.format=common"
+      - "--ping=false"
       - "--api=true"
       - "--accesslog=true"
-      - "--accesslog.format=json"
+      - "--accesslog.format=common"
       - "--metrics.prometheus=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedByDefault=false"
@@ -66,6 +66,7 @@ services:
       - "--entryPoints.app.http.redirections.entryPoint.scheme=https"
       - "--entryPoints.app-secure.address=:443"
       - "--entryPoints.app-secure.http3=true"
+      - "--entryPoints.app-secure.transport.lifeCycle.graceTimeOut=30s"
       - "--entryPoints.reverb.address=:8080"
       - "--entryPoints.reverb.http3=true"
       - "--entryPoints.pgadmin.address=:6053"
@@ -95,7 +96,7 @@ services:
     logging: *default-logging
     labels:
       traefik.enable: true
-      traefik.http.routers.traefik.rule: Host(`localhost`) || Host(`${APP_HOST}`)
+      traefik.http.routers.traefik.rule: Host(`localhost`) || Host(`{{ env "APP_HOST" }}`)
       traefik.http.routers.traefik.service: api@internal
       traefik.http.routers.traefik.entryPoints: traefik
       traefik.http.routers.traefik.middlewares: "traefik-auth,traefik-retry"
@@ -107,29 +108,24 @@ services:
     <<: *base
     healthcheck:
       test: ["CMD", "curl", "--fail", "--max-time", "10", "localhost:8000/up"]
-      interval: 10s
-      retries: 5
+      interval: 2s
+      retries: 10
       timeout: 10s
+    stop_grace_period: 35s
     labels:
       traefik.enable: true
-      traefik.http.routers.app.rule: Host(`${APP_HOST}`) || Host(`localhost`)
-      traefik.http.routers.app.entryPoints: app
-      traefik.http.routers.app.service: app-service
-      traefik.http.routers.app.middlewares: "redirect-scheme,app-retry,app-compress,security-headers"
-      traefik.http.routers.app-secure.rule: Host(`${APP_HOST}`) || Host(`localhost`)
+      traefik.http.routers.app-secure.rule: Host(`localhost`) || Host(`app.docker.localhost`)
       traefik.http.routers.app-secure.entryPoints: app-secure
       traefik.http.routers.app-secure.service: app-service
       traefik.http.routers.app-secure.tls: true
-      traefik.http.routers.app-secure.middlewares: "redirect-scheme,app-retry,app-compress,security-headers"
+      traefik.http.routers.app-secure.middlewares: "app-retry,app-compress,security-headers"
       traefik.http.services.app-service.loadbalancer.server.port: 8000 # Because container exposes multiple ports
       traefik.http.services.app-service.loadbalancer.healthCheck.path: "/up"
       traefik.http.services.app-service.loadbalancer.healthCheck.hostname: "localhost"
       traefik.http.services.app-service.loadbalancer.healthCheck.port: 8000
-      traefik.http.services.app-service.loadbalancer.healthCheck.interval: 3s
+      traefik.http.services.app-service.loadbalancer.healthCheck.interval: 2s
       traefik.http.services.app-service.loadbalancer.healthCheck.timeout: 5s
-      traefik.http.middlewares.limit.buffering.maxRequestBodyBytes: 460000000 # 460mb
-      traefik.http.middlewares.redirect-scheme.redirectscheme.scheme: https
-      traefik.http.middlewares.redirect-scheme.redirectscheme.permanent: true
+      traefik.http.middlewares.limit.buffering.maxRequestBodyBytes: 560000000 # 560mb
       traefik.http.middlewares.app-retry.retry.attempts: 4
       traefik.http.middlewares.app-retry.retry.initialinterval: 100ms
       traefik.http.middlewares.app-compress.compress: true
@@ -164,7 +160,7 @@ services:
       CONTAINER_MODE: reverb
     labels:
       traefik.enable: true
-      traefik.http.routers.reverb.rule: Host(`${APP_HOST}`) || Host(`localhost`)
+      traefik.http.routers.reverb.rule: Host(`localhost`) || Host(`{{ env "APP_HOST" }}`)
       traefik.http.routers.reverb.entryPoints: reverb
       traefik.http.routers.reverb.tls: true
       traefik.http.routers.reverb.middlewares: "reverb-retry"
@@ -377,12 +373,12 @@ services:
     logging: *default-logging
     labels:
       traefik.enable: true
-      traefik.http.routers.minio-console.rule: Host(`localhost`)
+      traefik.http.routers.minio-console.rule: Host(`localhost`) || Host(`{{ env "AWS_ENDPOINT" }}`)
       traefik.http.routers.minio-console.entryPoints: minio-console
       traefik.http.routers.minio-console.service: minio-console-service
       traefik.http.routers.minio-console.middlewares: "minio-auth,minio-retry"
       traefik.http.services.minio-console-service.loadbalancer.server.port: 8900
-      traefik.http.routers.minio.rule: Host(`${APP_HOST}`) || Host(`localhost`)
+      traefik.http.routers.minio.rule: Host(`localhost`) || Host(`{{ env "APP_HOST" }}`)
       traefik.http.routers.minio.entryPoints: minio
       traefik.http.routers.minio.service: minio-service
       traefik.http.routers.minio.middlewares: "minio-retry,minio-compress"
