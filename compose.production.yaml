@@ -237,7 +237,7 @@ services:
       docker-volume-backup.stop-during-backup: true
       docker-volume-backup.archive-pre: /bin/sh -c 'pg_dump -U ${DB_USERNAME} -F t ${DB_DATABASE} > /backup/${DB_DATABASE}-database.tar'
   pgbouncer:
-    image: bitnami/pgbouncer:1
+    image: bitnamilegacy/pgbouncer:latest
     restart: unless-stopped
     logging: *default-logging
     depends_on:
