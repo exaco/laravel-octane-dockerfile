@@ -55,7 +55,7 @@ jobs:
         working-directory: /var/www/app
 
       - name: Copy required content
-        run: sudo cp -R FrankenPHP.Dockerfile docker-compose.production.yml Makefile .env.production .dockerignore deployment/ /var/www/app/
+        run: sudo cp -R FrankenPHP.Dockerfile compose.production.yaml Makefile .env.production .dockerignore deployment/ /var/www/app/
 
       - name: Prepare the environment
         run: sudo mkdir -p storage/framework/{sessions,views,cache,testing} storage/logs && sudo chmod -R a+rw storage
