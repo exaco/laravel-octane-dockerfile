@@ -36,7 +36,6 @@ ARG WWWGROUP=1000
 ARG TZ=UTC
 ARG APP_DIR=/var/www/html
 ARG APP_ENV
-ARG APP_HOST
 
 ENV DEBIAN_FRONTEND=noninteractive \
     TERM=xterm-color \
@@ -48,8 +47,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     COMPOSER_FUND=0 \
     COMPOSER_MAX_PARALLEL_HTTP=24 \
     XDG_CONFIG_HOME=${APP_DIR}/.config \
-    XDG_DATA_HOME=${APP_DIR}/.data \
-    SERVER_NAME=${APP_HOST}
+    XDG_DATA_HOME=${APP_DIR}/.data
 
 WORKDIR ${ROOT}
 

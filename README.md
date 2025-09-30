@@ -9,7 +9,7 @@
  <a href="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/tests.yml"><img alt="GitHub Workflow Status" src="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/roadrunner-test.yml/badge.svg"></a>
  <a href="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/tests.yml"><img alt="GitHub Workflow Status" src="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/swoole-test.yml/badge.svg"></a>
  <a href="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/tests.yml"><img alt="GitHub Workflow Status" src="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/frankenphp-test.yml/badge.svg"></a>
- <a href="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/tests.yml"><img alt="GitHub Workflow Status" src="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/docker-compose-test.yml/badge.svg"></a>
+ <a href="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/tests.yml"><img alt="GitHub Workflow Status" src="https://github.com/exaco/laravel-octane-dockerfile/actions/workflows/compose-test.yaml/badge.svg"></a>
 </div>
 <br>
 
@@ -24,7 +24,7 @@ The setup is optimized for performance and includes multi-stage builds to create
 - **Multi-Stage Builds:** Creates smaller, more secure Docker images by separating build dependencies from the final runtime image.
 - **Container Modes:** Easily run your container in different modes for handling web requests (`http`), queues (`horizon`), scheduled tasks (`scheduler`), custom worker (`worker`), or WebSocket server (`reverb`).
 - **Extensible:** Simple to customize for your specific application needs.
-- **Comprehensive Docker Compose:** Includes a production-ready `docker-compose.production.yml` to orchestrate the full application stack.
+- **Comprehensive Docker Compose:** Includes a production-ready `compose.production.yaml` to orchestrate the full application stack.
 
 
 ## Laravel Container modes
@@ -42,7 +42,7 @@ Easily launch your container in different modes to handle specific tasks:
 
 ## Production-Ready Docker Compose
 
-For a complete production environment, this repository includes a `docker-compose.production.yml` file to orchestrate a full stack of services. This setup is security-hardened and provides a comprehensive solution for deploying and managing your application.
+For a complete production environment, this repository includes a `compose.production.yaml` file to orchestrate a full stack of services. This setup is security-hardened and provides a comprehensive solution for deploying and managing your application.
 
 The orchestrated containers include:
 
@@ -137,7 +137,7 @@ docker run --rm <image-name>:<tag> php artisan about
 
 To deploy your application stack with Docker Compose:
 1. Copy the following items to your code base:
-    - `docker-compose.production.yml`
+    - `compose.production.yaml`
     - `.env.production`
     - `Makefile`
 2. Edit `.env.production` and populate it with the appropriate values for your production environment variables (e.g., database credentials, API keys).
