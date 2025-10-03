@@ -67,11 +67,8 @@ services:
       - "--entryPoints.app-secure.address=:443"
       - "--entryPoints.app-secure.http3=true"
       - "--entryPoints.app-secure.transport.lifeCycle.graceTimeOut=30s"
-      - "--entryPoints.reverb.address=:8080"
-      - "--entryPoints.reverb.http3=true"
       - "--entryPoints.pgadmin.address=:6053"
       - "--entryPoints.pghero.address=:6660"
-      - "--entryPoints.minio.address=:9000"
       - "--entryPoints.minio-console.address=:8900"
       - "--entryPoints.netdata.address=:19999"
       - "--entryPoints.prometheus.address=:9090"
@@ -81,10 +78,8 @@ services:
       - "80:80" # HTTP
       - "443:443" # HTTPS
       - "443:443/udp" # HTTP/3
-      - "8080:8080" # Reverb
       - "127.0.0.1:6053:6053" # pgAdmin
       - "127.0.0.1:6660:6660" # PgHero
-      - "9000:9000" # MinIO
       - "127.0.0.1:8900:8900" # MinIO console
       - "127.0.0.1:19999:19999" # NetData
       - "127.0.0.1:9090:9090" # Prometheus
@@ -116,6 +111,7 @@ services:
       traefik.enable: true
       traefik.http.routers.app-secure.rule: Host(`localhost`) || Host(`app.docker.localhost`)
       traefik.http.routers.app-secure.entryPoints: app-secure
+      traefik.http.routers.app-secure.priority: 10
       traefik.http.routers.app-secure.service: app-service
       traefik.http.routers.app-secure.tls: true
       traefik.http.routers.app-secure.middlewares: "app-retry,app-compress,security-headers"
@@ -160,8 +156,9 @@ services:
       CONTAINER_MODE: reverb
     labels:
       traefik.enable: true
-      traefik.http.routers.reverb.rule: Host(`localhost`) || Host(`{{ env "APP_HOST" }}`)
-      traefik.http.routers.reverb.entryPoints: reverb
+      traefik.http.routers.reverb.rule: (Host(`localhost`) || Host(`app.docker.localhost`)) && PathPrefix(`/app`)
+      traefik.http.routers.reverb.entryPoints: app-secure
+      traefik.http.routers.reverb.priority: 30
       traefik.http.routers.reverb.tls: true
       traefik.http.routers.reverb.middlewares: "reverb-retry"
       traefik.http.middlewares.reverb-retry.retry.attempts: 4
@@ -373,13 +370,15 @@ services:
     logging: *default-logging
     labels:
       traefik.enable: true
-      traefik.http.routers.minio-console.rule: Host(`localhost`) || Host(`{{ env "AWS_ENDPOINT" }}`)
+      traefik.http.routers.minio-console.rule: Host(`localhost`)
       traefik.http.routers.minio-console.entryPoints: minio-console
       traefik.http.routers.minio-console.service: minio-console-service
       traefik.http.routers.minio-console.middlewares: "minio-auth,minio-retry"
       traefik.http.services.minio-console-service.loadbalancer.server.port: 8900
-      traefik.http.routers.minio.rule: Host(`localhost`) || Host(`{{ env "APP_HOST" }}`)
-      traefik.http.routers.minio.entryPoints: minio
+      traefik.http.routers.minio.rule: (Host(`localhost`) || Host(`app.docker.localhost`)) && PathPrefix(`/${AWS_BUCKET}`)
+      traefik.http.routers.minio.entryPoints: app-secure
+      traefik.http.routers.minio.priority: 20
+      traefik.http.routers.minio.tls: true
       traefik.http.routers.minio.service: minio-service
       traefik.http.routers.minio.middlewares: "minio-retry,minio-compress"
       traefik.http.services.minio-service.loadbalancer.server.port: 9000
