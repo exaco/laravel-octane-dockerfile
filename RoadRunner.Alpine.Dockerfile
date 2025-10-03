@@ -55,19 +55,18 @@ RUN apk update; \
     brotli \
     # Install PHP extensions
     && install-php-extensions \
+    apcu \
     bz2 \
     pcntl \
     mbstring \
     bcmath \
     sockets \
-    pgsql \
     pdo_pgsql \
     opcache \
     exif \
     pdo_mysql \
     zip \
     uv \
-    vips \
     intl \
     gd \
     redis \
@@ -176,7 +175,8 @@ RUN mkdir -p \
     bootstrap/cache && chmod -R a+rw storage
 
 RUN composer dump-autoload \
-    --classmap-authoritative \
+    --optimize \
+    --apcu \
     --no-dev \
     && composer clear-cache
 
