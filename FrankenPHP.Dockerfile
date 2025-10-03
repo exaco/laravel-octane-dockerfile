@@ -61,6 +61,7 @@ RUN apt-get update; \
     apt-get install -yqq --no-install-recommends --show-progress \
     apt-utils \
     curl \
+    wget \
     vim \
     ncdu \
     procps \

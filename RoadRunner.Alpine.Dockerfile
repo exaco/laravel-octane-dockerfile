@@ -43,6 +43,7 @@ RUN apk update; \
     apk upgrade; \
     apk add --no-cache \
     curl \
+    wget \
     vim \
     tzdata \
     ncdu \
