@@ -91,7 +91,7 @@ services:
     logging: *default-logging
     labels:
       traefik.enable: true
-      traefik.http.routers.traefik.rule: Host(`localhost`) || Host(`{{ env "APP_HOST" }}`)
+      traefik.http.routers.traefik.rule: Host(`localhost`)
       traefik.http.routers.traefik.service: api@internal
       traefik.http.routers.traefik.entryPoints: traefik
       traefik.http.routers.traefik.middlewares: "traefik-auth,traefik-retry"
