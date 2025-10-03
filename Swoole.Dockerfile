@@ -50,7 +50,6 @@ RUN apt-get update; \
     ca-certificates \
     supervisor \
     libsodium-dev \
-    # Install PHP extensions
     && install-php-extensions \
     apcu \
     bz2 \
