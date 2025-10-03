@@ -2,7 +2,7 @@ ARG PHP_VERSION=8.4.12
 ARG FRANKENPHP_VERSION=1.9.1
 ARG COMPOSER_VERSION=2.8
 ARG BUN_VERSION="latest"
-ARG APP_ENV
+ARG ROOT="/var/www/html"
 
 FROM composer:${COMPOSER_VERSION} AS vendor
 
@@ -34,19 +34,19 @@ LABEL org.opencontainers.image.licenses=MIT
 ARG WWWUSER=1000
 ARG WWWGROUP=1000
 ARG TZ=UTC
-ARG APP_DIR=/var/www/html
+ARG ROOT
 ARG APP_ENV
 
 ENV TERM=xterm-color \
     OCTANE_SERVER=frankenphp \
     TZ=${TZ} \
     USER=octane \
-    ROOT=${APP_DIR} \
+    ROOT=${ROOT} \
     APP_ENV=${APP_ENV} \
     COMPOSER_FUND=0 \
-    COMPOSER_MAX_PARALLEL_HTTP=24 \
-    XDG_CONFIG_HOME=${APP_DIR}/.config \
-    XDG_DATA_HOME=${APP_DIR}/.data
+    COMPOSER_MAX_PARALLEL_HTTP=48 \
+    XDG_CONFIG_HOME=${ROOT}/.config \
+    XDG_DATA_HOME=${ROOT}/.data
 
 WORKDIR ${ROOT}
 
@@ -59,18 +59,14 @@ RUN apk update; \
     apk upgrade; \
     apk add --no-cache \
     curl \
-    wget \
     vim \
     tzdata \
-    git \
     ncdu \
     procps \
     unzip \
     ca-certificates \
     supervisor \
     libsodium-dev \
-    brotli \
-    # Install PHP extensions (included with dunglas/frankenphp)
     && install-php-extensions \
     apcu \
     bz2 \
@@ -89,7 +85,6 @@ RUN apk update; \
     redis \
     rdkafka \
     memcached \
-    igbinary \
     ldap \
     && docker-php-source delete \
     && rm -rf /var/cache/apk/* /tmp/* /var/tmp/*
@@ -153,11 +148,7 @@ RUN composer install \
 
 FROM oven/bun:${BUN_VERSION} AS build
 
-ARG APP_ENV
-
-ENV ROOT=/var/www/html \
-    APP_ENV=${APP_ENV} \
-    NODE_ENV=${APP_ENV:-production}
+ARG ROOT
 
 WORKDIR ${ROOT}
 
@@ -165,8 +156,7 @@ COPY --link package.json bun.lock* ./
 
 RUN bun install --frozen-lockfile
 
-COPY --link . .
-COPY --link --from=common ${ROOT}/vendor vendor
+COPY --link --from=common ${ROOT} .
 
 RUN bun run build
 
@@ -180,7 +170,6 @@ ENV WITH_HORIZON=false \
     WITH_SCHEDULER=false \
     WITH_REVERB=false
 
-COPY --link --chown=${WWWUSER}:${WWWUSER} . .
 COPY --link --chown=${WWWUSER}:${WWWUSER} --from=build ${ROOT}/public public
 
 RUN mkdir -p \
@@ -194,8 +183,7 @@ RUN mkdir -p \
 RUN composer dump-autoload \
     --optimize \
     --apcu \
-    --no-dev \
-    && composer clear-cache
+    --no-dev
 
 EXPOSE 8000
 EXPOSE 443

@@ -1,7 +1,7 @@
 ARG PHP_VERSION=8.4.12
 ARG COMPOSER_VERSION=2.8
 ARG BUN_VERSION="latest"
-ARG APP_ENV
+ARG ROOT="/var/www/html"
 
 FROM composer:${COMPOSER_VERSION} AS vendor
 
@@ -17,6 +17,7 @@ ARG WWWUSER=1000
 ARG WWWGROUP=1000
 ARG TZ=UTC
 ARG APP_ENV
+ARG ROOT
 
 ENV DEBIAN_FRONTEND=noninteractive \
     TERM=xterm-color \
@@ -24,9 +25,9 @@ ENV DEBIAN_FRONTEND=noninteractive \
     TZ=${TZ} \
     USER=octane \
     APP_ENV=${APP_ENV} \
-    ROOT=/var/www/html \
+    ROOT=${ROOT} \
     COMPOSER_FUND=0 \
-    COMPOSER_MAX_PARALLEL_HTTP=24
+    COMPOSER_MAX_PARALLEL_HTTP=48
 
 WORKDIR ${ROOT}
 
@@ -42,17 +43,13 @@ RUN apt-get update; \
     apt-get install -yqq --no-install-recommends --show-progress \
     apt-utils \
     curl \
-    wget \
     vim \
-    git \
     ncdu \
     procps \
     unzip \
     ca-certificates \
     supervisor \
     libsodium-dev \
-    libbrotli-dev \
-    # Install PHP extensions
     && install-php-extensions \
     apcu \
     bz2 \
@@ -71,7 +68,6 @@ RUN apt-get update; \
     redis \
     rdkafka \
     memcached \
-    igbinary \
     ldap \
     && apt-get -y autoremove \
     && apt-get clean \
@@ -137,11 +133,7 @@ RUN composer install \
 
 FROM oven/bun:${BUN_VERSION} AS build
 
-ARG APP_ENV
-
-ENV ROOT=/var/www/html \
-    APP_ENV=${APP_ENV} \
-    NODE_ENV=${APP_ENV:-production}
+ARG ROOT
 
 WORKDIR ${ROOT}
 
@@ -149,8 +141,7 @@ COPY --link package.json bun.lock* ./
 
 RUN bun install --frozen-lockfile
 
-COPY --link . .
-COPY --link --from=common ${ROOT}/vendor vendor
+COPY --link --from=common ${ROOT} .
 
 RUN bun run build
 
@@ -164,7 +155,6 @@ ENV WITH_HORIZON=false \
     WITH_SCHEDULER=false \
     WITH_REVERB=false
 
-COPY --link --chown=${WWWUSER}:${WWWUSER} . .
 COPY --link --chown=${WWWUSER}:${WWWUSER} --from=build ${ROOT}/public public
 
 RUN mkdir -p \
@@ -175,8 +165,7 @@ RUN mkdir -p \
 RUN composer dump-autoload \
     --optimize \
     --apcu \
-    --no-dev \
-    && composer clear-cache
+    --no-dev
 
 RUN if composer show | grep spiral/roadrunner-cli >/dev/null; then \
     ./vendor/bin/rr get-binary --quiet; else \
