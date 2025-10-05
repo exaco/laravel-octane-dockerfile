@@ -4,6 +4,10 @@ x-logging: &default-logging
     max-size: "50m"
     max-file: "10"
     compress: "true"
+x-healthcheck: &default-healthcheck
+  interval: 1s
+  retries: 10
+  timeout: 3s
 x-base: &base
   profiles: [app]
   depends_on:
@@ -103,9 +107,7 @@ services:
     <<: *base
     healthcheck:
       test: ["CMD", "curl", "--fail", "--max-time", "10", "localhost:8000/up"]
-      interval: 2s
-      retries: 10
-      timeout: 10s
+      <<: *default-healthcheck
     stop_grace_period: 35s
     labels:
       traefik.enable: true
@@ -190,9 +192,7 @@ services:
     logging: *default-logging
     healthcheck:
       test: ["CMD", "redis-cli", "--pass", "${REDIS_PASSWORD}", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
+      <<: *default-healthcheck
     restart: unless-stopped
     deploy:
       resources:
@@ -223,10 +223,7 @@ services:
       - stack
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}"]
-      interval: 15s
-      timeout: 20s
-      retries: 5
-      start_period: 30s
+      <<: *default-healthcheck
     restart: unless-stopped
     logging: *default-logging
     labels:
@@ -323,9 +320,7 @@ services:
       - stack
     healthcheck:
       test: [CMD, bash, -c, "exec 3<>/dev/tcp/localhost/8108 && printf 'GET /health HTTP/1.1\\r\\nConnection: close\\r\\n\\r\\n' >&3 && head -n1 <&3 | grep '200' && exec 3>&-"]
-      interval: 3s
-      retries: 12
-      timeout: 5s
+      <<: *default-healthcheck
     restart: unless-stopped
     logging: *default-logging
     labels:
@@ -389,8 +384,7 @@ services:
       traefik.http.middlewares.minio-auth.basicauth.users: "user:$$2y$$05$$8zbpsdxg9wDiiKdqxiB0zeAlxZtG68P1SDBOvCN4IooLFewLx70Gm" # user:123456
     healthcheck:
       test: [ "CMD", "mc", "ready", "local" ]
-      retries: 3
-      timeout: 5s
+      <<: *default-healthcheck
   netdata:
     profiles: [administration]
     image: netdata/netdata
