@@ -31,8 +31,8 @@ LABEL org.opencontainers.image.description="Production-ready Dockerfile for Lara
 LABEL org.opencontainers.image.source=https://github.com/exaco/laravel-octane-dockerfile
 LABEL org.opencontainers.image.licenses=MIT
 
-ARG USER_ID=1001
-ARG GROUP_ID=1001
+ARG USER_ID=1000
+ARG GROUP_ID=1000
 ARG TZ=UTC
 ARG ROOT
 ARG APP_ENV
@@ -104,7 +104,8 @@ RUN arch="$(apk --print-arch)" \
     && mkdir -p /etc/supercronic \
     && echo "*/1 * * * * php ${ROOT}/artisan schedule:run --no-interaction" > /etc/supercronic/laravel
 
-RUN addgroup -g ${GROUP_ID} ${USER} \
+RUN deluser --force $(getent passwd ${USER_ID} | cut -d: -f1) \
+    && addgroup -g ${GROUP_ID} ${USER} \
     && adduser -D -g ${GROUP_ID} -u ${USER_ID} -s /bin/sh ${USER} \
     && setcap -r /usr/local/bin/frankenphp
 
