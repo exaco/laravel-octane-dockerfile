@@ -13,8 +13,8 @@ LABEL org.opencontainers.image.description="Production-ready Dockerfile for Lara
 LABEL org.opencontainers.image.source=https://github.com/exaco/laravel-octane-dockerfile
 LABEL org.opencontainers.image.licenses=MIT
 
-ARG USER_ID=1000
-ARG GROUP_ID=1000
+ARG USER_ID=1001
+ARG GROUP_ID=1001
 ARG TZ=UTC
 ARG ROOT
 ARG APP_ENV
