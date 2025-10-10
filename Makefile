@@ -3,8 +3,8 @@
 
 SHELL = /bin/bash
 DC_RUN_ARGS = --env-file ./.env.production --profile app --profile administration -f compose.production.yaml
-HOST_UID = $(shell id -u)
-HOST_GID = $(shell id -g)
+HOST_UID = $(shell if [ $$(id -u) -eq 0 ] && [ $$(id -g) -eq 0 ]; then echo 1000; else id -u; fi)
+HOST_GID = $(shell if [ $$(id -u) -eq 0 ] && [ $$(id -g) -eq 0 ]; then echo 1000; else id -g; fi)
 
 .PHONY: help up down stop shell\:app stop-all ps update build restart down-up images\:list images\:clean logs\:app logs containers\:health command\:app
 .DEFAULT_GOAL: help
@@ -63,4 +63,3 @@ images\:clean: ## Remove all dangling images and images not referenced by any co
 
 containers\:health: ## Check all containers health
 	docker compose ${DC_RUN_ARGS} ps --format "table {{.Name}}\t{{.Service}}\t{{.Status}}"
-	
