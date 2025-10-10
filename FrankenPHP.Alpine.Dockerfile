@@ -104,9 +104,8 @@ RUN arch="$(apk --print-arch)" \
     && mkdir -p /etc/supercronic \
     && echo "*/1 * * * * php ${ROOT}/artisan schedule:run --no-interaction" > /etc/supercronic/laravel
 
-RUN deluser $(getent passwd ${USER_ID} | cut -d: -f1) \
-    && addgroup -g ${GROUP_ID} ${USER} \
-    && adduser -D -g ${GROUP_ID} -u ${USER_ID} -s /bin/sh ${USER} \
+RUN addgroup -g ${GROUP_ID} ${USER} \
+    && adduser -D -G ${USER} -u ${USER_ID} -s /bin/sh ${USER} \
     && setcap -r /usr/local/bin/frankenphp
 
 RUN mkdir -p /var/log/supervisor /var/run/supervisor \
