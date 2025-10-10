@@ -161,7 +161,9 @@ COPY --link --chown=${USER_ID}:${GROUP_ID} --from=build ${ROOT}/public public
 RUN mkdir -p \
     storage/framework/{sessions,views,cache,testing} \
     storage/logs \
-    bootstrap/cache && chmod -R a+rw storage
+    bootstrap/cache \
+    && chown -R ${USER_ID}:${GROUP_ID} ${ROOT} \
+    && chmod -R a+rw ${ROOT}
 
 RUN composer dump-autoload \
     --optimize \
