@@ -13,8 +13,8 @@ LABEL org.opencontainers.image.description="Production-ready Dockerfile for Lara
 LABEL org.opencontainers.image.source=https://github.com/exaco/laravel-octane-dockerfile
 LABEL org.opencontainers.image.licenses=MIT
 
-ARG WWWUSER=1000
-ARG WWWGROUP=1000
+ARG USER_ID=1000
+ARG GROUP_ID=1000
 ARG TZ=UTC
 ARG ROOT
 ARG APP_ENV
@@ -91,24 +91,24 @@ RUN arch="$(uname -m)" \
     && echo "*/1 * * * * php ${ROOT}/artisan schedule:run --no-interaction" > /etc/supercronic/laravel
 
 RUN userdel --remove --force www-data \
-    && groupadd --force -g ${WWWGROUP} ${USER} \
-    && useradd -ms /bin/bash --no-log-init --no-user-group -g ${WWWGROUP} -u ${WWWUSER} ${USER}
+    && groupadd --force -g ${GROUP_ID} ${USER} \
+    && useradd -ms /bin/bash --no-log-init --no-user-group -g ${GROUP_ID} -u ${USER_ID} ${USER}
 
-RUN chown -R ${USER}:${USER} ${ROOT} /var/{log,run} \
+RUN chown -R ${USER_ID}:${GROUP_ID} ${ROOT} /var/{log,run} \
     && chmod -R a+rw ${ROOT} /var/{log,run}
 
 RUN cp ${PHP_INI_DIR}/php.ini-production ${PHP_INI_DIR}/php.ini
 
 USER ${USER}
 
-COPY --link --chown=${WWWUSER}:${WWWUSER} --from=vendor /usr/bin/composer /usr/bin/composer
+COPY --link --chown=${USER_ID}:${GROUP_ID} --from=vendor /usr/bin/composer /usr/bin/composer
 
-COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/supervisord.conf /etc/
-COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/octane/Swoole/supervisord.swoole.conf /etc/supervisor/conf.d/
-COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/supervisord.*.conf /etc/supervisor/conf.d/
-COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/php.ini ${PHP_INI_DIR}/conf.d/99-octane.ini
-COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/start-container /usr/local/bin/start-container
-COPY --link --chown=${WWWUSER}:${WWWUSER} deployment/healthcheck /usr/local/bin/healthcheck
+COPY --link --chown=${USER_ID}:${GROUP_ID} deployment/supervisord.conf /etc/
+COPY --link --chown=${USER_ID}:${GROUP_ID} deployment/octane/Swoole/supervisord.swoole.conf /etc/supervisor/conf.d/
+COPY --link --chown=${USER_ID}:${GROUP_ID} deployment/supervisord.*.conf /etc/supervisor/conf.d/
+COPY --link --chown=${USER_ID}:${GROUP_ID} deployment/php.ini ${PHP_INI_DIR}/conf.d/99-octane.ini
+COPY --link --chown=${USER_ID}:${GROUP_ID} deployment/start-container /usr/local/bin/start-container
+COPY --link --chown=${USER_ID}:${GROUP_ID} deployment/healthcheck /usr/local/bin/healthcheck
 
 RUN chmod +x /usr/local/bin/start-container /usr/local/bin/healthcheck
 
@@ -118,7 +118,7 @@ FROM base AS common
 
 USER ${USER}
 
-COPY --link --chown=${WWWUSER}:${WWWUSER} . .
+COPY --link --chown=${USER_ID}:${GROUP_ID} . .
 
 RUN composer install \
     --no-dev \
@@ -156,7 +156,7 @@ ENV WITH_HORIZON=false \
     WITH_SCHEDULER=false \
     WITH_REVERB=false
 
-COPY --link --chown=${WWWUSER}:${WWWUSER} --from=build ${ROOT}/public public
+COPY --link --chown=${USER_ID}:${GROUP_ID} --from=build ${ROOT}/public public
 
 RUN mkdir -p \
     storage/framework/{sessions,views,cache,testing} \

@@ -3,11 +3,11 @@
 
 SHELL = /bin/bash
 DC_RUN_ARGS = --env-file ./.env.production --profile app --profile administration -f compose.production.yaml
-HOST_UID=$(shell id -u)
-HOST_GID=$(shell id -g)
+HOST_UID = $(shell id -u)
+HOST_GID = $(shell id -g)
 
-.PHONY : help up down shell\:app stop-all ps update build restart down-up images\:list images\:clean logs\:app logs containers\:health command\:app
-.DEFAULT_GOAL : help
+.PHONY: help up down stop shell\:app stop-all ps update build restart down-up images\:list images\:clean logs\:app logs containers\:health command\:app
+.DEFAULT_GOAL: help
 
 # This will output the help for each task. thanks to https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 help: ## Show this help
@@ -15,18 +15,21 @@ help: ## Show this help
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z0-9_-]+:.*?## / {printf "  \033[32m%-18s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 up: ## Up containers
-	docker compose ${DC_RUN_ARGS} up -d --remove-orphans
+	HOST_UID=${HOST_UID} HOST_GID=${HOST_GID} docker compose ${DC_RUN_ARGS} up -d --remove-orphans
 
 logs: ## Tail all containers logs
 	docker compose ${DC_RUN_ARGS} logs -f
 
-logs\:app: ## app container logs
-	docker compose ${DC_RUN_ARGS} logs app
+logs\:app: ## Tail app container logs
+	docker compose ${DC_RUN_ARGS} logs -f app
 
-down: ## Stop containers
+down: ## Stop and remove containers and networks
 	docker compose ${DC_RUN_ARGS} down
 
-down\:with-volumes: ## Stop containers and remove volumes
+stop: ## Stop containers
+	docker compose ${DC_RUN_ARGS} stop
+
+down\:with-volumes: ## Stop and remove containers and networks and remove volumes
 	docker compose ${DC_RUN_ARGS} down -v
 
 shell\:app: ## Start shell into app container
@@ -42,13 +45,13 @@ ps: ## Containers status
 	docker compose ${DC_RUN_ARGS} ps
 
 build: ## Build images
-	docker compose ${DC_RUN_ARGS} build
+	HOST_UID=${HOST_UID} HOST_GID=${HOST_GID} docker compose ${DC_RUN_ARGS} build
 
 update: ## Update containers
-	docker compose ${DC_RUN_ARGS} up -d --no-deps --build --remove-orphans
+	HOST_UID=${HOST_UID} HOST_GID=${HOST_GID} docker compose ${DC_RUN_ARGS} up -d --no-deps --build --remove-orphans
 
 restart: ## Restart all containers
-	docker compose ${DC_RUN_ARGS} restart
+	HOST_UID=${HOST_UID} HOST_GID=${HOST_GID} docker compose ${DC_RUN_ARGS} restart
 
 down-up: down up ## Down all containers, then up
 
@@ -60,3 +63,4 @@ images\:clean: ## Remove all dangling images and images not referenced by any co
 
 containers\:health: ## Check all containers health
 	docker compose ${DC_RUN_ARGS} ps --format "table {{.Name}}\t{{.Service}}\t{{.Status}}"
+	
